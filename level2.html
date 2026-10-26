@@ -9,17 +9,18 @@
   --green:#1f6a43; --orange:#e2711d; --line:#b9cdb7; --panel:#f6faf3;
   --bad:#c8392b; --warn:#d99a12; --good:#2c8a4f;
   --d-mv:#e2711d; --d-ec:#2f6fd6; --d-so:#a03fbf;
+  --hero:#143d2a; --hero-ink:#eaf4ec; --hero-mute:#a9c7b2; --card:#ffffff; --shadow:0 1px 2px rgba(20,61,42,.08),0 6px 18px rgba(20,61,42,.08);
   --f-disp:"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#101a14; --board:#17251c; --cell:#1e2d23; --ink:#e4efe5; --muted:#93a897;
   --green:#5fc48a; --orange:#f39445; --line:#2d4234; --panel:#18261d;
-  --bad:#ef6a5c; --warn:#f0bd45; --good:#5fc48a; --d-mv:#f39445; --d-ec:#6ea2ff; --d-so:#d08cf0; color-scheme:dark}}
+  --bad:#ef6a5c; --warn:#f0bd45; --good:#5fc48a; --d-mv:#f39445; --d-ec:#6ea2ff; --d-so:#d08cf0; --hero:#0b2418; --hero-ink:#e4efe5; --hero-mute:#8fb39b; --card:#1b2a20; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#101a14; --board:#17251c; --cell:#1e2d23; --ink:#e4efe5; --muted:#93a897;
   --green:#5fc48a; --orange:#f39445; --line:#2d4234; --panel:#18261d;
-  --bad:#ef6a5c; --warn:#f0bd45; --good:#5fc48a; --d-mv:#f39445; --d-ec:#6ea2ff; --d-so:#d08cf0; color-scheme:dark}
+  --bad:#ef6a5c; --warn:#f0bd45; --good:#5fc48a; --d-mv:#f39445; --d-ec:#6ea2ff; --d-so:#d08cf0; --hero:#0b2418; --hero-ink:#e4efe5; --hero-mute:#8fb39b; --card:#1b2a20; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}
 html,body{height:100%}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);
@@ -40,7 +41,22 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .cell.corner .ic{font-size:17px}
 .cell.corner .nm{font-family:var(--f-disp);font-size:9px}
 .cell .own{position:absolute;right:1px;bottom:0;font-size:8px;font-weight:700;line-height:1}
-.cell .tk{position:absolute;left:1px;bottom:1px;display:flex;gap:1px}
+.cell .tk{display:none}
+#pawns{position:absolute;inset:0;pointer-events:none;z-index:3}
+.pawn{position:absolute;left:0;top:0;width:var(--pw);height:calc(var(--pw)*1.35);transform:translate(-50%,-95%);transition:left .16s ease-out,top .16s ease-out;filter:drop-shadow(0 1.5px 1.5px rgba(0,0,0,.35))}
+.pawn svg{width:100%;height:100%;display:block;overflow:visible}
+.pawn .body{transform-origin:50% 100%}
+.pawn.hop .body{animation:hop .16s ease-out}
+@keyframes hop{0%{transform:translateY(0)}50%{transform:translateY(-28%) scale(1.05,.95)}100%{transform:translateY(0)}}
+.pawn.now{z-index:2}
+.pawn.now .body{animation:bob 1.1s ease-in-out infinite}
+.pawn.now.hop .body{animation:hop .16s ease-out}
+@keyframes bob{50%{transform:translateY(-12%)}}
+.pawn .ring{transform-origin:50% 50%;animation:ring 1.4s ease-out infinite}
+@keyframes ring{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.6)}}
+.pawn .tagn{position:absolute;left:50%;bottom:calc(100% + 1px);transform:translateX(-50%);font-size:9px;font-weight:700;color:#fff;background:var(--pc);border-radius:6px;padding:0 4px;white-space:nowrap;line-height:1.5}
+.pawn.out{opacity:.25}
+@media (prefers-reduced-motion:reduce){.pawn{transition:none}.pawn .body,.pawn .ring{animation:none!important}}
 .cell .tk i{width:7px;height:7px;border-radius:50%;border:1px solid var(--cell);display:block}
 .cell.here{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
 .cell.hit{animation:hit .8s ease}
@@ -108,10 +124,59 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .info b{font-family:var(--f-disp);font-weight:400;font-size:14px}
 .ol{padding-left:16px;margin:2px 0}
 
-#setup{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;gap:10px;overflow-y:auto;padding:14px 4px;z-index:5}
-#setup h1{font-family:var(--f-disp);font-weight:400;font-size:34px;margin:0;color:var(--green);line-height:1.05;text-wrap:balance}
-#setup h1 span{color:var(--orange)}
-#setup .lead{font-size:13px;line-height:1.55;color:var(--muted);max-width:60ch}
+#setup{position:absolute;inset:0;background:var(--bg);overflow-y:auto;z-index:5;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch}
+.su{display:flex;flex-direction:column;gap:18px;padding:4px 0 12px}
+.hero{position:relative;background:var(--hero);color:var(--hero-ink);border-radius:20px;padding:12px;overflow:hidden}
+.mini{display:grid;grid-template-columns:repeat(22,minmax(0,1fr));grid-template-rows:repeat(11,minmax(0,1fr));gap:2px;aspect-ratio:22/11.6;width:100%}
+.mini i{border-radius:2px;background:var(--mc);opacity:.95;transition:transform .25s,box-shadow .25s}
+.mini i.c{border-radius:4px;background:color-mix(in srgb,var(--orange) 70%,var(--hero))}
+.mini i.on{transform:scale(1.25);background:var(--orange);box-shadow:0 0 0 2px var(--hero),0 0 10px 1px color-mix(in srgb,var(--orange) 70%,transparent);z-index:1}
+.mini .core{grid-column:2/22;grid-row:2/11;display:flex;flex-direction:column;justify-content:center;padding:4px 10px;min-width:0}
+.eyebrow{font-size:10.5px;letter-spacing:.18em;font-weight:700;color:var(--orange)}
+.hero h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(30px,10vw,46px);line-height:1;margin:4px 0 2px;letter-spacing:-.01em;color:var(--hero-ink)}
+.hero .tag{font-size:12.5px;color:var(--hero-mute);line-height:1.45}
+.hero .tag b{color:var(--hero-ink);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px;border-top:1px solid color-mix(in srgb,var(--hero-ink) 18%,transparent);padding-top:9px}
+.stats div{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.stats div+div{border-left:1px solid color-mix(in srgb,var(--hero-ink) 14%,transparent)}
+.stats b{font-family:var(--f-disp);font-weight:400;font-size:22px;line-height:1;font-variant-numeric:tabular-nums}
+.stats span{font-size:10px;color:var(--hero-mute);white-space:nowrap}
+.sh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 2px 8px}
+.sh h2{font-family:var(--f-disp);font-weight:400;font-size:19px;margin:0;color:var(--ink)}
+.sh span{font-size:11px;color:var(--muted)}
+.seats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.st{background:var(--card);border-radius:14px;padding:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;border:1px solid transparent;min-width:0}
+.st.me{border-color:var(--pc)}
+.st .top{display:flex;align-items:center;gap:8px;min-width:0}
+.av{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;background:color-mix(in srgb,var(--pc) 16%,var(--card));color:var(--pc);font-size:15px;font-weight:700}
+.st input{flex:1;min-width:0;border:0;border-bottom:1.5px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:15px;font-weight:600;padding:3px 0}
+.st input:focus{outline:none;border-bottom-color:var(--pc)}
+.tg{display:grid;grid-template-columns:1fr 1fr;background:var(--panel);border-radius:999px;padding:2px;gap:2px}
+.tg button{border:0;background:transparent;border-radius:999px;padding:5px 0;font-size:12px;cursor:pointer;color:var(--muted)}
+.tg button.on{background:var(--pc);color:#fff;font-weight:600}
+.st .meta{font-size:10px;color:var(--muted);line-height:1.3;min-height:13px}
+.diffs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.df{background:var(--card);border-radius:14px;padding:10px 8px;box-shadow:var(--shadow);cursor:pointer;text-align:left;border:1.5px solid transparent;display:flex;flex-direction:column;gap:6px;min-width:0}
+.df.on{border-color:var(--green)}
+.df b{font-family:var(--f-disp);font-weight:400;font-size:17px;color:var(--ink)}
+.ratio{display:flex;height:5px;border-radius:3px;overflow:hidden;background:var(--line)}
+.ratio i{display:block;height:100%}
+.df small{font-size:10px;color:var(--muted)}
+details.adv{background:var(--card);border-radius:14px;box-shadow:var(--shadow)}
+details.adv summary{list-style:none;cursor:pointer;padding:12px;display:flex;align-items:center;gap:8px}
+details.adv summary::-webkit-details-marker{display:none}
+details.adv summary h2{font-family:var(--f-disp);font-weight:400;font-size:17px;margin:0}
+details.adv summary .sum{font-size:10.5px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+details.adv summary .chev{transition:transform .2s;color:var(--muted)}
+details.adv[open] summary .chev{transform:rotate(180deg)}
+details.adv .body{padding:0 12px 12px;display:flex;flex-direction:column;gap:4px}
+.cta{position:sticky;bottom:0;margin-top:auto;padding:12px 0 6px;background:linear-gradient(to top,var(--bg) 70%,transparent);display:flex;gap:8px}
+.cta .go{flex:1;border:0;border-radius:14px;background:#d9661a;color:#fff;font-family:var(--f-disp);font-size:20px;padding:13px 10px;cursor:pointer;box-shadow:0 6px 16px color-mix(in srgb,var(--orange) 35%,transparent);display:flex;align-items:center;justify-content:center;gap:8px}
+.cta .go small{font-family:var(--f-body);font-size:11px;opacity:.85}
+.cta .resume{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;font-size:13px;font-weight:600}
+.cta .resume small{font-size:10px;color:var(--muted);font-weight:400}
+.foot{font-size:10.5px;color:var(--muted);text-align:center;margin:0}
+@media (prefers-reduced-motion:reduce){.mini i{transition:none}}
 .seat{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px}
 .seat input{width:100%;min-width:0;font:inherit;font-size:14px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--cell);color:var(--ink)}
 .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
@@ -185,6 +250,7 @@ tr.flash td,tr.flash th{animation:flash 1.6s ease}
 
 <div id="app">
   <div id="board"></div>
+  <div id="pawns" aria-hidden="true"></div>
   <div id="fx" aria-hidden="true"></div>
   <div id="setup"></div>
 </div>
@@ -291,7 +357,9 @@ const cur=()=>G.players[G.turn];
 const alive=()=>G.players.filter(p=>!p.out);
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
+function clearPawns(){const l=document.getElementById('pawns');if(l)l.innerHTML='';for(const k in PAWN_LAST)delete PAWN_LAST[k];}
 function newGame(cfg){
+  clearPawns();
   const POOL=shuffle(['균형','문화','경제','복지']);
   G={v:4,srcSeq:0,src:null,repSrc:null,repSeq:0,theme:-1,themeHist:[],pending:[],fxRound:null,fxHits:[],round:1,turn:0,rate:3,boom:'보통',food:100,oil:100,steel:100,fund:0,diff:cfg.diff,recent:[],log:[],report:[],
      phase:'roll',winner:null,dice:{mv:null,ec:null,so:null},msg:'',chain:'',cells:CELLS.map(()=>({o:-1,l:0})),hits:[]};
@@ -854,6 +922,48 @@ function renderBoard(){
   G.fxHits=(G.fxHits||[]).concat(G.hits||[]);
   (G.hits||[]).forEach(i=>{const el=document.getElementById('c'+i);if(el){el.classList.remove('hit');void el.offsetWidth;el.classList.add('hit');}});
   G.hits=[];
+  placePawns();
+}
+const PAWN_LAST={};
+function pawnSvg(x){
+  const c=x.col,skin='#f4c9a0',ink='#2b2320',st='#fff';
+  const hair=[ /* 짧은 머리 */ `<path d="M8.6 9.2 C8.6 4.2 21.4 4.2 21.4 9.2 C19.5 7.4 16.5 6.9 15 8.2 C13.4 6.9 10.4 7.4 8.6 9.2Z" fill="${ink}"/>`,
+    /* 모자 */ `<path d="M8.2 8.6 C8.4 3.6 21.6 3.6 21.8 8.6 Z" fill="${c}" stroke="${st}" stroke-width="1"/><path d="M15 8.4 L24.5 8.9 L24.2 10 L15 9.6Z" fill="${c}" stroke="${st}" stroke-width=".8"/>`,
+    /* 긴 머리 */ `<path d="M8 13.5 C6.5 5 23.5 5 22 13.5 L21 16 L20.6 9.6 C18.5 8 11.5 8 9.4 9.6 L9 16Z" fill="${ink}"/>`,
+    /* 묶은 머리 + 안경 */ `<path d="M8.6 9.4 C8.4 4.4 21.6 4.4 21.4 9.4 C18.8 7.6 11.2 7.6 8.6 9.4Z" fill="${ink}"/><circle cx="15" cy="3.6" r="2.4" fill="${ink}"/><g fill="none" stroke="${ink}" stroke-width=".9"><circle cx="12.6" cy="11" r="1.9"/><circle cx="17.4" cy="11" r="1.9"/><path d="M14.5 11 H15.5"/></g>`][x.id%4];
+  return `<svg viewBox="0 0 30 40"><ellipse class="ring" cx="15" cy="38" rx="12" ry="3.4" fill="none" stroke="${c}" stroke-width="1.6" style="display:var(--rg,none)"/>
+  <ellipse cx="15" cy="38.2" rx="8" ry="1.8" fill="rgba(0,0,0,.25)"/>
+  <g class="body">
+    <path d="M12.2 28 L11.4 37.4 M17.8 28 L18.6 37.4" stroke="${ink}" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M9.6 36.8 h3.4 M17 36.8 h3.4" stroke="${ink}" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M9.4 18.6 C7.5 21.5 7 24.5 7.4 27.2 M20.6 18.6 C22.5 21.5 23 24.5 22.6 27.2" stroke="${c}" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+    <circle cx="7.4" cy="27.6" r="1.6" fill="${skin}"/><circle cx="22.6" cy="27.6" r="1.6" fill="${skin}"/>
+    <path d="M9.2 18.4 C10.5 16.6 19.5 16.6 20.8 18.4 L20.2 29.4 L9.8 29.4 Z" fill="${c}" stroke="${st}" stroke-width="1.1" stroke-linejoin="round"/>
+    <path d="M13 17 L15 19.4 L17 17" fill="none" stroke="${st}" stroke-width="1"/>
+    <rect x="13.6" y="14.2" width="2.8" height="3" rx="1" fill="${skin}"/>
+    <circle cx="15" cy="10.6" r="5.6" fill="${skin}" stroke="${st}" stroke-width="1"/>
+    <circle cx="13" cy="11" r=".75" fill="${ink}"/><circle cx="17" cy="11" r=".75" fill="${ink}"/>
+    <path d="M13.4 13.2 Q15 14.4 16.6 13.2" fill="none" stroke="${ink}" stroke-width=".7" stroke-linecap="round"/>
+    ${hair}
+    <circle cx="15" cy="23.6" r="3.4" fill="${st}"/><text x="15" y="25.9" text-anchor="middle" font-size="6.2" font-weight="700" fill="${c}">${x.sym}</text>
+  </g></svg>`;}
+function placePawns(){
+  const layer=$('#pawns');if(!layer||!G)return;const app=$('#app').getBoundingClientRect();
+  const c0=document.getElementById('c0');if(!c0)return;const cw=c0.getBoundingClientRect().width;
+  const pw=Math.max(18,Math.min(36,cw*0.6));layer.style.setProperty('--pw',pw+'px');
+  const now=cur();const byCell={};G.players.forEach(x=>{if(x.out)return;(byCell[x.pos]=byCell[x.pos]||[]).push(x);});
+  G.players.forEach(x=>{let el=document.getElementById('pw'+x.id);
+    if(!el){el=document.createElement('div');el.id='pw'+x.id;el.className='pawn';el.style.setProperty('--pc',x.col);el.innerHTML=pawnSvg(x)+`<span class="tagn">${x.name}</span>`;layer.appendChild(el);}
+    el.classList.toggle('out',x.out);if(x.out){el.hidden=true;return;}el.hidden=false;
+    const cell=document.getElementById('c'+x.pos);if(!cell)return;const r=cell.getBoundingClientRect();
+    const grp=byCell[x.pos],k=grp.indexOf(x),n=grp.length;
+    const spread=Math.min(r.width*0.62,pw*0.75*(n-1));const dx=n>1?(-spread/2+spread*k/(n-1)):0;const dy=n>1?(k%2?-r.height*0.08:r.height*0.06):0;
+    el.style.left=(r.left-app.left+r.width/2+dx)+'px';el.style.top=(r.top-app.top+r.height*0.97+dy)+'px';
+    const isNow=x===now&&G.phase!=='over';el.classList.toggle('now',isNow);el.style.setProperty('--rg',isNow?'inline':'none');
+    el.querySelector('.tagn').hidden=!(isNow);
+    el.style.zIndex=isNow?5:(2+Math.round(r.top));
+    if(PAWN_LAST[x.id]!==undefined&&PAWN_LAST[x.id]!==x.pos){el.classList.remove('hop');void el.offsetWidth;el.classList.add('hop');}
+    PAWN_LAST[x.id]=x.pos;});
 }
 function focusP(){const p=cur();if(p.human)return p;return G.players.find(x=>x.human&&!x.out)||p;}
 function tile(k,v,s,bar,state){return `<div class="tile ${state||''}" data-k="${k}"><div class="k">${k}</div><div class="v">${v}</div>${bar!=null?`<div class="bar"><i style="width:${bar[0]}%;background:${bar[1]}"></i></div>`:''}${s?`<div class="s">${s}</div>`:''}</div>`;}
@@ -1233,31 +1343,52 @@ function applyFrame(){const f=FRAMES.find(x=>x[0]===OPT.frame)||FRAMES[0];const 
 
 /* ========= 시작 화면 ========= */
 let SETUP={seats:[{name:'나',human:true},{name:'한솔',human:false},{name:'다온',human:false},{name:'미르',human:false}],diff:'normal'};
+let SU_TIMER=null;
+function miniBoard(){
+  const cells=CELLS.map(c=>{const [r,col]=pos2grid(c.i);return `<i id="mb${c.i}" class="${c.t==='corner'?'c':''}" style="grid-column:${r};grid-row:${col};--mc:${c.t==='prop'?PROV[c.pv].c:'color-mix(in srgb,var(--hero-ink) 22%,var(--hero))'}"></i>`;}).join('');
+  return `<div class="mini" aria-hidden="true">${cells}<div class="core"><div class="eyebrow">22세기 브르마블 · LEVEL 2</div><h1>누리 공화국</h1><div class="tag"><b>나라 살리기</b> — 땅과 기업을 키우되, 민심을 잃으면 끝입니다.</div></div></div>`;
+}
 function showSetup(){
   const el=$('#setup');el.hidden=false;const saved=loadSaved();
-  el.innerHTML=`<div style="font-size:12px;color:var(--orange);font-weight:700;letter-spacing:.5px">22세기 브르마블 · LEVEL 2</div>
-  <h1>나라 살리기<br><span>누리 공화국</span></h1>
-  <p class="lead">돈만 많아서는 이길 수 없습니다. 8개 지방의 땅과 기업을 키우면서, 국민이 등을 돌리지 않게 지지율과 사회 혼란을 함께 관리하세요. 돈을 버는 길(증세·자동화·인구 유입)마다 사회적 대가가 따라옵니다.</p>
-  <div class="keyfacts"><div><b>62칸 새 보드</b>8개 지방 24칸 + 기능 38칸</div><div><b>9대 지표</b>현금·순자산·금리·원자재·교육 + 지지·혼란·문화·인구</div><div><b>주사위 3개</b>이동 · 경제 · 사회</div><div><b>카드 70장</b>경제 30 + 사회·문화 40</div></div>
-  <div style="font-family:var(--f-disp);font-size:16px;color:var(--green)">지도자</div>
-  ${SETUP.seats.map((s,i)=>`<div class="seat"><span style="color:${PCOL[i]};font-weight:700;font-size:16px">${SYM[i]}</span><input id="nm${i}" value="${s.name}" maxlength="8" aria-label="지도자 ${i+1} 이름"><div class="seg"><button data-s="${i}" data-h="1" class="${s.human?'on':''}">사람</button><button data-s="${i}" data-h="0" class="${s.human?'':'on'}">AI</button></div></div>`).join('')}
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--f-disp);font-size:16px;color:var(--green)">난이도</span><div class="seg">${[['easy','쉬움'],['normal','보통'],['hard','어려움']].map(([k,n])=>`<button data-d="${k}" class="${SETUP.diff===k?'on':''}">${n}</button>`).join('')}</div><span style="font-size:11px;color:var(--muted)">호재:악재 6:4 · 5:5 · 4:6</span></div>
-  <div style="font-family:var(--f-disp);font-size:16px;color:var(--green)">화면·시각효과</div>${settingsHtml()}
-  <button class="btn main" id="start">게임 시작</button>
-  ${saved?`<button class="btn" id="cont"><span>이어하기</span><span class="sb">${saved.round}라운드 · 저장된 판</span></button>`:''}
-  <p style="font-size:11px;color:var(--muted)">권장 20라운드 · 60~80분. 사람 여러 명이면 한 기기를 돌려 가며 합니다.</p>`;
+  const humans=SETUP.seats.filter(s=>s.human).length;
+  const ratio={easy:[6,4],normal:[5,5],hard:[4,6]};
+  const fxOnList=['A','B','C','D'].filter(k=>OPT.fx[k]).join('');
+  const frameName=(FRAMES.find(f=>f[0]===OPT.frame)||FRAMES[0])[1];
+  el.innerHTML=`<div class="su">
+  <section class="hero">${miniBoard()}
+    <div class="stats"><div><b>62</b><span>보드 칸</span></div><div><b>9</b><span>지표</span></div><div><b>3</b><span>주사위</span></div><div><b>70</b><span>사건 카드</span></div></div>
+  </section>
+  <section><div class="sh"><h2>지도자</h2><span>사람 ${humans} · AI ${4-humans} · 한 기기를 돌려 가며</span></div>
+    <div class="seats">${SETUP.seats.map((s,i)=>`<div class="st ${s.human?'me':''}" style="--pc:${PCOL[i]}">
+      <div class="top"><span class="av">${SYM[i]}</span><input id="nm${i}" value="${s.name}" maxlength="8" aria-label="지도자 ${i+1} 이름"></div>
+      <div class="tg" role="group" aria-label="지도자 ${i+1} 조작"><button data-s="${i}" data-h="1" class="${s.human?'on':''}" aria-pressed="${s.human}">사람</button><button data-s="${i}" data-h="0" class="${s.human?'':'on'}" aria-pressed="${!s.human}">AI</button></div>
+    </div>`).join('')}</div>
+  </section>
+  <section><div class="sh"><h2>난이도</h2><span>규칙은 같고 사건 카드 비율만 다릅니다</span></div>
+    <div class="diffs">${[['easy','쉬움'],['normal','보통'],['hard','어려움']].map(([k,n])=>`<button class="df ${SETUP.diff===k?'on':''}" data-d="${k}" aria-pressed="${SETUP.diff===k}"><b>${n}</b><span class="ratio"><i style="width:${ratio[k][0]*10}%;background:var(--good)"></i><i style="width:${ratio[k][1]*10}%;background:var(--bad)"></i></span><small>호재 ${ratio[k][0]} : 악재 ${ratio[k][1]}</small></button>`).join('')}</div>
+  </section>
+  <details class="adv" ${VIEW.advOpen?'open':''}><summary><h2>화면·시각효과</h2><span class="sum">효과 ${fxOnList||'없음'} · ${OPT.speed==='fast'?'빠름':'보통 속도'} · ${frameName}</span><span class="chev">▾</span></summary><div class="body">${settingsHtml()}</div></details>
+  <p class="foot">권장 20라운드 · 60~80분 · 승리: 순자산 1위 또는 문화 승리</p>
+  <div class="cta">${saved?`<button class="resume" id="cont">이어하기<small>${saved.round}라운드 저장됨</small></button>`:''}<button class="go" id="start">게임 시작 <small>→</small></button></div>
+  </div>`;
   const sync=()=>SETUP.seats.forEach((s,i)=>{const v=$('#nm'+i);if(v)s.name=v.value.trim()||s.name;});
-  el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{sync();SETUP.seats[+b.dataset.s].human=b.dataset.h==='1';showSetup();});
-  el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{sync();SETUP.diff=b.dataset.d;showSetup();});
-  wireSettings(el,()=>{sync();showSetup();});
-  $('#start').onclick=()=>{sync();newGame(SETUP);el.hidden=true;VIEW={tab:'act',info:null,badge:{}};startTurn();};
-  const c=$('#cont');if(c)c.onclick=()=>{G=saved;el.hidden=true;resume();};
+  const adv=el.querySelector('details.adv');adv.ontoggle=()=>{VIEW.advOpen=adv.open;};
+  const keep=()=>{const y=el.scrollTop;sync();showSetup();el.scrollTop=y;};
+  el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{SETUP.seats[+b.dataset.s].human=b.dataset.h==='1';keep();});
+  el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{SETUP.diff=b.dataset.d;keep();});
+  wireSettings(el,keep);
+  const stopAnim=()=>{if(SU_TIMER){clearInterval(SU_TIMER);SU_TIMER=null;}};
+  $('#start').onclick=()=>{stopAnim();sync();newGame(SETUP);el.hidden=true;VIEW={tab:'act',info:null,badge:{}};startTurn();};
+  const c=$('#cont');if(c)c.onclick=()=>{stopAnim();G=saved;el.hidden=true;resume();};
+  stopAnim();
+  if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){let k=0;
+    SU_TIMER=setInterval(()=>{if(el.hidden){stopAnim();return;}const a=document.getElementById('mb'+((k+N-1)%N)),b=document.getElementById('mb'+(k%N));if(a)a.classList.remove('on');if(b)b.classList.add('on');k++;},140);}
 }
-function resume(){G.choices=null;G.hits=[];const p=cur();if(G.phase!=='over'){G.phase=p.hsr?'hsr':'roll';}render();if(!p.human&&G.phase!=='over')startTurn();}
+function resume(){clearPawns();G.choices=null;G.hits=[];const p=cur();if(G.phase!=='over'){G.phase=p.hsr?'hsr':'roll';}render();if(!p.human&&G.phase!=='over')startTurn();}
 
 /* ========= 부팅 ========= */
 function boot(data){
-  applySpeed();buildBoard();applyFrame();window.addEventListener('resize',()=>{applyFrame();});
+  applySpeed();buildBoard();applyFrame();window.addEventListener('resize',()=>{applyFrame();if(G)placePawns();});
   if(data&&data.G&&data.G.v===4&&!data.G.winner){G=data.G;$('#setup').hidden=true;resume();}
   else showSetup();
 }
