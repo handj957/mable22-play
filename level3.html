@@ -1164,7 +1164,7 @@ const FR=r=>r==='ocean'||r==='space';
 const CELLS=[
  sp('start','궤도 엘리베이터','출발','지날 때마다 예산 ₵200 × 생산성 × 물가와 원자재 배당을 받고 지지율 +1.'),
  city(1,'라고스','라고스','나이지리아',60,'oil',1.25,'S','af','아프리카 최대 도시권. 원유 수출과 젊은 인구.'),
- sp('supply','공급망 카드','공급망','개인 카드.'),
+ sp('supply','공급망 카드','공급망','공급망 카드를 한 장 뽑아 즉시 실행합니다(16종).'),
  city(1,'킨샤사','킨샤사','콩고민주공화국',60,'rare',1.1,'S','af','코발트·구리 세계 최대급 매장지.'),
  city(1,'카이로','카이로','이집트',80,'tour',1.2,'S','af','피라미드와 수에즈를 끼고 있는 관광·물류 도시.'),
  sp('tax','탄소 국경세','탄소세','₵50 + 보유 석유·가스 도시당 ₵25 (물가 연동).'),
@@ -1172,7 +1172,7 @@ const CELLS=[
  city(2,'상파울루','상파울루','브라질',100,'food',1.0,'S','sa','세계의 곡물·대두 창고.'),
  sp('event','글로벌 이벤트','이벤트','세계 정세 카드.'),
  city(2,'자카르타','자카르타','인도네시아',100,'food',1.15,'S','as','팜유·니켈 강국.'),
- sp('jail','분쟁지대 억류','억류','군사 주사위 + 군사력/2 ≥ 10이면 탈출. 최대 2번, 실패하면 다음 턴 석방.'),
+ sp('jail','분쟁지대 억류','억류','군사 주사위 + 군사력/2 + 특수부대(+터미네이터 특성 1) ≥ 10이면 탈출. 못 나가면 휴전 비용 ₵100(물가 연동)을 내고 석방될 수 있습니다. 최대 2번, 실패하면 다음 턴 석방.'),
  city(2,'시드니','시드니','호주',120,'steel',.85,'P','oc','철광석·리튬 수출 허브.'),
  sp('refugee','국경 난민 캠프','난민캠프','난민을 수용하면 UN 지원금과 노동력(교육 2+면 생산성)을 얻지만 사회 혼란이 오릅니다.'),
  city(3,'리야드','리야드','사우디아라비아',140,'oil',.9,'S','me','탈석유 메가시티로 전환 중인 원유 강국.'),
@@ -1189,9 +1189,9 @@ const CELLS=[
  sp('event','글로벌 이벤트','이벤트','세계 정세 카드.'),
  city(5,'베를린','베를린','독일',220,'steel',.95,'A','we','유럽 제조·철강 중심.'),
  sp('cult','종교·문화 센터','종교문화','종교·문화 결속을 올립니다. 생산성 +3%/단계, 사회 혼란 매 라운드 −3/단계.'),
- city(5,'암스테르담','암스텔','네덜란드',220,'chip',.85,'A','we','노광장비를 쥔 반도체 공급망의 목줄.'),
+ city(5,'암스테르담','암스테르담','네덜란드',220,'chip',.85,'A','we','노광장비를 쥔 반도체 공급망의 목줄.'),
  city(5,'파리','파리','프랑스',240,'tour',1.0,'A','we','세계 관광 1번지이자 원자력 강국.'),
- sp('supply','공급망 카드','공급망','개인 카드.'),
+ sp('supply','공급망 카드','공급망','공급망 카드를 한 장 뽑아 즉시 실행합니다(16종).'),
  sp('robot','피지컬 AI 공장','로봇공장','휴머노이드·자율 공장을 도입합니다. 생산성 +6%×AI지수/단계, 단 교육보다 높으면 일자리 대체로 사회 혼란.'),
  sp('fund','우주 무역기금','기금','세금·벌금이 쌓인 기금을 전부 가져갑니다.'),
  sp('cp','호르무즈 해협','호르무즈','세계 원유의 길목. 봉쇄 시 석유·가스 급등.',{price:200,region:'me'}),
@@ -1203,11 +1203,11 @@ const CELLS=[
  city(7,'베이징','베이징','중국',300,'ai',1.2,'E','ea','국가 주도 AI 연산 클러스터.'),
  city(7,'하노이','하노이','베트남',300,'chip',1.1,'S','ea','탈중국 공급망의 새 반도체·전자 조립 기지.'),
  sp('cp','말라카 해협','말라카','동아시아 반도체·원유 수송로.',{price:200,region:'ea'}),
- sp('cyber','사이버·첩보 본부','첩보','해킹·산업스파이·정치인 매수 중 하나를 시도합니다. 외교 주사위 + 교육/2 ≥ 7 + 상대 특수부대 + 상대 교육/2. 발각되면 제재 3R·지지율 −6.'),
+ sp('cyber','사이버·첩보 본부','첩보','해킹·산업스파이·정치인 매수 중 하나를 시도합니다. 외교 주사위 + 교육/2 (+독재 1, 우주 2단계 이상 1, 첩보국) ≥ 7 + 상대 특수부대 + 상대 교육/2 + 상대 양자기술(최대 2) + 상대 방첩. 정치인 매수는 상대 공략 보정(민주 −1, 독재 +1, 혼란 50 이상 −1, 지지율 70 이상 +1)이 더해집니다. 실패 시 제재 2R·지지율 −4, 대실패 시 제재 3R·지지율 −6.'),
  sp('event','글로벌 이벤트','이벤트','세계 정세 카드.'),
  city(8,'멕시코시티','멕시코','멕시코',280,'chip',1.2,'A','na','북미 니어쇼어링 제조 기지.'),
  city(8,'캘거리','캘거리','캐나다',320,'oil',.9,'A','na','오일샌드와 천연가스를 가진 캐나다의 에너지 수도.'),
- sp('bank','세계 중앙은행','중앙은행','국채 발행·상환. 국채 금리 = 기준금리 + 2%p.'),
+ sp('bank','세계 중앙은행','중앙은행','국채 발행·상환. 국채 금리 = 기준금리 + 2%p (기축 블록 또는 기축 크립토 보유국은 +0.5%p).'),
  city(8,'미국','미국','미국',350,'ai',1.1,'A','na','워싱턴의 정치력과 실리콘밸리 프런티어 AI를 가진 초강대국.'),
  sp('refugee','해상 난민 구조센터','난민센터','난민 수용 여부를 결정합니다.'),
  sp('cp','북극 항로','북극항로','해빙으로 열린 신항로. 개척 지수가 높을수록 중요.',{price:200,region:null}),
@@ -1219,7 +1219,7 @@ const CELLS=[
  sp('dip','유엔 안보리','안보리','정상회담 또는 제재 결의.'),
  sp('terror','테러 경보 구역','테러경보','군사 주사위 + 특수부대×2 ≥ 8이면 무사통과, 아니면 테러 피해. 세계 테러 위협이 높을수록 위험.'),
  city(10,'섀클턴 달 기지','달기지','달',380,'gas',.6,'N','space','헬륨-3 채굴. 핵융합 연료.'),
- sp('wtax','부유세 징수','부유세','현금이 ₵1,000(물가 연동)을 넘으면 초과분의 10%, 아니면 ₵30을 기금에 납부.'),
+ sp('wtax','부유세 징수','부유세','현금이 ₵1,000(물가 연동)을 넘으면 초과분의 10%, 아니면 ₵30(물가 연동)을 기금에 납부.'),
  city(10,'소행성대 채굴단','소행성','소행성대',380,'gold',.5,'N','space','백금족·니켈 소행성 채굴.'),
  sp('pop','대중문화 스튜디오','콘텐츠','영화·음악·게임·관광 콘텐츠에 투자해 소프트파워(대중문화)를 키웁니다.'),
  city(10,'라그랑주 태양광 위성','라그랑주','L1 궤도',400,'gas',.5,'N','space','우주 태양광 발전을 지상으로 송전.'),
@@ -1270,7 +1270,7 @@ const EVENTS=[
  {t:'금 사재기 열풍',d:'안전자산으로 자금이 몰립니다.',s:{gold:25},st:-2},
  {t:'민주화 물결',d:'혼란 60 이상인 독재·공산·왕권 국가가 자유민주주의로 바뀝니다.',fx(){alive().forEach(p=>{if(['dict','com','mon'].includes(p.gov)&&p.un>=60){setGov(p,'dem','민주화 혁명');unc(p,-15)}})},s:{},st:3},
  {t:'권위주의 확산',d:'지지율 35 미만 민주국가가 비상계엄으로 독재가 됩니다.',fx(){alive().forEach(p=>{if(p.gov==='dem'&&p.ap<35)setGov(p,'dict','비상계엄')})},s:{},st:-4},
- {t:'국가 기반시설 해킹',d:'사이버 방어가 가장 약한 나라의 전력·금융망이 마비됐습니다.',fx(){const q=alive().sort((a,b)=>a.sf-b.sf||a.edu-b.edu)[0];if(q){const l=Math.min(Math.round(q.cash*.1),pl(250));q.cash-=l;S.fund+=l;unc(q,4);apc(q,-4);log(`${pn(q)} 기반시설 해킹 피해 −${won(l)}`)}},s:{ai:-4},st:-3},
+ {t:'국가 기반시설 해킹',d:'사이버 방어가 가장 약한 나라의 전력·금융망이 마비됐습니다.',fx(){const q=alive().sort((a,b)=>a.sf-b.sf||a.edu-b.edu)[0];if(q){const l=Math.max(0,Math.min(Math.round(q.cash*.1),pl(250)));q.cash-=l;S.fund+=l;unc(q,4);apc(q,-4);log(`${pn(q)} 기반시설 해킹 피해 −${won(l)}`)}},s:{ai:-4},st:-3},
  {t:'메가 히트 콘텐츠 탄생',d:'한 나라의 영화·음악이 전 세계를 휩씁니다.',fx(){const q=alive()[Math.random()*alive().length|0];if(q){q.soft=Math.min(5,q.soft+1);apc(q,3);S._popHit=q.name}},s:{ai:3},st:2},
  {t:'스트리밍 전쟁',d:'플랫폼 경쟁으로 콘텐츠 몸값이 치솟습니다. 대중문화 2 이상 국가 ₵60.',fx(){alive().forEach(p=>{if(p.soft>=2)p.cash+=pl(60)})},s:{ai:5,chip:3},st:0},
  {t:'문화 보이콧 운동',d:'제재받는 나라의 콘텐츠가 퇴출됩니다(대중문화 −1).',ok:()=>alive().some(p=>p.sanct),fx(){alive().forEach(p=>{if(p.sanct&&p.soft>0)p.soft--})},s:{},st:-1},
@@ -1286,12 +1286,12 @@ const EVENTS=[
  {t:'부동산 버블 경고',d:'궤도 도시 분양가가 꺾이기 시작했습니다.',fx(){S.RE-=10},s:{steel:-6},st:-2},
  {t:'재무장 선언',d:'모든 지도자 군사력 +1.',fx(){alive().forEach(p=>p.M=Math.min(12,p.M+1))},s:{steel:12,oil:5},st:-6},
  {t:'군축 조약 체결',d:'모든 지도자 군사력 −1, 지지율 +3.',fx(){alive().forEach(p=>{p.M=Math.max(0,p.M-1);apc(p,3)})},s:{steel:-8},st:6},
- {t:'포퓰리즘 확산',d:'모든 지도자 지지율 −6.',fx(){alive().forEach(p=>apc(p,-6));S.sanction=Math.max(S.sanction,2)},s:{},st:-4},
+ {t:'포퓰리즘 확산',d:'모든 지도자 지지율 −6 · 세계 제재 2R.',fx(){alive().forEach(p=>apc(p,-6));S.sanction=Math.max(S.sanction,2)},s:{},st:-4},
  {t:'민주주의 정상회의',d:'모든 지도자 지지율 +5.',fx(){alive().forEach(p=>apc(p,5))},s:{},st:4},
 ];
 const SUPPLY=[
  {t:'리튬 장기공급 계약',d:'₵100(물가 연동)을 받습니다.',fx:p=>gain(p,pl(100))},
- {t:'공급망 다변화 보조금',d:'보유 원자재 종류 1개당 ₵40.',fx:p=>gain(p,pl(40*tagsOf(p).size))},
+ {t:'공급망 다변화 보조금',d:'보유 원자재 종류 1개당 ₵40.',fx:p=>gain(p,pl(40*[...tagsOf(p)].filter(t=>t!=='tour').length))},
  {t:'데이터센터 정전',d:'건물 1단계당 ₵25, 지지율 −3.',fx:p=>{payFund(p,pl(25*levelsOf(p)));apc(p,-3)}},
  {t:'긴급 해상 수송',d:'가장 가까운 해협으로 전진.',fx:p=>({to:nextOf(p.pos,'cp')})},
  {t:'궤도 엘리베이터 급행',d:'출발 칸으로 이동.',fx:p=>({to:0})},
@@ -1777,20 +1777,20 @@ function led(f,t,a,w){a=Math.round(a);if(!a)return;if(!S.ledger)S.ledger=[];S.le
   const me=S.players[0];if(t===me&&a>=50&&f!==me)toast(`💰 <span class="good">+${won(a)}</span> ← ${f?esc(f.name):'은행·시장'} · ${esc(w||S._why||'수입')}`);
   else if(f===me&&a>=150&&t!==me)toast(`💸 <span class="bad">−${won(a)}</span> → ${t?esc(t.name):'은행·시장'} · ${esc(w||S._why||'지출')}`)}
 function gain(p,n,why){if(n<=0)return;p.cash+=n;led(null,p,n,why);log(`${pn(p)} +${won(n)}`)}
-function borrow(p,amt){amt=Math.min(amt,borrowCap(p));if(amt<=0)return 0;p.debt+=amt;p.cash+=amt;led(null,p,amt,'국채 발행(대출)');log(`${pn(p)} 국채 발행 ${won(amt)}`);return amt}
+function borrow(p,amt){if(p.bankrupt)return 0;amt=Math.min(amt,borrowCap(p));if(!(amt>0))return 0;p.debt+=amt;p.cash+=amt;led(null,p,amt,'국채 발행(대출)');log(`${pn(p)} 국채 발행 ${won(amt)}`);return amt}
 function raise(p,need){
   if(p.cx>0&&p.cash<need)sellCx(p);
   for(const i of ownedIdx(p).sort((a,b)=>priceOf(CELLS[a])-priceOf(CELLS[b]))){if(p.cash>=need)break;if(!S.props[i].mort&&!S.props[i].level)mortgageProp(p,i)}
   for(const i of ownedIdx(p).sort((a,b)=>S.props[b].level-S.props[a].level)){const pr=S.props[i];while(p.cash<need&&pr.level>0){const c=pr.inv.pop();pr.level--;p.cash+=Math.round(c/2*S.RE/100);log(`${pn(p)} ${CELLS[i].name} ${LV[pr.level+1]} 매각`)}}
-  for(const i of ownedIdx(p)){if(p.cash>=need)break;if(S.props[i].level>0)continue;p.cash+=Math.round(priceOf(CELLS[i])/2);delete S.props[i];log(`${pn(p)} ${CELLS[i].name} 매각`)}
+  for(const i of ownedIdx(p)){if(p.cash>=need)break;if(S.props[i].level>0)continue;p.cash+=S.props[i].mort?0:Math.round(priceOf(CELLS[i])/2);delete S.props[i];log(`${pn(p)} ${CELLS[i].name} 매각`)}
 }
 function ensure(p,n){if(p.cash>=n)return true;borrow(p,Math.ceil((n-p.cash)/100)*100);if(p.cash<n)raise(p,n);return p.cash>=n}
 // 받는 쪽 생산성이 수입에 반영(초과분의 절반을 국가 재정에서 보전)
-function payTo(p,n,q,why){n=Math.round(n);if(n<=0)return;
+function payTo(p,n,q,why){n=Math.round(n);if(!(n>0))return;
   if(!ensure(p,n)){const left=p.cash;if(q)q.cash+=left;else S.fund+=left;led(p,q||null,left,(why||'지급')+' (부도)');p.cash=0;bankrupt(p);return}
   p.cash-=n;if(q){q.cash+=n;led(p,q,n,why);const bonus=Math.max(0,Math.round(n*(prod(q)-100)/200));q.cash+=bonus;if(bonus)led(null,q,bonus,'생산성 보정')}else{S.fund+=n;led(p,null,n,why)}}
 function payFund(p,n,why){if(n<=0)return;payTo(p,n,null,why||'무역기금 납부');log(`${pn(p)} −${won(n)} (무역기금)`)}
-function payBank(p,n,why){n=Math.round(n);if(n<=0)return;if(!ensure(p,n)){led(p,null,p.cash,(why||'은행 납부')+' (부도)');p.cash=0;bankrupt(p);return}p.cash-=n;led(p,null,n,why||'은행 납부')}
+function payBank(p,n,why){n=Math.round(n);if(!(n>0))return;if(!ensure(p,n)){led(p,null,p.cash,(why||'은행 납부')+' (부도)');p.cash=0;bankrupt(p);return}p.cash-=n;led(p,null,n,why||'은행 납부')}
 function bankrupt(p){if(p.bankrupt)return;p.bankrupt=true;p.debt=0;ownedIdx(p).forEach(i=>delete S.props[i]);S.treaties=S.treaties.filter(t=>t.a!==p.id&&t.b!==p.id);log(`${pn(p)} 국가 부도.`)}
 function passStart(p){let div=0;ownedCities(p).forEach(c=>div+=Math.round(priceOf(c)*.05*idxOf(c.tag)/100));const pr=prod(p),sal=Math.round(pl(200)*pr/100);div=Math.round(div*pr/100);p.cash+=sal+div;led(null,p,sal,'국가 예산(출발)');if(div)led(null,p,div,'원자재 배당');apc(p,1);log(`${pn(p)} 출발 통과: 예산 ${won(sal)}${div?` + 배당 ${won(div)}`:''} (생산성 ${pr}%)`)}
 function buyMil(p,n){const c=milCost(p);let k=0;while(k<n&&p.M<12&&p.cash>=c){p.cash-=c;p.M++;k++}if(k){led(p,null,c*k,'군비 증강');S.mkt.steel=clamp(S.mkt.steel*(1+.006*k),30,300);log(`${pn(p)} 군사력 +${k} → ${p.M}`)}}
@@ -1814,7 +1814,7 @@ async function strike(p,q){
   const i=cs[0],c=CELLS[i],pr=S.props[i];
   payFund(p,pl(200));
   const v=await rollA('mil'),need=q.M+6+q.sf+termB(q),tot=v+p.M+p.sf+milB(p);
-  const pre=[[`${p.name} → ${q.name}의 ${c.name} 국지전`,'mil'],[`군사 ${v}+${p.M}+특수부대 ${p.sf} vs ${need}`,'mil']];
+  const pre=[[`${p.name} → ${q.name}의 ${c.name} 국지전`,'mil'],[`군사 ${v}+${p.M}+특수부대 ${p.sf}${milB(p)?`+보너스 ${milB(p)}`:''} vs ${need}`,'mil']];
   if(tot>=need){
     const lv=pr.level;if(lv>0){pr.level--;pr.inv.pop()}
     const rep=pl(80+60*lv);payTo(q,rep,p,'국지전 배상금 '+c.name);apc(p,p.gov==='dem'?0:4);apc(q,-6);unc(q,8);
@@ -3082,7 +3082,7 @@ function skyTick(){
   alive().forEach(q=>{if(own&&q===own)return;const t=q.term||0;const f=t>=3?0:t>=2?.5:1;
     const infra=Math.round(pl(15*(levelsOf(q)+1))*f),sat=Math.round(pl(40*spaceAssets(q))*f),sum=infra+sat;
     if(sum){if(own)payTo(q,sum,own,'스카이넷 장악 사용료');else payBank(q,sum,'스카이넷 장악 사용료');tot+=sum}
-    if(t<3){q.M=Math.max(2,q.M-1)}unc(q,3);apc(q,-2)});
+    if(t<3){q.M=Math.min(q.M,Math.max(2,q.M-1))}unc(q,3);apc(q,-2)});
   const r=applyShock({ai:4,chip:2},-3);pushHist();
   ch.push([`☠️ 스카이넷 장악 ${S.sky.domR}R (${skyOwnerName()})`,'mil'],[`인프라·위성 사용료 ${won(tot)}${own?' → '+own.name:' 소각'}`,'eco'],['타국 군사력 −1 · 혼란 +3 · 지지율 −2','pol'],[`AI연산 ${sg(r.d.ai)}% · 안정 −3`,'res']);
   if(S.sky.domR>=5){S.skyEnd=own?own.id:-1;S.over=true;ch.push([own?`${own.name} 세계 정복`:'인류 패배','mil'])}
@@ -3587,7 +3587,7 @@ async function playCard(p,k,q){const c=card(k);p.cards.splice(p.cards.indexOf(k)
   if(k==='sanc'){q.sanct=Math.max(q.sanct||0,3);q.M=Math.max(0,q.M-1);S.wwT=Math.min(100,S.wwT+4);ch.push([`${q.name} 제재 3R · 군사력 −1`,'dip'])}
   if(k==='secret'){makeAlly(p,q,'비밀 동맹');return}
   if(k==='ult'){let pay;if(q.human)pay=(await ask(`🔥 ${esc(p.name)}의 최후통첩: ₵150을 내지 않으면 국지전을 겁니다.`,[{id:'y',l:`₵150 지불`,dis:q.cash<pl(150)},{id:'n',l:'거절',g:1}]))==='y';else pay=q.cash>pl(400)&&(q.M+3<p.M||Math.random()<.4);
-    S.wwT=Math.min(100,S.wwT+6);if(pay){payTo(q,pl(150),p,'최후통첩 굴복');apc(q,-4);ch.push([`${q.name} 굴복 · ₵150 지불`,'eco'])}else{log(`${pn(q)} 최후통첩 거절`);p.cash+=pl(200);await strike(p,q);return}}
+    S.wwT=Math.min(100,S.wwT+6);if(pay){payTo(q,pl(150),p,'최후통첩 굴복');apc(q,-4);ch.push([`${q.name} 굴복 · ₵150 지불`,'eco'])}else{log(`${pn(q)} 최후통첩 거절`);if(ownedIdx(q).some(i=>CELLS[i]&&CELLS[i].t==='city'))p.cash+=pl(200);await strike(p,q);return}}
   S.news={k:'🃏 협상 카드',t:`${p.name}: ${c.e} ${c.n}`,d:c.d,chain:ch};log(`🃏 ${pn(p)} ${c.e} ${c.n}${q?' → '+pn(q):''}`)}
 /* ── 라운드 결산 ── */
 const _roundEndW=roundEnd;
@@ -3780,7 +3780,7 @@ const bkey=(a,b)=>[a,b].sort().join('');
 function relShift(a,b,d){if(!S||!a||!b||a===b||a==='N'||b==='N')return;S.relB=S.relB||{};const k=bkey(a,b);S.relB[k]=clamp((S.relB[k]||0)+d,-3,4)}
 rel=function(a,b){if(!b||b==='N'||!a||a==='N')return 1;if(a===b)return .7;const g=(S&&S.relB&&S.relB[bkey(a,b)])||0;let r=1+g*.1;if(g>0&&S.sanction>0)r=Math.max(r,1.4);return clamp(r,.7,1.45)};
 const _mkR=makeAlly;makeAlly=function(p,q,why){_mkR(p,q,why);relShift(p.bloc,q.bloc,-1.2)};
-const _stR=strike;strike=async function(p,q){relShift(p.bloc,q.bloc,1.5);return _stR(p,q)};
+const _stR=strike;strike=async function(p,q){if(p&&q)relShift(p.bloc,q.bloc,1.5);return _stR(p,q)};
 const _wrR=wwRound;wwRound=function(){const W=S.ww;if(W)W.X.ids.forEach(a=>W.Y.ids.forEach(b=>relShift(S.players[a].bloc,S.players[b].bloc,.5)));return _wrR()};
 const _reR=roundEnd;roundEnd=function(){_reR();if(!S||!S.relB)return;Object.keys(S.relB).forEach(k=>{const v=S.relB[k];S.relB[k]=Math.abs(v)<.15?0:v-Math.sign(v)*.15});
   (S.treaties||[]).forEach(t=>{const a=S.players[t.a],b=S.players[t.b];if(a&&b)relShift(a.bloc,b.bloc,-.2)})};
@@ -5508,17 +5508,17 @@ EVENTS.push(
  {t:'수에즈 운하 확장 개통',d:'복선화 공사가 끝나 운하 통행량이 두 배가 됩니다.',fx(){open(CP.suez);v32X([['수에즈 운하 정상·확장','dip'],['해상 운임 하락','res']])},s:{steel:-6,food:-5,oil:-4},st:3},
  {t:'파나마 운하 우기 회복',d:'큰비로 수위가 돌아와 통행이 정상화됩니다.',ok:()=>S.cps[CP.pan].b,fx(){open(CP.pan)},s:{food:-8},st:2},
  {t:'북극 항로 해빙 개통',d:'여름 항로가 열려 아시아-유럽 거리가 크게 줄어듭니다. 개척 지수 +5.',fx(){open(CP.arc);S.frontier+=5},s:{gas:-6,steel:-4},st:1},
- {t:'기후 안정 협약',d:'기상 조작 금지와 탄소 감축에 합의했습니다. 인공 가뭄이 모두 끝납니다.',fx(){Object.keys(S.wx).forEach(k=>S.wx[k]=0);S.refugees=clamp(S.refugees-5,0,100);v32X([['인공 가뭄 해제','res'],['난민 −5','dip']])},s:{food:-6,coffee:-4},st:4},
+ {t:'기후 안정 협약',d:'기상 조작 금지와 탄소 감축에 합의했습니다. 인공 가뭄이 모두 끝납니다.',fx(){Object.keys(S.wx).forEach(k=>delete S.wx[k]);S.refugees=clamp(S.refugees-5,0,100);v32X([['인공 가뭄 해제','res'],['난민 −5','dip']])},s:{food:-6,coffee:-4},st:4},
  {t:'난민 귀환 프로그램',d:'분쟁이 잦아든 지역으로 난민이 돌아갑니다. 모든 나라 혼란 −4.',ok:()=>S.refugees>20,fx(){S.refugees=clamp(S.refugees-18,0,100);v32Al().forEach(p=>unc(p,-4));v32X([['난민 −18','dip'],['모든 나라 혼란 −4','pol']])},s:{food:-3},st:4},
  {t:'골디락스 호황',d:'물가는 안정되고 성장은 빠른 이상적 경기. 부동산 +4, 세계 주가 +8%.',ok:()=>!S.depression,fx(){S.infl=Math.max(0,S.infl-.8);S.RE=Math.min(220,S.RE+4);stkInit();S.stk*=1.08;v32X([['인플레 −0.8%p','eco'],['부동산 +4 · 주가 +8%','eco']])},s:{chip:6,ai:6,steel:5},st:5},
  {t:'글로벌 경기 호황',d:'산업 수요가 한꺼번에 살아납니다. 원자재 강세, 물가는 조금 오릅니다.',ok:()=>!S.depression,fx(){S.infl+=.5;S.RE=Math.min(220,S.RE+6)},s:{oil:12,steel:15,chip:12,ai:10},st:4},
- {t:'종교 갈등 격화',d:'종파 간 충돌이 번집니다. 모든 나라 혼란 +5, 종교·문화 3 이상 나라 지지율 −3.',fx(){v32Al().forEach(p=>{unc(p,5);if(p.cult>=3)apc(p,-3)});S.terror=clamp(S.terror+5,0,100);v32X([['모든 나라 혼란 +5','pol'],['테러 위협 +5','mil']])},s:{oil:3},st:-3},
+ {t:'종교 갈등 격화',d:'종파 간 충돌이 번집니다. 모든 나라 혼란 +5, 종교·문화 3 이상 나라 지지율 −3, 테러 위협 +5.',fx(){v32Al().forEach(p=>{unc(p,5);if(p.cult>=3)apc(p,-3)});S.terror=clamp(S.terror+5,0,100);v32X([['모든 나라 혼란 +5','pol'],['테러 위협 +5','mil']])},s:{oil:3},st:-3},
  {t:'휴머노이드 대규모 리콜',d:'로봇 결함으로 공장이 멈춥니다. 피지컬 AI 보유국 ₵40 손실, 대신 일자리가 돌아와 로봇 실업국 혼란 −4.',fx(){const a=[],b=[];v32Al().forEach(p=>{if(p.phys>=1){payBank(p,pl(40),'로봇 리콜');a.push(p.name)}if(p.phys>p.edu){unc(p,-4);b.push(p.name)}});v32X([[`리콜 비용: ${a.join('·')||'해당 없음'}`,'eco'],[`일자리 회복(혼란 −4): ${b.join('·')||'해당 없음'}`,'pol']])},s:{ai:-8},st:-1},
  {t:'두뇌 유출 파동',d:'혼란한 나라의 연구자들이 안정된 나라로 떠납니다. 혼란 55 이상 나라 교육 −1, 가장 안정된 나라 교육 +1.',fx(){const L=v32Al().filter(p=>p.un>=55&&p.edu>1),W=v32Al().slice().sort((a,b)=>a.un-b.un)[0];L.forEach(p=>p.edu--);if(W&&L.length)W.edu=Math.min(5,W.edu+1);v32X([[`인재 유출: ${L.map(p=>p.name).join('·')||'없음'}`,'pol'],[W&&L.length?`${W.name} 교육 +1`:'흡수국 없음','eco']])},s:{},st:-1},
  {t:'심해 생태계 붕괴',d:'무분별한 채굴로 해저 생태계가 무너졌습니다. 개척 지수 −10.',fx(){S.frontier-=10},s:{steel:8,food:4},st:-2},
  {t:'조세 개혁 성공',d:'세제를 단순화해 세수가 늘었습니다. 저·중세율 나라 지지율 +5, 고세율 나라 혼란 −5.',fx(){v32Al().forEach(p=>{if(p.tax==='high')unc(p,-5);else apc(p,5)})},s:{},st:3},
  {t:'기축통화 신뢰 회복',d:'기축국이 부채 감축에 성공했습니다. 신뢰 +20.',ok:()=>S.rtrust<80,fx(){S.rtrust=clamp(S.rtrust+20,0,100)},s:{gold:-12},st:3,cxm:.92},
- {t:'희토류 대체 소재 개발',d:'철·나트륨 기반 신소재가 희토류를 대신합니다.',fx(){S.sanction=Math.max(0,(S.sanction||0)-2)},s:{rare:-25,chip:-5},st:2},
+ {t:'희토류 대체 소재 개발',d:'철·나트륨 기반 신소재가 희토류를 대신합니다. 세계 제재 2R 완화.',fx(){S.sanction=Math.max(0,(S.sanction||0)-2)},s:{rare:-25,chip:-5},st:2},
  {t:'금값 대폭락',d:'위험자산 선호가 돌아오며 금이 팔려 나갑니다.',s:{gold:-22,chip:3},st:1},
  {t:'사이버 보안 국제 협정',d:'각국이 해킹 공조 수사에 합의했습니다. 양자기술·첩보국 보유국 ₵40, 테러 위협 −5.',fx(){const w=[];v32Al().forEach(p=>{if((p.qt||0)>=1||(p.intel||0)>=1){gain(p,pl(40),'사이버 보안 협정');w.push(p.name)}});S.terror=clamp(S.terror-5,0,100);v32X([[`보안 지원금: ${w.join('·')||'해당 없음'}`,'eco'],['테러 위협 −5','mil']])},s:{ai:3},st:3},
  {t:'세계 대풍작',d:'주요 곡창지대가 동시에 풍년입니다. 난민 −5.',fx(){S.refugees=clamp(S.refugees-5,0,100)},s:{food:-22,coffee:-6},st:4},
@@ -5554,7 +5554,7 @@ V29COF.push(
 const BOON=[
  {e:'🌈',n:'기후 회복',d:'재해 복구가 끝나고 날씨가 안정됩니다',reg:['ea','me','eu','sa','oc','as','af','we','na'],fx:hit=>{hit.forEach(i=>delete S.dz[i]);return applyShock({food:-4},2)}},
  {e:'🌾',n:'황금 풍년 날씨',d:'알맞은 햇볕과 비로 수확이 늘어납니다',tags:['food','coffee'],fx:()=>applyShock({food:-10,coffee:-6},2)},
- {e:'💧',n:'대수맥 발견',d:'거대한 지하수층이 발견돼 가뭄 걱정이 사라집니다',reg:['me','af','na','as'],fx:hit=>{const r=CELLS[hit[0]].region;Object.keys(S.wx).forEach(k=>{if(WXR[k]&&WXR[k].r.includes(r))S.wx[k]=0});return applyShock({food:-5},1)}},
+ {e:'💧',n:'대수맥 발견',d:'거대한 지하수층이 발견돼 가뭄 걱정이 사라집니다',reg:['me','af','na','as'],fx:hit=>{const r=CELLS[hit[0]].region;Object.keys(S.wx).forEach(k=>{if(WXR[k]&&WXR[k].r.includes(r))delete S.wx[k]});return applyShock({food:-5},1)}},
  {e:'🐟',n:'어장 대풍',d:'따뜻한 해류가 바뀌며 근해 어획량이 폭증합니다',names:['라고스','카이로','자카르타','시드니','뭄바이','도쿄','이스탄불','암스테르담','하노이','서울','두바이','아쿠아폴리스 해상도시'],fx:()=>applyShock({food:-6},1)},
  {e:'⛏️',n:'노천 광맥 노출',d:'지각 변동으로 새 광맥이 드러났습니다',tags:['steel','rare','gold'],fx:()=>applyShock({steel:-7,rare:-8},1)}];
 function boonTargets(B){return CELLS.map((c,i)=>i).filter(i=>{const c=CELLS[i];return c.t==='city'&&(B.names?B.names.includes(c.name):B.tags?B.tags.includes(c.tag):B.reg.includes(c.region))})}
@@ -5803,8 +5803,8 @@ const _stV321=strike;strike=async function(p,q){if(!p||!q||q.bankrupt)return;con
 /* ═════════ 외교력(0~100): 협정·동맹·평판·문화·지지율·난민 수용이 쌓여 판정·수입에 작용 ═════════ */
 function dipInit(p){if(p.rep==null)p.rep=40}
 function dpParts(p){dipInit(p);const tr=S.treaties.filter(t=>t.a===p.id||t.b===p.id).length,al=(typeof allyOf==='function'&&allyOf(p))?1:0,
-  ld=(typeof ldr==='function'&&ldr(p)==='diplomat')?10:0,tt=/중립 외교/.test(p.trait||'')?8:0;
-  return[['평판',Math.round(p.rep*.5)],['협정',tr*8],['동맹',al*12],['대중문화',(p.soft||0)*2],['지지율',Math.round(p.ap/10)],['난민 수용',(p.refAcc||0)*3],['민주 체제',p.gov==='dem'?5:0],['지도자·특성',ld+tt],['제재',p.sanct?-25:0]]}
+  tt=/중립 외교/.test(p.trait||'')?8:0;
+  return[['평판',Math.round(p.rep*.5)],['협정',tr*8],['동맹',al*12],['대중문화',(p.soft||0)*2],['지지율',Math.round(p.ap/10)],['난민 수용',(p.refAcc||0)*3],['민주 체제',p.gov==='dem'?5:0],['국가 특성',tt],['제재',p.sanct?-25:0]]}
 function dpOf(p){if(!p||!S)return 0;return clamp(dpParts(p).reduce((a,x)=>a+x[1],0),0,100)}
 const dpBon=p=>Math.floor(dpOf(p)/25);
 function repAdd(p,d,why){if(!p)return;dipInit(p);p.rep=clamp(p.rep+d,0,100);if(why&&p.human)log(`🕊️ ${pn(p)} 평판 ${d>0?'+':''}${d} (${why}) → 외교력 ${dpOf(p)}`)}
@@ -5831,7 +5831,7 @@ RANK.dip={f:p=>dpOf(p),v:p=>`외교력 ${dpOf(p)} · 협정 ${S.treaties.filter(
 /* 규칙서 */
 const _rulesDip=rulesHTML;rulesHTML=function(){return _rulesDip()+`<h2 id="diplomacy">외교력</h2>
  <p>보드 가운데 비교판의 🤝 외교는 <b>외교력(0~100)</b>입니다. 아래 항목을 더해 정합니다.</p>
- <ul><li>평판 × 0.5 (시작 40, 매 라운드 40으로 5%씩 돌아감) · 협정 1개당 +8 · 동맹 가입 +12 · 대중문화 단계 × 2 · 지지율 ÷ 10 · 난민 수용 1회당 +3 · 민주 체제 +5 · 외교관 지도자 +10 · 중립 외교 특성 +8 · 제재 중 −25</li>
+ <ul><li>평판 × 0.5 (시작 40, 매 라운드 40으로 5%씩 돌아감) · 협정 1개당 +8 · 동맹 가입 +12 · 대중문화 단계 × 2 · 지지율 ÷ 10 · 난민 수용 1회당 +3 · 민주 체제 +5 · 중립 외교 특성 +8 · 제재 중 −25</li>
  <li><b>평판</b>: 정상회담 성공 +6, 제재 결의 주도 +2, 동맹 결성 +5 / 국지전 개시 −8, 군사 개입 −6, 유엔 제재를 당하면 −10.</li></ul>
  <p><b>효과</b></p><ul><li>정상회담·제재 결의 판정 + 외교력 ÷ 25 (최대 +4).</li><li>제재 결의를 당할 때 외교력 ÷ 30만큼 방어.</li><li>내가 동맹을 제안하면 외교력이 높을수록 AI가 수락하기 쉬움(외교력 40 초과분 ÷ 150 확률만큼 추가 수락).</li>
  <li>외교력 50 이상: 매 라운드 외교 배당(교역·원조) ₵(외교력 − 50) × 0.8.</li><li>외교력 15 미만: 국제적 고립으로 매 라운드 지지율 −1.</li></ul>`};
@@ -6071,7 +6071,7 @@ kick();
 (function(){
 const AG=[{n:'미개발',e:'·'},
  {n:'반중력 부양 시제품',e:'🪶',c:220,req:p=>[['교육 2+',p.edu>=2],['양자기술 1+ 또는 우주개발 1+',(p.qt||0)>=1||(p.space||0)>=1]],d:'물류비↓ → 철강·식량 가격 하락 · 내 생산성 +3%'},
- {n:'반중력 화물망',e:'🚚',c:320,req:p=>[['교육 3+',p.edu>=3],['양자기술 1+',(p.qt||0)>=1],['건물 3동+',levelsOf(p)>=3]],d:'해협 통행료 −40%(하늘로 우회) · 석유·가스 수요↓ · 해양·우주 도시 통행료 +15% · 물류 수수료 ₵20×단계/R'},
+ {n:'반중력 화물망',e:'🚚',c:320,req:p=>[['교육 3+',p.edu>=3],['양자기술 1+',(p.qt||0)>=1],['건물 3동+',levelsOf(p)>=3]],d:'운하·해협·항로 통행료 −40%(하늘로 우회) · 석유·가스 수요↓ · 해양·우주 도시 통행료 +15% · 물류 수수료 ₵20×단계/R'},
  {n:'반중력 함대',e:'🛸',c:450,req:p=>[['교육 4+',p.edu>=4],['우주개발 2+',(p.space||0)>=2],['군사력 5+',p.M>=5]],d:'군사 판정 +2 · 우주개발 판정 +1 · 대전 위기 +6 · 적대 블록 혼란 +2'}];
 window.AG=AG;
 const agOf=p=>p&&p.ag||0;
@@ -6094,7 +6094,7 @@ async function agStep(p){const lv=agOf(p),t=AG[lv+1];if(!t)return false;const co
   if(win){p.ag=lv+1;let sh={};
     if(p.ag===1){sh={steel:-4,food:-3};pre.push(['물류비 하락 → 철강·식량 가격↓','res'],[`${p.name} 생산성 +3%`,'eco']);steelFood().slice(0,5).forEach(i=>arrows.push({i,c:'#0f9b5a',label:'🪶 물류비↓',pow:'🪶'}))}
     if(p.ag===2){sh={oil:-6,gas:-4,steel:-2};const losers=alive().filter(q=>q!==p&&ownedCities(q).some(c=>c.tag==='oil'||c.tag==='gas'));losers.forEach(q=>apc(q,-2));
-      pre.push(['화물이 하늘로 → 해협 통행료 −40%(내 화물)','dip'],['석유·가스 수요↓','res'],[losers.length?`산유국 지지율 −2: ${losers.map(q=>q.name).join('·')}`:'산유국 피해 없음','pol'],['해양·우주 도시 관광 통행료 +15%','re']);
+      pre.push(['화물이 하늘로 → 운하·해협·항로 통행료 −40%(내 화물)','dip'],['석유·가스 수요↓','res'],[losers.length?`산유국 지지율 −2: ${losers.map(q=>q.name).join('·')}`:'산유국 피해 없음','pol'],['해양·우주 도시 통행료 +15%','re']);
       oilCells().slice(0,4).forEach(i=>arrows.push({i,c:'#d9443f',label:'🛢️ 수요↓',pow:'🚚'}));skyCells().slice(0,4).forEach(i=>arrows.push({i,c:'#0f9b5a',label:'🛸 관광↑',pow:'🛸'}))}
     if(p.ag===3){sh={rare:4,chip:3};S.wwT=Math.min(100,(S.wwT||0)+6);const foes=alive().filter(q=>q!==p&&rel(p.bloc,q.bloc)>1);foes.forEach(q=>unc(q,2));
       pre.push(['반중력 함대 → 군사 판정 +2 · 우주개발 +1','mil'],['대전 위기 +6','mil'],[foes.length?`경계하는 나라 혼란 +2: ${foes.map(q=>q.name).join('·')}`:'적대국 없음','pol']);
