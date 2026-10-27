@@ -325,8 +325,8 @@ const CARDS=[
  ['관광 침체','사이버 테러 소문으로 관광객이 끊겼습니다. 관광 기업 이번 라운드 매출 0.',0,S=>{S.tourOff=1},['관광↓','관광 기업 매출 0']],
  ['무역 확대','자유무역 협정이 체결됐습니다. 항만(E) 주인은 땅 1곳당 ₵30.',1,S=>{owners('E').forEach(p=>gain(p,30*landOf(p,'E'),'무역 확대'))},['무역↑','E 구역 수입']],
  ['무역 분쟁','관세 전쟁이 터졌습니다. 항만(E) 주인은 땅 1곳당 ₵30 손실, 제조 기업 원가 2배.',0,S=>{owners('E').forEach(p=>pay(p,30*landOf(p,'E'),'무역 분쟁'));S.mfgCost=2},['무역↓','E 손실','제조 원가↑']],
- ['IT 투자 열풍','벤처 자금이 쏟아집니다. IT 기업 보유자는 ₵80, 테크밸리(F) 땅값 +10%.',1,S=>{S.players.forEach(p=>{if(p.comp.it)gain(p,80,'IT 투자 열풍')});S.fMod=1.1},['IT↑','F 구역↑']],
- ['닷컴 버블 붕괴','거품이 꺼졌습니다. IT 기업 1단계 하락, 테크밸리(F) 땅값 −10%.',0,S=>{S.players.forEach(p=>{if(p.comp.it){p.comp.it--;log(`${pn(p)} IT 기업 1단계 하락`);dropCo(p,'it')}});S.fMod=.9},['IT↓','F 구역↓']],
+ ['IT 투자 열풍','벤처 자금이 쏟아집니다. IT 기업 보유자는 ₵80, 테크밸리(F) 땅값 +10%.',1,S=>{S.players.forEach(p=>{if(p.comp.it)gain(p,80,'IT 투자 열풍')});S.fMod={v:1.1,r:S.round}},['IT↑','F 구역↑']],
+ ['닷컴 버블 붕괴','거품이 꺼졌습니다. IT 기업 1단계 하락, 테크밸리(F) 땅값 −10%.',0,S=>{S.players.forEach(p=>{if(p.comp.it){p.comp.it--;log(`${pn(p)} IT 기업 1단계 하락`);dropCo(p,'it')}});S.fMod={v:.9,r:S.round}},['IT↓','F 구역↓']],
  ['교육 바우처','시에서 교육비를 지원합니다. 다음 교육 비용 절반.',1,S=>{S.eduDisc=1},['교육↑','생산성↑']],
  ['대학 등록금 인상','교육비가 오릅니다. 다음 교육 비용 1.5배.',0,S=>{S.eduUp=1},['교육 비용↑']],
  ['복구 지원금','지난 재해 복구 지원금이 나왔습니다. 모두 건물 1동당 ₵15.',1,S=>{S.players.forEach(p=>gain(p,15*bldOf(p),'복구 지원금'))},['지원금']],
@@ -335,8 +335,8 @@ const CARDS=[
  ['기업 횡령 사건','회계 부정이 드러났습니다. 모든 기업 이번 라운드 이익 절반.',0,S=>{S.profitMod=.5},['기업 이익↓','배당↓']],
  ['은행 보너스 이자','은행이 예금 이자를 특별 지급합니다. 모두 현금의 5%(최대 ₵100).',1,S=>{alive().forEach(p=>gain(p,Math.min(100,Math.round(p.cash*.05)),'보너스 이자'))},['이자 수입']],
  ['대출 회수','은행이 대출 일부를 회수합니다. 대출이 있으면 즉시 ₵100 상환.',0,S=>{alive().forEach(p=>{if(p.debt>0){const a=Math.min(100,p.debt);pay(p,a,'대출 회수');p.debt-=a}})},['대출↓','현금↓']],
- ['주택 수요 증가','인구가 늘어 주거단지(D) 땅값 +15%.',1,S=>{S.dMod=1.15},['D 구역↑']],
- ['주택 규제','투기 규제로 주거단지(D) 땅값 −15%.',0,S=>{S.dMod=.85},['D 구역↓']]];
+ ['주택 수요 증가','인구가 늘어 주거단지(D) 땅값 +15%.',1,S=>{S.dMod={v:1.15,r:S.round}},['D 구역↑']],
+ ['주택 규제','투기 규제로 주거단지(D) 땅값 −15%.',0,S=>{S.dMod={v:.85,r:S.round}},['D 구역↓']]];
 
 /* ═════════ 상태 ═════════ */
 let S=null,askResolve=null,selected=null,tab='act',gen=0,TQ=[],newsOpen=false;
@@ -404,8 +404,10 @@ function boomF(){return phase()[3]}
 const boomN=()=>S.boom>0?'호황':S.boom<0?'불황':'보통';
 function cnt(p,t){return Object.entries(S.props).filter(([i,pr])=>pr.owner===p.id&&CELLS[i].t===t).length}
 /* 땅값(시세) */
+/* 카드 배수(fMod/dMod)는 {v, r}로 저장: 발생 라운드(r)에만 적용, 다음 라운드부터 자동으로 1 */
+function roundMod(k){const m=S[k];return m&&typeof m==='object'&&m.r===S.round?m.v:1}
 function priceOf(i){const c=CELLS[i];if(c.t!=='land')return c.price||0;let v=c.price;
- if(c.d==='A'&&S.redev)v*=2;if(c.d==='D')v*=clamp(1-(S.rate-4)*.05,.6,1.3)*S.dMod;if(c.d==='F')v*=S.fMod;if(c.d==='H')v*=S.boom>0?1.3:S.boom<0?.7:1;
+ if(c.d==='A'&&S.redev)v*=2;if(c.d==='D')v*=clamp(1-(S.rate-4)*.05,.6,1.3)*roundMod('dMod');if(c.d==='F')v*=roundMod('fMod');if(c.d==='H')v*=S.boom>0?1.3:S.boom<0?.7:1;
  return Math.round(v/5)*5}
 function buildCost(i,lvl){return Math.round(CELLS[i].price*BLDCOST[lvl]*S.mkt.steel/100/5)*5}
 function propValue(i){const pr=S.props[i];let v=priceOf(i);for(let l=1;l<=pr.level;l++)v+=buildCost(i,l);return v}
@@ -818,7 +820,7 @@ function cellDetail(){if(selected==null)return'';const i=selected,c=CELLS[i],pr=
  else if(c.t==='util')d+=`<dt>가격</dt><dd>${won(c.price)}</dd><dt>통행료</dt><dd>주사위 × ₵10 (둘 다 가지면 ×₵25)${c.kind==='power'?' · 석유 시세 반영':''}</dd><dt>주인</dt><dd>${o?o.emoji+' '+esc(o.name):'없음'}</dd>`;
  else d+=`<dt>효과</dt><dd>${{start:'지나가면 ₵200, 도착하면 ₵100 더',rest:'1~2턴 쉬기(7 이상 굴리면 출발)',fund:'쌓인 세금을 모두 가져감',hyper:'다음 턴 원하는 칸으로 이동',hq:`${SECT[c.sector]?SECT[c.sector].n:''} 기업 설립·확장 (₵150 → 300 → 500)`,bank:c.kind==='save'?'예금 보너스 이자 + 대출·상환':'대출·상환',xch:(c.goods||[]).map(k=>COM[k].n).join('·')+' 1단위씩 사고팔기',edu:'교육 +1 (₵200 → 300)',stock:'남의 기업 지분 20% 사기 → 이익의 25% 배당',auction:'빈 땅 하나를 경매(시작가 시세 60%)',ins:'재해 보험 ₵40 — 다음 재해 피해 면제',tax:c.kind==='income'?'현금의 10% → 복지기금':'건물 1동당 ₵20 → 복지기금',news:'경제 뉴스 카드 1장(호재·악재)',quiz:'경제 상식 문제, 맞히면 ₵50(+교육×₵10)'}[c.t]}</dd>`;
  return d+'</dl></div>'}
-function flows(){const f=[];f.push(`<div id="fl-rate"><span>금리 ${S.rate.toFixed(2)}%</span><em>→</em><span>이자 ${S.rate.toFixed(2)}%/R</span><em>·</em><span>주거단지(D) 시세 ${Math.round(clamp(1-(S.rate-4)*.05,.6,1.3)*S.dMod*100)}%</span><em>·</em><span>금융가(G) 통행료 +${Math.round(Math.max(0,S.rate-4)*5)}%</span></div>`);
+function flows(){const f=[];f.push(`<div id="fl-rate"><span>금리 ${S.rate.toFixed(2)}%</span><em>→</em><span>이자 ${S.rate.toFixed(2)}%/R</span><em>·</em><span>주거단지(D) 시세 ${Math.round(clamp(1-(S.rate-4)*.05,.6,1.3)*roundMod('dMod')*100)}%</span><em>·</em><span>금융가(G) 통행료 +${Math.round(Math.max(0,S.rate-4)*5)}%</span></div>`);
  f.push(`<div id="fl-com"><span>원자재 ${Object.keys(COM).map(k=>COM[k].e+S.mkt[k]).join(' ')}</span><em>→</em><span>건설비 ×${(S.mkt.steel/100).toFixed(2)}</span><em>·</em><span>기업 원가</span><em>·</em><span>전통시장 ×${(S.mkt.food/100).toFixed(2)} · 테크밸리 ×${(S.mkt.chip/100).toFixed(2)}</span></div>`);
  const me=S.players[0];f.push(`<div id="fl-edu"><span>교육 ${EDUN[me.edu]}</span><em>→</em><span>생산성 +${me.edu*5}%</span><em>→</em><span>기업 이익 ${won(Object.keys(SECT).reduce((a,s)=>a+compProfit(me,s).profit,0))}/R</span><em>→</em><span>재투자</span><em>·</em><span>대학가(B) 통행료 +${me.edu*10}%</span></div>`);
  f.push(`<div id="fl-boom"><span>${phaseN()}</span><em>→</em><span>스카이라인(H) 통행료 ×${S.boom>0?1.5:S.boom<0?.5:1}</span><em>·</em><span>항만(E) ×${boomF()}</span><em>·</em><span>기업 매출 ×${boomF()}</span></div>`);
