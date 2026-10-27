@@ -384,7 +384,7 @@ const buildCost=c=>Math.round(c.price*0.5);
 function rent(i){
   const c=CELLS[i],s=G.cells[i]; if(s.o<0)return 0; const o=G.players[s.o];
   if(c.t==='public')return 10;
-  if(c.t==='transport')return ownedBy(s.o,'transport').length>=2?80:40;
+  if(c.t==='transport'){const b=ownedBy(s.o,'transport').length>=2?80:40;return Math.max(10,Math.round(b*Math.min(1.3,Math.max(0.8,G.oil/100))))}
   let m=1;
   switch(c.pv){
     case 1:m=0.7+0.1*o.pop;break; case 2:m=G.food/100;break; case 3:m=1+0.08*o.culture;break;
@@ -596,7 +596,7 @@ function passStart(p){const t=TAX[p.tax];const v=Math.round(t.inc*taxMul(p));p.c
 async function move(p,n){
   for(let k=0;k<n;k++){p.pos=(p.pos+1)%N;if(p.pos===0)passStart(p);renderBoard();await sleep(p.human?SPD.step:SPD.step*0.6);}
 }
-async function travelTo(p,t){const n=(t-p.pos+N)%N||N;G.msg=`🚄 고속철로 ${CELLS[t].name}까지 이동`;await move(p,n);}
+async function travelTo(p,t){if(t===p.pos){G.msg='이미 있는 칸입니다. 다른 칸을 고르세요.';render();return;}const n=(t-p.pos+N)%N;G.msg=`🚄 고속철로 ${CELLS[t].name}까지 이동`;await move(p,n);}
 
 async function startTurn(){
   if(G.winner){G.phase='over';render();return;}
@@ -737,11 +737,11 @@ function resolve(p){
       C('선거 캠페인 ₵100','지지율 +5',()=>{if(p.cash<100)return;p.cash-=100;p.support+=5;say(`${p.name} 선거 캠페인`,'지지율 +5 → 재신임 확률↑');},()=>p.support<55&&p.cash>350&&next<=2?6:-1),
       RC(C('조기 선거','성공: 지지율 +8 · 실패: 세율 표준·기업 1곳 정지',()=>election(p,true),()=>pr>=85&&p.support<80?3:-1)),PASS()];}
   case 'taxoffice':{
-    const pay=Math.round(Math.max(0,p.cash)*0.08);p.cash-=pay;G.fund+=pay;
-    say(`${c.ic} 국세청 · 국세 ${won(pay)} 납부(현금 8%)`,'납부액은 국민 축제 광장 기금으로');
+    const rate=p.support<=30?0.04:th('austere')?0.10:p.tax==='high'?0.12:0.08;const pay=Math.round(Math.max(0,p.cash)*rate);p.cash-=pay;G.fund+=pay;
+    say(`${c.ic} 국세청 · 국세 ${won(pay)} 납부(현금 ${Math.round(rate*100)}%)`,p.support<=30?'지지 30 이하 조세 저항으로 세율 인하':'납부액은 국민 축제 광장 기금으로');
     return taxChoices(p);}
   case 'welfare':{
-    const pay=50+Math.round(Math.max(0,p.cash)*0.05);p.cash-=pay;G.fund+=pay;
+    let pay=50+Math.round(Math.max(0,p.cash)*0.05);if(p.tax==='high')pay=Math.round(pay*1.5);if(th('austere'))pay=Math.round(pay*1.2);p.cash-=pay;G.fund+=pay;
     say(`${c.ic} 복지세 ${won(pay)} 납부`,'국민 축제 광장 기금 → 도착한 지도자가 받음');return null;}
   case 'expo':{
     say(`${c.ic} ${c.name} · 문화력 ${p.culture} · 개최 ${p.expo}회`,'유치: 사회 주사위 + 문화력×2 ≥ 12');
@@ -761,7 +761,7 @@ function resolve(p){
     say(`${c.k==='s'?'📰 사회':'📈 경제'} 뉴스 · ${good?'호재':'악재'} 「${card.t}」`,r);return null;}
   case 'corner':{
     if(p.pos===0){say('🏛️ 국회의사당 도착',`세금 또는 국정 정책 1개를 바꿀 수 있습니다 · 현재 ${TAX[p.tax].n}·${POLICY[p.policy].n}`);return taxChoices(p,true).concat(policyChoices(p),[PASS('그대로 두기')]);}
-    if(p.pos===10){p.skip=1;p.pop++;say('🏡 귀농 마을','한 턴 쉬고 인구 +1');return null;}
+    if(p.pos===10){p.skip=1;if(p.unrest>=50){say('🏡 귀농 마을','한 턴 쉬지만 혼란 50 이상이라 인구 유입 없음');return null;}const g=th('youth')?2:1;p.pop+=g;say('🏡 귀농 마을',`한 턴 쉬고 인구 +${g}${th('youth')?' (청년 박람회 효과)':''}`);return null;}
     if(p.pos===31){const f=G.fund;p.cash+=f;G.fund=0;p.unrest-=5;say(`🎉 국민 축제 광장 · 기금 ${won(f)} 획득`,'혼란 −5'+(p.culture>=3?' · 문화력 3 이상이면 여기서 국제 행사를 유치할 수 있습니다':''));
       if(p.culture>=3)return [RC(C('세계 엑스포 유치 신청 ₵200',`주사위 + 문화력×2 ≥ 12 · 확률 ${Math.round(Math.max(0,Math.min(12,13-(12-p.culture*2)))/12*100)}%`,()=>{
         if(p.cash<200)return;p.cash-=200;const d=d12();G.dice.so=d;setSrc('so',d);
@@ -769,7 +769,7 @@ function resolve(p){
         else{p.cash+=100;say(`${p.name} 유치 실패 (주사위 ${d})`,'신청비 절반 환급');}
       },()=>p.cash>350&&p.expo<1?(p.strat==='문화'?9:6):-1)),PASS()];
       return null;}
-    if(p.pos===41){p.hsr=true;say('🚄 고속철 환승역','다음 차례에 원하는 칸으로 이동');return null;}
+    if(p.pos===41){if(p.unrest>=70){say('🚄 고속철 환승역','혼란 70 이상이라 노선이 제한되어 이번엔 이용 불가');return null;}p.hsr=true;say('🚄 고속철 환승역','다음 차례에 원하는 칸으로 이동');return null;}
   }}
   return null;
 }
@@ -1021,7 +1021,7 @@ function render(){
 function rankOf(p){return G.players.filter(x=>!x.out).sort((a,b)=>worth(b)-worth(a)).indexOf(p)+1||'-';}
 function cellClick(i){
   const p=cur();
-  if(G&&G.phase==='hsr'&&p.human){p.hsr=false;G.phase='moving';VIEW.info=null;travelTo(p,i).then(()=>afterMove(p));return;}
+  if(G&&G.phase==='hsr'&&p.human){if(i===p.pos){G.msg='이미 있는 칸입니다. 다른 칸을 고르세요.';render();return;}p.hsr=false;G.phase='moving';VIEW.info=null;travelTo(p,i).then(()=>afterMove(p));return;}
   VIEW.info=VIEW.info===i?null:i;render();
 }
 function infoCard(i){
