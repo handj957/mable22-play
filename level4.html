@@ -1398,14 +1398,14 @@ const CELLS=[
  sp('refugee','해상 난민 구조센터','난민센터','난민 수용 여부를 결정합니다.'),
  sp('cp','북극 항로','북극항로','해빙으로 열린 신항로. 개척 지수가 높을수록 중요.',{price:200,region:null}),
  city(9,'마리아나 심해 광물기지','심해기지','태평양 해저',300,'rare',.5,'N','ocean','망간단괴·희토류 채굴. 개척 지수에 연동.'),
- sp('edu','AI 국제대학','AI대학','교육 단계를 올립니다.'),
+ sp('fleet','우주함대 사령부','우주함대','함대를 건조합니다(최고 3척). 척당 군사력 +1 · 대전 위기 +3. 위성무기 방어 +2/척.'),
  city(9,'아쿠아폴리스 해상도시','해상도시','남태평양',320,'tour',.6,'N','ocean','해수면 상승 시대의 부유식 도시.'),
  city(9,'대서양 해저 데이터센터','해저DC','대서양 해저',340,'ai',.5,'N','ocean','해수 냉각 초대형 연산 단지.'),
- sp('defense','국방 조달청','방산','군사력 구입, 기상무기, 국지전.'),
+ sp('satwpn','위성무기 기지','위성무기','₵150 공격. 주사위+군사력/2+우주개발+함대 ≥ 8+상대 함대×2면 명중(상대 현금 10% 몰수 · 우주개발 −1 · 혼란 +4). 실패 시 지지율 −4 · 제재 2R.'),
  sp('dip','유엔 안보리','안보리','정상회담 또는 제재 결의.'),
  sp('terror','테러 경보 구역','테러경보','군사 주사위 + 특수부대×2 ≥ 8이면 무사통과, 아니면 테러 피해. 세계 테러 위협이 높을수록 위험.'),
  city(10,'섀클턴 달 기지','달기지','달',380,'gas',.6,'N','space','헬륨-3 채굴. 핵융합 연료.'),
- sp('wtax','부유세 징수','부유세','현금이 ₵1,000(물가 연동)을 넘으면 초과분의 10%, 아니면 ₵30을 기금에 납부.'),
+ sp('mars','화성 기지','화성기지','단계 투자(최고 3). 개척 지수 +3/단계, 매 라운드 탐사 수입(개척 지수 연동). 우주 자산.'),
  city(10,'소행성대 채굴단','소행성','소행성대',380,'gold',.5,'N','space','백금족·니켈 소행성 채굴.'),
  sp('pop','대중문화 스튜디오','콘텐츠','영화·음악·게임·관광 콘텐츠에 투자해 소프트파워(대중문화)를 키웁니다.'),
  city(10,'라그랑주 태양광 위성','라그랑주','L1 궤도',400,'gas',.5,'N','space','우주 태양광 발전을 지상으로 송전.'),
@@ -2497,7 +2497,7 @@ function rulesHTML(){
 <tr><td>기간시설</td><td>2</td><td>AI 연구소·궤도 우주항.</td></tr>
 <tr><td>방위산업</td><td>2</td><td>군사력·특수부대 구입, 기상무기, 국지전.</td></tr>
 <tr><td>핵 연구소</td><td>1</td><td>핵개발 단계 진행.</td></tr>
-<tr><td>교육 혁신원·AI 국제대학</td><td>2</td><td>교육 단계 상승.</td></tr>
+<tr><td>교육 혁신원</td><td>2</td><td>교육 단계 상승.</td></tr>
 <tr><td>종교·문화 센터</td><td>1</td><td>종교·문화 결속 상승.</td></tr>
 <tr><td>피지컬 AI 공장</td><td>1</td><td>로봇·자율 공장 도입.</td></tr>
 <tr><td>난민 캠프·구조센터</td><td>2</td><td>난민 수용 또는 거부.</td></tr>
@@ -6314,6 +6314,56 @@ const _saV341=shootArrows;shootArrows=function(list){if(!document.documentElemen
 
 
 
+
+/* ═════════ v35: 신규 칸 3종 — 🚀 우주함대 사령부 · 🛰️ 위성무기 기지 · 🔴 화성 기지 (AI 국제대학·국방 조달청·부유세 칸 교체) ═════════ */
+ICON.fleet='🚀';ICON.satwpn='🛰️';ICON.mars='🔴';
+const FLEET_COST=[250,400,600];
+const _landV35=land;
+land=async function(p,mv){
+ const c=CELLS[p.pos];if(!['fleet','satwpn','mars'].includes(c.t))return _landV35(p,mv);
+ selected=p.pos;render();
+ if(c.t==='fleet'){
+  setAct(p,'🚀 우주함대 사령부 방문');
+  const n=p.fleet||0;
+  if(n>=3){if(p.human)await ok('우주함대가 이미 3척 편성되어 있습니다.');return}
+  const cost=pl(FLEET_COST[n]);let y;
+  if(p.human)y=(await ask(`🚀 우주함대 사령부 · 함대 ${n}/3척<small>건조 ${won(cost)} → 군사력 +1 · 대전 위기 +3 · 위성무기 방어 +2/척</small>`,[{id:'y',l:`건조 ${won(cost)}`,dis:p.cash<cost},{id:'n',l:'패스',g:1}]))==='y';
+  else{await sleep(delay());y=canPay(p,cost,100)&&Math.random()<({military:.8,bloc:.5}[p.strategy]||.3)}
+  if(y){payTo(p,cost,null,'우주함대 건조');p.fleet=n+1;p.M=Math.min(12,p.M+1);S.wwT=(S.wwT||0)+3;log(`🚀 ${pn(p)} 우주함대 ${p.fleet}척 편성 — 대전 위기 +3`);render();if(p.human)await ok(`우주함대 ${p.fleet}/3척 편성<small>군사력 ${p.M}</small>`)}
+  return;
+ }
+ if(c.t==='satwpn'){
+  setAct(p,'🛰️ 위성무기 기지 방문');
+  const cost=pl(150);
+  const tg=alive().filter(q=>q!==p).sort((a,b)=>b.cash-a.cash)[0];
+  if(!tg){if(p.human)await ok('공격할 상대가 없습니다.');return}
+  let go;
+  if(p.human)go=(await ask(`🛰️ 위성무기 기지 · 목표 ${tg.emoji} ${esc(tg.name)}<small>₵${cost} 공격 · 주사위 + 군사력/2 + 우주개발 + 함대 ≥ 8 + 상대 함대×2면 명중(상대 현금 10% 몰수 · 상대 우주개발 −1 · 혼란 +4). 실패: 지지율 −4 · 제재 2R. 어느 쪽이든 대전 위기 +8.</small>`,[{id:'y',l:`공격 ₵${cost}`,dis:p.cash<cost||p.M<2},{id:'n',l:'패스',g:1}]))==='y';
+  else{await sleep(delay());go=canPay(p,cost,100)&&(p.fleet||0)+(p.space||0)>=1&&Math.random()<({military:.6,bloc:.3}[p.strategy]||.15)}
+  if(!go)return;
+  payTo(p,cost,null,'위성무기 공격 비용');
+  const v=d12();const power=v+Math.floor(p.M/2)+(p.space||0)+(p.fleet||0);const need=8+(tg.fleet||0)*2;
+  let hit=power>=need;
+  if(hit){const take=Math.round(tg.cash*.1);payTo(tg,take,null,'위성무기 피해');tg.space=Math.max(0,(tg.space||0)-1);unc(tg,4);log(`🛰️ ${pn(p)} → ${pn(tg)} 위성무기 명중: 현금 −${won(take)} · 우주개발 −1 · 혼란 +4 (주사위 ${v}, 힘 ${power} / 기준 ${need})`)}
+  else{apc(p,-4);p.sanct=Math.max(p.sanct,2);log(`🛰️ ${pn(p)} 위성무기 요격당함 (주사위 ${v}, 힘 ${power} / 기준 ${need}): 지지율 −4 · 제재 2R`)}
+  S.wwT=(S.wwT||0)+8;render();
+  if(p.human)await ok(hit?`🎯 명중! ${esc(tg.name)}의 현금 10%를 기금으로 몰수했습니다.`:`❌ 요격당했습니다. 지지율 −4 · 제재 2R`);
+  return;
+ }
+ if(c.t==='mars'){
+  setAct(p,'🔴 화성 기지 방문');
+  const n=p.mars||0;
+  if(n>=3){if(p.human)await ok('화성 기지는 최고 단계(3)입니다. 매 라운드 탐사 수입을 받습니다.');return}
+  const cost=pl(180*(n+1));let y;
+  if(p.human)y=(await ask(`🔴 화성 기지 · ${n}/3단계<small>투자 ${won(cost)} → 개척 지수 +3 · 매 라운드 탐사 수입(개척 지수 연동)</small>`,[{id:'y',l:`투자 ${won(cost)}`,dis:p.cash<cost},{id:'n',l:'패스',g:1}]))==='y';
+  else{await sleep(delay());y=canPay(p,cost,100)&&Math.random()<({tech:.6,resource:.4,military:.3}[p.strategy]||.4)}
+  if(y){payTo(p,cost,null,'화성 기지 투자');p.mars=n+1;S.frontier=(S.frontier||0)+3;log(`🔴 ${pn(p)} 화성 기지 ${p.mars}단계 — 개척 지수 +3`);render();if(p.human)await ok(`화성 기지 ${p.mars}단계 완료<small>개척 지수 ${S.frontier}</small>`)}
+  return;
+ }
+};
+/* 화성 기지 매 라운드 탐사 수입 */
+const _roundV35=roundEnd;
+roundEnd=async function(){alive().forEach(p=>{if((p.mars||0)>0){const n=Math.round(pl(40*p.mars)*(1+(S.frontier||0)/200));gain(p,n,'화성 탐사 수입')}});return _roundV35()};
 </script>
 
 
