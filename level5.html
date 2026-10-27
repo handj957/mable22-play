@@ -35,8 +35,12 @@ button:disabled{opacity:.35;cursor:default}
 .cmdinfo b{color:var(--txt)}
 
 /* ---------- 상단 ---------- */
-#app{height:100dvh;height:100vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0)}
-#top{padding:6px 8px 4px;display:flex;flex-direction:column;gap:4px;flex:none}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0)}
+#bar{display:flex;align-items:center;gap:6px;padding:3px 8px;flex:none;flex-wrap:nowrap;min-height:0;background:#0b1224;border-bottom:1px solid var(--line)}
+#bar #status{flex:1;min-width:0;flex-wrap:nowrap;overflow:hidden;font-size:10px;gap:4px}
+#bar .tag{padding:1px 6px}
+#bar #title{display:none}
+#bar .ctl span{margin-left:6px}
 #title{display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:2px;color:var(--dim)}
 #title b{color:var(--acc)}
 #title .ctl span{margin-left:8px;cursor:pointer;letter-spacing:0;font-size:11px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
@@ -59,11 +63,11 @@ button:disabled{opacity:.35;cursor:default}
 @keyframes rise{0%{opacity:0;transform:translateY(6px)}20%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
 
 /* ---------- 보드 (2.5D 스테이지) ---------- */
-#stage{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2px 0 4px;perspective:1500px;perspective-origin:50% 50%;min-height:0;position:relative}
-#board{position:relative;display:grid;grid-template-columns:repeat(11,var(--cell));grid-template-rows:repeat(19,var(--cell));gap:var(--gap);background:#0a0f1d;border-radius:10px;padding:var(--gap);transform:rotateX(var(--tilt)) scale(var(--bscale));transform-style:preserve-3d;transition:transform .4s;box-shadow:0 20px 40px rgba(0,0,0,.6)}
+#stage{flex:1;display:flex;align-items:stretch;justify-content:center;padding:2px;min-width:0;min-height:0;position:relative}
+#board{position:relative;display:grid;grid-template-columns:repeat(11,minmax(0,1fr));grid-template-rows:repeat(19,minmax(0,1fr));gap:var(--gap);background:#0a0f1d;border-radius:10px;padding:var(--gap);width:100%;height:100%;transform:scale(var(--bscale));transition:transform .4s;box-shadow:0 20px 40px rgba(0,0,0,.6)}
 #board.shake{animation:shake .45s}
-@keyframes shake{0%,100%{transform:rotateX(var(--tilt)) scale(var(--bscale)) translate(0,0)}20%{transform:rotateX(var(--tilt)) scale(var(--bscale)) translate(-3px,2px)}40%{transform:rotateX(var(--tilt)) scale(var(--bscale)) translate(3px,-2px)}60%{transform:rotateX(var(--tilt)) scale(var(--bscale)) translate(-2px,-1px)}80%{transform:rotateX(var(--tilt)) scale(var(--bscale)) translate(2px,1px)}}
-.cell{position:relative;border-radius:5px;background:var(--panel);border:1px solid #223055;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8.5px;line-height:1.05;text-align:center;cursor:pointer;user-select:none;transform-style:preserve-3d;box-shadow:0 2px 0 #050810,0 4px 6px rgba(0,0,0,.5)}
+@keyframes shake{0%,100%{transform:scale(var(--bscale)) translate(0,0)}20%{transform:scale(var(--bscale)) translate(-3px,2px)}40%{transform:scale(var(--bscale)) translate(3px,-2px)}60%{transform:scale(var(--bscale)) translate(-2px,-1px)}80%{transform:scale(var(--bscale)) translate(2px,1px)}}
+.cell{position:relative;border-radius:5px;background:var(--panel);border:1px solid #223055;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8.5px;line-height:1.05;text-align:center;cursor:pointer;user-select:none;box-shadow:0 2px 0 #050810,0 4px 6px rgba(0,0,0,.5)}
 .cell .ic{font-size:11px;line-height:1}
 .cell .nm{color:#c5d2f2;padding:0 1px;letter-spacing:-.3px;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all}
 .cell.zN{background:var(--zoneN)}.cell.zE{background:var(--zoneE)}.cell.zS{background:var(--zoneS)}.cell.zW{background:var(--zoneW)}
@@ -82,7 +86,7 @@ button:disabled{opacity:.35;cursor:default}
 @keyframes holo{0%,100%{box-shadow:0 2px 0 #050810,0 0 0 0 rgba(79,209,255,0)}50%{box-shadow:0 2px 0 #050810,0 0 10px 2px rgba(79,209,255,.5)}}
 @keyframes hit{0%{background:#ff5c7a;transform:scale(1.15)}100%{transform:scale(1)}}
 /* 건물 타워(세워진 블록) */
-.bld{position:absolute;left:2px;bottom:2px;display:flex;gap:1px;align-items:flex-end;transform-origin:bottom;transform:rotateX(calc(-1*var(--tilt)));pointer-events:none}
+.bld{position:absolute;left:2px;bottom:2px;display:flex;gap:1px;align-items:flex-end;transform-origin:bottom;pointer-events:none}
 .bld i{width:4px;background:linear-gradient(180deg,#fff8,var(--pc) 40%,color-mix(in srgb,var(--pc) 50%,#000));border-radius:1px 1px 0 0;box-shadow:1px 1px 0 #0008}
 /* 실드 돔 */
 .dome{position:absolute;inset:-1px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(79,209,255,.35),rgba(79,209,255,.05) 60%,transparent 70%);border:1px solid rgba(79,209,255,.5);pointer-events:none;animation:domeb 2.4s ease-in-out infinite}
@@ -90,14 +94,16 @@ button:disabled{opacity:.35;cursor:default}
 @keyframes domeb{0%,100%{opacity:.55}50%{opacity:.9}}
 @keyframes domef{0%{background:#4fd1ffcc;transform:scale(1.1)}100%{transform:scale(1)}}
 /* 말(세워진 핀) */
-.tok{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);display:flex;gap:2px;transform-style:preserve-3d}
-.tok i{display:block;width:9px;height:9px;border-radius:50% 50% 50% 0;background:radial-gradient(circle at 35% 30%,#fff,var(--pc) 45%,color-mix(in srgb,var(--pc) 55%,#000));transform:rotate(-45deg) rotateX(calc(-1*var(--tilt)));transform-origin:bottom left;box-shadow:0 0 6px var(--pc);animation:bob 1.6s ease-in-out infinite}
+.tok{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);display:flex;gap:2px;}
+.tok i{display:block;width:9px;height:9px;border-radius:50% 50% 50% 0;background:radial-gradient(circle at 35% 30%,#fff,var(--pc) 45%,color-mix(in srgb,var(--pc) 55%,#000));transform:rotate(-45deg);transform-origin:bottom left;box-shadow:0 0 6px var(--pc);animation:bob 1.6s ease-in-out infinite}
 .tok i.cur{width:11px;height:11px;animation:bob .9s ease-in-out infinite}
-.tok i.g{border-radius:2px;background:var(--red);transform:rotateX(calc(-1*var(--tilt)));animation:none}
+.tok i.g{border-radius:2px;background:var(--red);animation:none}
 @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -2px}}
 
 /* ---------- 콘솔 ---------- */
-#console{grid-column:2/11;grid-row:8/19;margin:3px;background:#0e1529f2;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0;position:relative;z-index:1}
+#bottom{flex:none;display:flex;flex-direction:column;min-height:0}
+#bottom #chips{padding:4px;order:0;background:#0b1224}
+#console{order:1;flex:0 0 25vh;min-height:190px;margin:0 4px 4px;background:#0e1529f2;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0;position:relative;z-index:1}
 #tabs{display:flex;border-bottom:1px solid var(--line)}
 #tabs button{flex:1;border:none;border-radius:0;background:transparent;color:var(--dim);padding:6px 0;font-size:11px;position:relative}
 #tabs button.on{color:var(--acc)}
@@ -140,7 +146,7 @@ button:disabled{opacity:.35;cursor:default}
 #sea::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 14px,rgba(120,200,255,.07) 14px 16px);animation:wave 7s linear infinite;pointer-events:none}
 #sea::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(60deg,transparent 0 22px,rgba(120,200,255,.05) 22px 25px);animation:wave 11s linear infinite reverse;pointer-events:none}
 @keyframes wave{to{background-position:60px 40px}}
-#seaband{position:absolute;left:0;top:0;width:100%;height:calc(6*(var(--cell) + var(--gap)));display:flex;flex-direction:column;gap:2px;padding:3px 4px;z-index:1;overflow:hidden}
+#seaband{position:absolute;left:0;top:0;width:100%;padding:3px 4px;z-index:3;overflow:hidden}
 #satlane{position:relative;height:14px;flex:none;border-bottom:1px dashed rgba(120,200,255,.25)}
 .sat{position:absolute;top:0;font-size:9px;line-height:14px;white-space:nowrap;color:var(--pc);text-shadow:0 0 4px var(--pc);animation:orbit var(--dur) linear infinite;animation-delay:var(--delay)}
 @keyframes orbit{from{left:-14%}to{left:102%}}
@@ -151,7 +157,17 @@ button:disabled{opacity:.35;cursor:default}
 .ship.sub{border-style:dashed;opacity:.75}
 .ship.hitf{animation:hit .5s}
 .ship b{display:inline-flex;gap:1px}.ship b i{width:4px;height:6px;background:var(--grn);border-radius:1px}.ship b i.x{background:#334}
-.seahint{font-size:8px;color:rgba(200,230,255,.55);flex:none}
+.seahint{display:none}
+#seamap{position:absolute;inset:0;z-index:1;pointer-events:none}
+#seamap>*{pointer-events:auto}
+.ship{position:absolute;width:20px;height:22px;margin:-11px 0 0 -10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:13px;line-height:1;background:none;border:none;border-radius:0;padding:0;white-space:nowrap;cursor:pointer;z-index:2;filter:drop-shadow(0 0 3px var(--pc)) drop-shadow(0 2px 2px #000c);animation:bob 2.2s ease-in-out infinite}
+.ship.sub{opacity:.55;filter:drop-shadow(0 0 4px #4fd1ff)}
+.ship b{display:flex;gap:1px}
+.ship b i{width:4px;height:3px;border-radius:1px;background:var(--grn)}
+.ship b i.x{background:#334}
+.isle{position:absolute;width:46px;height:40px;margin:-20px 0 0 -23px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;font-size:18px;line-height:1;background:none;border:none;padding:0;color:inherit;cursor:pointer;z-index:2}
+.mbase{position:absolute;left:1px;top:0;font-size:9px;pointer-events:none;z-index:2}
+.isle small{font-size:8px;line-height:1.2;color:#eafff0;background:#0b1f36d9;border:1px solid var(--pc);border-radius:999px;padding:0 4px;white-space:nowrap;margin-top:2px}
 .plane{position:absolute;font-size:14px;z-index:7;pointer-events:none;filter:drop-shadow(0 4px 3px rgba(0,0,0,.6))}
 .para{position:absolute;font-size:12px;z-index:7;pointer-events:none;animation:para 1.3s ease-in forwards}
 @keyframes para{0%{transform:translate(-50%,-40px) scale(.6);opacity:0}20%{opacity:1}100%{transform:translate(-50%,0) scale(1);opacity:1}}
@@ -166,8 +182,8 @@ button:disabled{opacity:.35;cursor:default}
 .dicefn{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;font-size:10px;margin:4px 0;background:#0d1428;border:1px solid var(--line);border-radius:8px;padding:5px 7px}
 .dicefn span:nth-child(odd){color:var(--acc2)}
 /* ---------- 이펙트 ---------- */
-#fx{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:2;transform:translateZ(2px)}
-#fxlayer{position:absolute;inset:0;pointer-events:none;transform:translateZ(6px);transform-style:preserve-3d;z-index:9}
+#fx{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:2;}
+#fxlayer{position:absolute;inset:0;pointer-events:none;z-index:9}
 #fx path{fill:none;stroke:var(--red);stroke-width:2;stroke-dasharray:5 4;animation:dash .6s linear infinite;filter:drop-shadow(0 0 4px var(--red))}
 #fx path.emp{stroke:var(--vio)}#fx path.ok{stroke:var(--grn)}
 @keyframes dash{to{stroke-dashoffset:-18}}
@@ -206,21 +222,54 @@ button:disabled{opacity:.35;cursor:default}
 #banner small{display:block;font-size:11px;font-weight:400;color:var(--dim);margin-top:3px}
 @keyframes bann{0%{opacity:0;transform:translate(-50%,-50%) scale(.8)}12%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
 #modal{position:fixed;inset:0;background:rgba(3,6,14,.75);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px}
-#modal .box{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:380px;width:100%;max-height:85vh;overflow:auto;font-size:12px;line-height:1.5}
+#modal .box{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:380px;width:100%;max-height:85vh;max-height:85dvh;overflow:auto;-webkit-overflow-scrolling:touch;font-size:12px;line-height:1.5}
+#modal .mclose{position:sticky;top:0;float:right;z-index:3;width:34px;height:34px;border-radius:50%;background:#26335c;color:#fff;border:1px solid var(--line);font-size:16px;line-height:1;padding:0;margin:-4px -4px 0 6px;cursor:pointer}
 #modal h3{color:var(--acc);font-size:14px;margin-bottom:6px}
 #modal .btns button{flex:1 1 100%}
 #modal .btns.row button{flex:1 1 30%}
 
 @media (orientation:landscape){
   #app{flex-direction:row}
-  #top{width:var(--sidew);justify-content:flex-start}
   #chips{grid-template-columns:1fr 1fr}
-  #board{grid-template-columns:repeat(19,var(--cell));grid-template-rows:repeat(11,var(--cell))}
-  #console{grid-column:8/19;grid-row:2/11}
+  #board{grid-template-columns:repeat(19,minmax(0,1fr));grid-template-rows:repeat(11,minmax(0,1fr))}
+  #bottom{width:300px;height:100%}
+  #bar{flex-wrap:wrap}
+  #bar #title{display:block;font-size:10px;letter-spacing:2px;color:var(--dim)}
+  #bar #status{flex-wrap:wrap;overflow:visible}
+  #bottom #chips{order:2;padding:4px 0 0}
+  #console{order:1;flex:1 1 auto;min-height:0;height:auto;width:100%;margin:0 0 4px}
   #sea{grid-column:2/19;grid-row:2/11}
-  #seaband{height:100%;width:calc(6*(var(--cell) + var(--gap)))}
-  #stage{perspective-origin:50% 50%}
+  
 }
+/* v4.7: 행동 패널 압축 배치 */
+#p-act{padding:4px 6px}
+.rowinfo{display:flex;flex-wrap:wrap;gap:2px 9px;font-size:10.5px;align-items:center;margin-bottom:4px;color:var(--dim)}
+.rowinfo b{font-size:11.5px}
+.mapline{font-size:10px;color:var(--dim);background:#0d1428;border:1px solid var(--line);border-radius:8px;padding:3px 6px;margin:3px 0;line-height:1.4}
+.mapline i{font-style:normal;color:var(--acc2)}
+.hint{line-height:1.35}
+#p-act .optgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:3px 0}
+#p-act button.opt{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:4px 7px;min-height:42px;gap:0;position:relative}
+#p-act button.opt b{display:block;font-size:11.5px;line-height:1.2}
+#p-act button.opt small{display:block;font-size:9px;opacity:.8;line-height:1.2;white-space:normal}
+#p-act .ol{display:flex;justify-content:space-between;align-items:center;width:100%;gap:4px}
+#p-act button.opt em{font-style:normal;flex:none;font-size:10px;background:#0b1224aa;border-radius:5px;padding:1px 5px;font-weight:700}
+#p-act .util{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+#p-act .util button{flex:1 1 auto;font-size:11px;min-height:34px;padding:5px 7px}
+#p-act .util em{font-style:normal;opacity:.75;font-size:10px}
+#p-act button.big{margin:2px 0}
+/* v4.5: 지휘관 아바타 · 뉴스 슬롯 · 주사위 연출 · 행동 버튼 */
+.tok{top:-8px;bottom:auto;gap:1px;flex-wrap:nowrap;z-index:5}
+.av{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;background:#0b1224;border:2px solid var(--pc);box-shadow:0 0 6px var(--pc),0 2px 3px #000;font-size:10px;line-height:1}
+.av.cur{width:22px;height:22px;font-size:13px;animation:bob .9s ease-in-out infinite}
+#newsslot{position:relative;z-index:4;padding:0 2px 3px}
+#newsslot .newsbar{margin:0;font-size:10px;padding:3px 8px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dicefx{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:8px;background:#fff;color:#06101f;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #9aa,0 8px 12px #000a;z-index:12;pointer-events:none;animation:diceRoll 1.1s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes diceRoll{0%{transform:translateY(-120px) rotate(0) scale(1.3)}55%{transform:translateY(0) rotate(540deg) scale(1)}72%{transform:translateY(-14px) rotate(620deg)}86%{transform:translateY(0) rotate(700deg)}100%{transform:translateY(0) rotate(720deg)}}
+#p-act .acts{display:flex;flex-direction:column;gap:6px}
+#p-act button{font-size:13px;min-height:40px;border-radius:10px}
+#p-act button.big{width:100%;font-size:15px;min-height:46px;font-weight:800}
+#p-act .optlist{display:flex;flex-direction:column;gap:5px}
 </style>
 </head>
 <body>
@@ -237,13 +286,13 @@ button:disabled{opacity:.35;cursor:default}
 </div>
 
 <div id="app" class="hide">
-  <div id="top">
-    <div id="title"><span>BLUEMARBLE TACTICS · <b>LV5</b></span><span class="ctl"><span id="tiltbtn" onclick="toggleTilt()">2.5D</span><span id="sound" onclick="toggleSound()">🔇</span></span></div>
-    <div id="status"></div>
-    <div id="chips"></div>
-  </div>
   <div id="stage"><div id="board">
-    <div id="sea"><div id="seaband"><div id="satlane"></div><div id="isles"></div><div id="fleet"></div><div class="seahint">바다 · 함대는 정박지(⚓)에서 사거리를 잽니다</div></div></div>
+    <div id="sea"><div id="seaband"><div id="newsslot"></div><div id="satlane"></div></div><div id="seamap"></div></div>
+    <svg id="fx"></svg>
+    <div id="fxlayer"></div>
+  </div></div>
+  <div id="bottom">
+    <div id="bar"><span id="title"><b>BLUEMARBLE</b> TACTICS · LV5</span><div id="status"></div><span class="ctl"><span id="unstick" onclick="unstick()" title="멈췄을 때 누르세요">⟲</span><span id="sound" onclick="toggleSound()">🔇</span></span></div>
     <div id="console">
       <div id="tabs">
         <button class="on" data-t="act" onclick="tab('act')">행동</button>
@@ -258,10 +307,8 @@ button:disabled{opacity:.35;cursor:default}
         <div class="pane rule" id="p-rule"></div>
         <div id="log"></div>
       </div>
-    </div>
-    <svg id="fx"></svg>
-    <div id="fxlayer"></div>
-  </div></div>
+  </div>
+</div>
 </div>
 <svg id="fxtop"></svg>
 <div id="modal" class="hide"><div class="box" id="mbox"></div></div>
@@ -271,6 +318,7 @@ button:disabled{opacity:.35;cursor:default}
    데이터
 ============================================================ */
 const N=56, LONG=19, SHORT=11, ROUNDS=15;
+const CORNERS=[0,10,28,38]; // 플레이어 시작 모퉁이 (HQ·통신탑·연구소·보급창)
 const PC=['#4fd1ff','#ff8a5c','#5ef2a2','#ffd93d'];
 const ZN={N:'북부 측면',E:'동쪽 전선',S:'남부 측면',W:'서쪽 백라인'};
 const RAW=[
@@ -360,7 +408,7 @@ const WPN={
  bullet:{n:'총알',ic:'🔫',ap:0,d:'거리 2 이내 · 골드 −₲60'},
  grenade:{n:'수류탄',ic:'💣',ap:1,d:'거리 3 이내 · 건물 −1 / ₲100'},
  shell:{n:'함포',ic:'🚢',ap:1,d:'군함 정박지 5칸 · 건물 −1 / ₲120'},
- missile:{n:'미사일',ic:'🚀',ap:2,d:'사거리 내 · 건물 −1 / 골드 피해'},
+ missile:{n:'미사일',ic:'🚀',ap:2,d:'사거리 내 · 건물 −1 / 골드 피해 · 11면→11면 장거리는 군사위성·항모·핵융합·미사일기지·레이더섬'},
  drone:{n:'드론',ic:'🛩️',ap:1,d:'항모 정박지 8칸 · ₲90 · 요격 25%'},
  bomber:{n:'폭격기',ic:'✈️',ap:3,d:'항모 정박지 12칸 · 건물 −2 / ₲250'},
  laser:{n:'레이저',ic:'🔴',ap:2,d:'군사위성 · 거리 무제한 · 요격 불가'},
@@ -376,7 +424,7 @@ let uid=1;
    상태 / 덱(반복 회피)
 ============================================================ */
 let cells=[], P=[], cur=0, round=1, phase='roll', weather=WEATHERS[0], news=null, guer=-1, lastGuerZone='', tutorial=false, tutStep=0;
-let dice=[0,0], range=0, attacked=false, sel=null, soundOn=false, orbitalMode=false, bombMode=false, tilt=true;
+let dice=[0,0], range=0, attacked=false, sel=null, soundOn=false, orbitalMode=false, bombMode=false, tilt=false;
 let busy=false,pendingLand=false,_go=null,attackOpts=null;
 const T=ms=>window.FAST?0:ms;
 const STATS={dice:{},rep:0,rolls:0,ev:{},card:{},wx:[],news:{},atk:{},res:{},guerKill:0,resist:0,quest:0,buys:0,toll:0,bomb:0,orbital:0,skill:{},prevTotal:{}};
@@ -418,7 +466,7 @@ function startGame(tut){
   for(let i=0;i<4;i++){
     const b=document.getElementById('bt'+i).value; if(b==='x')continue;
     P.push({id:P.length,name:document.getElementById('nm'+i).value||NAMES[i],cmd:document.getElementById('cm'+i).value,bot:b==='b',
-      gold:2000,ap:5,pos:0,alive:true,resist:false,bomb:0,orbital:0,freeCiws:0,rangeBonus:0,immune:0,reverse:false,frozen:0,cd:0,qpts:0,rangePen:0,
+      gold:2000,ap:5,pos:CORNERS[P.length],dir:0,alive:true,resist:false,bomb:0,orbital:0,freeCiws:0,rangeBonus:0,immune:0,reverse:false,frozen:0,cd:0,qpts:0,rangePen:0,
       quest:null,qdeck:new Deck(QUESTS),st:{hits:0,emps:0,abs:0,long:0,terror:0},color:PC[i],bag:[],lastTotal:0,fleet:[],sats:{C:0,M:0,T:0}});
   }
   if(P.length<2){alert('플레이어는 2명 이상이어야 합니다');return}
@@ -439,28 +487,15 @@ function startGame(tut){
 function isLand(){return innerWidth>innerHeight}
 function vh(){return (window.visualViewport?window.visualViewport.height:innerHeight)}
 function layout(){
-  const land=isLand(),topEl=document.getElementById('top');
-  let c;
-  if(land){
-    const sidew=Math.max(200,Math.min(260,innerWidth*0.25));
-    document.documentElement.style.setProperty('--sidew',sidew+'px');
-    c=Math.min((innerWidth-sidew-16-(LONG+1)*2)/LONG,(vh()-14-(SHORT+1)*2)/SHORT);
-  }else{
-    const th=topEl.getBoundingClientRect().height||120;
-    c=Math.min((innerWidth-8-(SHORT+1)*2)/SHORT,(vh()-th-12-(LONG+1)*2)/LONG);
-  }
-  c=Math.max(20,Math.floor(c*10)/10);
-  document.documentElement.style.setProperty('--cell',c+'px');
-  document.documentElement.style.setProperty('--tilt',tilt?(land?'20deg':'14deg'):'0deg');
-  document.documentElement.style.setProperty('--bscale',1);
-  requestAnimationFrame(fitTilt);
+  if(isLand())document.documentElement.style.setProperty('--sidew',Math.max(200,Math.min(260,innerWidth*0.25))+'px');
+  document.documentElement.style.setProperty('--tilt','0deg');
+  document.documentElement.style.setProperty('--bscale','1');
 }
-function fitTilt(){const st=document.getElementById('stage').getBoundingClientRect(),br=B().getBoundingClientRect();const s=Math.min(1,(st.height-6)/br.height,(st.width-4)/br.width);document.documentElement.style.setProperty('--bscale',Math.floor(s*100)/100)}
+function toggleTilt(){}
 addEventListener('resize',()=>{layout();drawFx(null)});
 if(window.visualViewport)window.visualViewport.addEventListener('resize',layout);
-if(window.ResizeObserver){new ResizeObserver(()=>layout()).observe(document.getElementById('top'))}
-function toggleTilt(){tilt=!tilt;applyTilt();layout()}
-function applyTilt(){document.getElementById('tiltbtn').textContent=tilt?'2.5D':'2D';document.getElementById('tiltbtn').style.color=tilt?'var(--acc)':'var(--dim)'}
+if(window.ResizeObserver){new ResizeObserver(()=>layout()).observe(document.getElementById('bottom'))}
+function applyTilt(){}
 function rc(i){let r,c;if(i<=10){r=0;c=i}else if(i<=28){c=10;r=i-10}else if(i<=38){r=18;c=38-i}else{c=0;r=56-i}if(isLand())return{r:c,c:18-r};return{r,c}}
 
 /* ============================================================
@@ -480,45 +515,60 @@ function updateBoard(){if(window.FAST)return;
     if(c.lvl)h+=`<div class="bld">${[...Array(c.lvl)].map((_,k)=>`<i style="height:${5+k*3}px"></i>`).join('')}</div>`;
     const d=(c.def.ciws?'🎯':'')+(c.def.jammer?'📡':'');if(d)h+=`<div class="df">${d}</div>`;
     if(c.def.shield)h+=`<div class="dome"></div>`;
-    if(c.emp>0)h+=`<div class="emp"></div>`;
+    if(c.emp>0)h+=`<div class="emp"></div>`;if(baseAt(c))h+=`<div class="mbase">🚀</div>`;
     const toks=P.filter(p=>p.alive&&p.pos===c.i);
-    if(toks.length)h+=`<div class="tok">${toks.map(p=>`<i class="${p.id===cur?'cur':''}" style="--pc:${p.color}"></i>`).join('')}</div>`;
+    if(toks.length)h+=`<div class="tok">${toks.map(p=>`<span class="av ${p.id===cur?'cur':''}" style="--pc:${p.color}" title="${p.name}">${AV[p.id]||'👤'}</span>`).join('')}</div>`;
     e.innerHTML=h;
   });
   renderSea();renderTop();
 }
 function renderSea(){if(window.FAST)return;
   const sl=document.getElementById('satlane');sl.innerHTML=P.flatMap(p=>['C','M','T'].filter(k=>p.sats[k]).map((k,n)=>`<span class="sat" id="sat${p.id}${k}" style="--pc:${p.color};--dur:${9+p.id*2+n*3}s;--delay:-${(p.id*3+n*2)}s">${k==='T'?'📡':'🛰️'}<small>${{C:'민',M:'군',T:'통'}[k]}</small></span>`)).join('');
-  document.getElementById('isles').innerHTML=ISLES.map((s,k)=>`<span class="isle" id="isle${k}" style="--pc:${s.owner!==null?P[s.owner].color:'#5a7a4a'}" onclick="isleInfo(${k})">${s.ic}${s.n}${s.owner!==null?' <b style="color:'+P[s.owner].color+'">●</b>':''}</span>`).join('');
-  document.getElementById('fleet').innerHTML=P.flatMap(p=>p.fleet.map(s=>`<span class="ship ${s.t==='sub'?'sub':''}" id="ship${s.id}" style="--pc:${p.color}" onclick="shipInfo(${s.id})">${UNITS[s.t].ic}<span style="color:${p.color}">${UNITS[s.t].n}</span><b>${[...Array(UNITS[s.t].hp)].map((_,k)=>`<i class="${k<s.hp?'':'x'}"></i>`).join('')}</b><small>⚓${cell(s.anchor).short}</small></span>`)).join('');
+  document.getElementById('seamap').innerHTML=ISLES.map((s,k)=>`<span class="isle" id="isle${k}" style="--pc:${s.owner!==null?P[s.owner].color:'#8fb37a'};left:${ISLE_FR[k][0]*100}%;top:${ISLE_FR[k][1]*100}%" onclick="isleInfo(${k})">${s.ic}<small>${s.radar?'📡':''}${s.n}${s.owner!==null?' <b style="color:'+P[s.owner].color+'">●</b>':''}</small></span>`).join('')+seaShips();
+  /* 함선은 seaShips()가 바다 지도에 배치 */
 }
+const ISLE_FR=[[.5,.5],[.25,.3],[.75,.7]]; // 자원섬·레이더섬·보급섬 (바다 안 비율 위치)
+function seaDims(){return isLand()?[17,9]:[9,17]} // 바다 안쪽 칸 수 [가로, 세로]
+// 정박지(모퉁이 밖 칸) → 바다 쪽 해안 좌표. 같은 칸에 여러 척이면 해안을 따라 펼침
+function seaSpot(a,k,n){const land=isLand(),R=land?10:18,C=land?18:10,[SC,SR]=seaDims(),{r,c}=rc(a);
+  let u=c===0?0:c===C?SC-1:Math.min(SC-1,Math.max(0,c-1)), v=r===0?0:r===R?SR-1:Math.min(SR-1,Math.max(0,r-1));
+  const t=(k-(n-1)/2)*1.3;
+  if(r===0){v+=1;u+=t}else if(r===R){v-=1;u+=t}else if(c===0){u+=1;v+=t}else{u-=1;v+=t}
+  return [Math.min(SC-1,Math.max(0,u)),Math.min(SR-1,Math.max(0,v))]}
+function seaShips(){
+  const all=[];P.forEach(p=>p.fleet.forEach(s=>all.push({s,p})));
+  const cnt={},seen={};all.forEach(({s})=>{cnt[s.anchor]=(cnt[s.anchor]||0)+1});
+  const [SC,SR]=seaDims();
+  return all.map(({s,p})=>{const k=seen[s.anchor]||0;seen[s.anchor]=k+1;const [u,v]=seaSpot(s.anchor,k,cnt[s.anchor]);
+    const pips=[...Array(UNITS[s.t].hp)].map((_,j)=>`<i class="${j<s.hp?'':'x'}"></i>`).join('');
+    return `<span class="ship ${s.t==='sub'?'sub':''}" id="ship${s.id}" title="${p.name} ${UNITS[s.t].n} · 정박 ${cell(s.anchor).name}" style="--pc:${p.color};left:${(u+.5)/SC*100}%;top:${(v+.5)/SR*100}%" onclick="shipInfo(${s.id})">${UNITS[s.t].ic}<b>${pips}</b></span>`}).join('')}
+function flipDir(p){p.dir=-(p.dir||1);const dn=p.dir>0?"↻ 시계":"↺ 반시계";log(`${p.name} 진행 방향 전환 → ${dn}`,p.id);banner("🔀 진행 방향 전환",`${p.name} · ${dn}`);chipDelta(p.id,"🔀","p")}
 function localXY(el){let x=0,y=0,e=el;const b=B();while(e&&e!==b){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent}return [x+el.offsetWidth/2,y+el.offsetHeight/2]}
 function shipXY(s){const e=document.getElementById('ship'+s.id);return e?localXY(e):bcenter()}
 function satXY(p){const e=document.getElementById('sat'+p.id+'M')||document.getElementById('satlane');return e?localXY(e):bcenter()}
 function findShip(id){for(const p of P){const s=p.fleet.find(s=>s.id===id);if(s)return {s,p}}return null}
 function shipInfo(id){const f=findShip(id);if(!f)return;const {s,p}=f;modal(`<h3>${UNITS[s.t].ic} ${p.name}의 ${UNITS[s.t].n}</h3><div class="kv"><span>내구도</span><span>${s.hp}/${UNITS[s.t].hp}</span><span>정박지</span><span>${cell(s.anchor).ic} ${cell(s.anchor).name}</span><span>능력</span><span>${UNITS[s.t].d}</span></div>${p.id===cur&&!p.bot?`<div class="btns"><button ${P[cur].ap<1?'disabled':''} onclick="reanchor(${id})">⚓ 현재 위치로 재정박 (AP1)</button><button onclick="closeModal()">닫기</button></div>`:'<div class="btns"><button onclick="closeModal()">닫기</button></div>'}`)}
 function reanchor(id){const f=findShip(id);if(!f||f.p.id!==cur||f.p.ap<1)return;f.p.ap--;f.s.anchor=f.p.pos;attackOpts=null;log(`${f.p.name} ${UNITS[f.s.t].n} 재정박 → ${cell(f.p.pos).name}`,f.p.id);closeModal();updateBoard();renderAct()}
-function isleInfo(k){const s=ISLES[k];modal(`<h3>${s.ic} ${s.n}</h3><p>${s.d}<br>소유: ${s.owner!==null?P[s.owner].name:'없음'} — 더블(같은 눈)이 나오고 항공모함이 있으면 낙하산부대로 점령할 수 있습니다.</p><div class="btns"><button onclick="closeModal()">닫기</button></div>`)}
+function isleInfo(k){const s=ISLES[k];const canR=RADAR_SLOTS.includes(k),mine=s.owner===cur&&!P[cur].bot;
+  modal(`<h3>${s.ic} ${s.n}</h3><p>${s.d}<br>소유: ${s.owner!==null?P[s.owner].name:'없음'} — 더블(같은 눈)이 나오고 항공모함이 있으면 낙하산부대로 점령할 수 있습니다.</p>${canR?`<p class="hint">📡 레이더기지: ${s.radar?'가동 중 — 소유자는 바다 건너 반대편으로 다양한 무기를 쓸 수 있습니다':'섬 소유자가 건설 가능 (₲'+RADAR_COST+')'}</p>`:''}<div class="btns">${canR&&mine&&!s.radar?`<button ${P[cur].gold<RADAR_COST?'disabled':''} onclick="buildRadar(${k})">📡 레이더기지 건설 (₲${RADAR_COST})</button>`:''}<button onclick="closeModal()">닫기</button></div>`)}
 function armsModal(){
   const p=P[cur];if(p.bot)return;
   modal(`<h3>🏭 군비 조달</h3><p>골드로 함대·위성을 삽니다. 함선은 현재 위치(${cell(p.pos).ic} ${cell(p.pos).name})에 정박하며, 무기는 주사위 1번 눈이 그 무기를 가리킬 때 쓸 수 있습니다.</p><div class="btns">
   ${Object.keys(UNITS).map(k=>{const u=UNITS[k];const owned=k.startsWith('sat')?p.sats[k[3]]>0:p.fleet.filter(s=>s.t===k).length;const dis=p.gold<u.c||(k.startsWith('sat')&&owned)||(!k.startsWith('sat')&&owned>=2);return `<button ${dis?'disabled':''} onclick="buyUnit('${k}')">${u.ic} ${u.n} ${fmt(u.c)} — ${u.d}${owned?' (보유 '+owned+')':''}</button>`}).join('')}
-  <button onclick="closeModal()">닫기</button></div>`);
+  ${baseBtns(p)}<button onclick="closeModal()">닫기</button></div>`);
 }
 function buyUnit(k){const p=P[cur],u=UNITS[k];if(p.gold<u.c)return;p.gold-=u.c;sfx.coin();chipDelta(p.id,'−'+fmt(u.c),'m');
   if(k.startsWith('sat')){p.sats[k[3]]=1;log(`${p.name} ${u.n} 발사`,p.id);banner(`${u.ic} ${u.n} 궤도 진입`,p.name)}
   else{p.fleet.push({t:k,hp:u.hp,anchor:p.pos,id:uid++});log(`${p.name} ${u.n} 취역 (정박 ${cell(p.pos).name})`,p.id);banner(`${u.ic} ${u.n} 취역`,`${p.name} · 정박지 ${cell(p.pos).name}`)}
   attackOpts=null;closeModal();updateBoard();renderAct();if(!window.FAST){const [x,y]=bcenter();ringAt(x,y,'b',2)}}
 function renderTop(){if(window.FAST)return;
+  document.getElementById('newsslot').innerHTML=news?`<div class="newsbar">${news.ic} <b>${news.n}</b> — ${news.d}</div>`:'';
   const p=P[cur];
   document.getElementById('status').innerHTML=
    `<span class="tag">R <b>${round}</b>/${ROUNDS}</span><span class="tag w">${weather.ic} ${weather.n.split(' ')[0]}</span>`+(news?`<span class="tag news">${news.ic} ${news.n}</span>`:'')+
    `<span class="tag" style="border-color:${p.color};color:${p.color}">${CMDS[p.cmd].ic} ${p.name} 차례</span>`+
    (guer>=0?`<span class="tag" style="border-color:var(--red);color:var(--red)">💀 ${cell(guer).short}</span>`:'');
-  document.getElementById('chips').innerHTML=P.map(p=>`<div class="chip ${p.id===cur?'cur':''} ${p.alive?'':'dead'} ${p.resist?'res':''}" id="chip${p.id}" style="--pc:${p.color}">
-    <div class="nm">${CMDS[p.cmd].ic} ${p.name}${p.bot?' <span style="color:var(--dim)">AI</span>':''}</div>
-    <div class="ln"><span>₲</span><b>${p.gold.toLocaleString()}</b></div>
-    <div class="ln"><span>AP</span><b>${p.ap}</b><span>도시</span><b>${cities(p).length}</b></div></div>`).join('');
+  /* 플레이어 정보는 전황 탭(renderWar)에서 표시 */
 }
 function tab(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));}
 function log(m,cls){if(window.FAST)return;const l=document.getElementById('log');const d=document.createElement('div');if(cls!==undefined)d.className='c'+cls;d.textContent=m;l.prepend(d);while(l.children.length>40)l.lastChild.remove();}
@@ -527,8 +577,8 @@ function log(m,cls){if(window.FAST)return;const l=document.getElementById('log')
    이펙트 엔진
 ============================================================ */
 const B=()=>document.getElementById('board');
-function cellPx(){const s=getComputedStyle(document.documentElement);return [parseFloat(s.getPropertyValue('--cell')),parseFloat(s.getPropertyValue('--gap'))||2]}
-function cxy(i){const [cs,g]=cellPx(),{r,c}=rc(i);return [g+c*(cs+g)+cs/2,g+r*(cs+g)+cs/2]}
+function cellPx(){const land=isLand(),cols=land?19:11,rows=land?11:19,b=B(),g=parseFloat(getComputedStyle(b).rowGap)||2;return [(b.clientWidth-2*g-(cols-1)*g)/cols,(b.clientHeight-2*g-(rows-1)*g)/rows,g]}
+function cxy(i){const [cw,ch,g]=cellPx(),{r,c}=rc(i);return [g+c*(cw+g)+cw/2,g+r*(ch+g)+ch/2]}
 function bcenter(){return [B().offsetWidth/2,B().offsetHeight/2]}
 function spawn(cls,x,y,ms,st={}){if(window.FAST)return null;const e=document.createElement('div');e.className=cls;e.style.left=x+'px';e.style.top=y+'px';Object.assign(e.style,st);document.getElementById('fxlayer').appendChild(e);if(ms)setTimeout(()=>e.remove(),ms);return e}
 function toast(i,txt,cls=''){if(window.FAST)return;const [x,y]=cxy(i);spawn('toast '+cls,x,y,1900).textContent=txt}
@@ -590,43 +640,56 @@ function beginTurn(){
 }
 function renderAct(){if(window.FAST)return;
   const p=P[cur],c=CMDS[p.cmd];
-  let h=`<div class="card"><h4>${c.ic} ${p.name} · ${c.n}</h4><div class="kv"><span>위치</span><span>${cell(p.pos).ic} ${cell(p.pos).name} (${ZN[cell(p.pos).zone]})</span><span>사거리 보정</span><span>${rangeMod(p)>=0?'+':''}${rangeMod(p)}</span><span>퀘스트</span><span>${p.quest?p.quest.txt:'-'}</span></div></div>`;
-  if(news)h+=`<div class="newsbar">${news.ic} <b>${news.n}</b> — ${news.d}</div>`;
-  h+=`<div id="dice"><div class="die" id="d0">${dice[0]||'?'}</div><div class="die" id="d1">${dice[1]||'?'}</div><div style="font-size:11px">${range?`사거리 <b style="color:var(--acc)">${range}</b>칸`:'<span class="hint">주사위를 굴리면 이동 + 사거리가 정해집니다</span>'}</div></div>`;
+  const dn=p.dir?(p.dir>0?'↻ 시계':'↺ 반시계'):'첫 주사위에 결정';
+  let h=`<div class="rowinfo"><b style="color:${p.color}">${c.ic} ${p.name}</b><span>${cell(p.pos).ic} ${cell(p.pos).short}</span><span>${dn}</span><span>사거리 ${rangeMod(p)>=0?'+':''}${rangeMod(p)}${range?` · <b style="color:var(--acc)">${range}칸</b>`:''}</span></div>`;
   if(p.bot){const keep=(document.getElementById('msg')||{}).innerHTML||'';h+=`<p class="hint">AI가 진행 중…</p><div id="msg">${keep}</div>`;document.getElementById('p-act').innerHTML=h;return}
-  h+='<div class="btns">';
-  if(phase==='roll')h+=`<button class="pri" onclick="roll()">🎲 주사위 굴리기</button>`;
+  if(phase==='moving')h+=`<button disabled class="big">🚶 이동 중…</button>`;
+  if(phase==='roll')h+=`<button class="pri big" onclick="roll()">🎲 주사위 굴리기</button><p class="hint">주사위 1번 눈=무기 · 2번 눈=표적 · 더블=낙하산</p>`;
   if(phase==='attack'){
     const truce=news&&news.k==='truce';
     if(!attackOpts)attackOpts=genOptions(p);
     const ao=attackOpts;
-    h+=`</div><div class="dicefn"><span>🎲 ${dice[0]}</span><span>무기 → ${WPN[ao.base].ic} ${WPN[ao.base].n}${ao.fallback?` <span class="hint">(${ao.fallback})</span>`:''}</span><span>🎲 ${dice[1]}</span><span>표적 → ${ao.targets.length?`${ao.tIdx+1}번째 적 = <b>${tgName(ao.target)}</b> (${ao.targets.length}개 중)`:'사거리 안에 적 없음'}</span>${dice[0]===dice[1]?'<span>더블</span><span>🪂 낙하산부대 작전 가능</span>':''}</div><div class="btns">`;
-    if(truce)h+=`<button disabled>🕊️ 휴전 협정 — 이번 라운드 공격 불가</button>`;
-    else if(attacked)h+=`<button disabled>공격 완료</button>`;
-    else ao.options.forEach((o,k)=>{h+=`<button class="warn" ${o.ok&&p.ap>=o.cost?'':'disabled'} onclick="fireOpt(${k})">${WPN[o.w].ic} ${WPN[o.w].n} (AP${o.cost})${o.alt?' · 대체':''} — ${o.note}</button>`});
-    h+=`<button class="pri" onclick="endTurn()">⏭ 턴 종료</button><button onclick="armsModal()">🏭 군비 (함대·위성)</button>`;
-    if(p.ap>=c.ap&&p.cd===0)h+=`<button onclick="useSkill()">${c.ic} ${c.a.split('(')[0]} (AP${c.ap})</button>`;
-    if(p.orbital>0)h+=`<button class="warn" onclick="orbitalMode=true;msg('🛰 궤도 타격: 초토화할 칸을 보드에서 누르세요')">🛰 궤도 타격 ×${p.orbital}</button>`;
-    if(p.resist&&p.bomb>0)h+=`<button class="warn" onclick="bombMode=true;msg('💣 거점 점령 폭탄: 빈 거점 또는 상대 최하위 도시를 누르세요')">💣 거점 점령 폭탄</button>`;
+    h+=`<div class="mapline">1번 눈 → ${WPN[ao.base].ic} ${WPN[ao.base].n}${ao.fallback?` <i>(${ao.fallback})</i>`:''} · 2번 눈 → ${ao.targets.length?`${ao.tIdx+1}번째 ${tgName(ao.target)}`:'사거리 안 적 없음'}${dice[0]===dice[1]?' · 더블 → 🪂':''}</div>`;
+    if(truce)h+=`<button disabled class="big">🕊️ 휴전 — 이번 라운드 공격 불가</button>`;
+    else if(attacked)h+=`<button disabled class="big">공격 완료 · 곧 다음 차례</button>`;
+    else if(ao.options.length)h+='<div class="optgrid">'+ao.options.map((o,k)=>`<button class="warn opt" ${o.ok&&p.ap>=o.cost?'':'disabled'} onclick="fireOpt(${k})"><span class="ol"><b>${WPN[o.w].ic} ${WPN[o.w].n}${o.alt?' · 대체':''}</b><em>AP${o.cost}</em></span><small>${o.note}</small></button>`).join('')+'</div>';
+    else h+=`<p class="hint">쓸 수 있는 공격이 없습니다 · 잠시 후 자동으로 턴이 넘어갑니다</p>`;
+    h+='<div class="util">'+`<button onclick="armsModal()">🏭 군비</button>`;
+    if(p.ap>=c.ap&&p.cd===0)h+=`<button onclick="useSkill()">${c.ic} ${c.a.split('(')[0]} <em>AP${c.ap}</em></button>`;
+    if(p.orbital>0)h+=`<button class="warn" onclick="orbitalMode=true;msg('🛰 궤도 타격: 초토화할 칸을 보드에서 누르세요')">🛰 궤도 ×${p.orbital}</button>`;
+    if(p.resist&&p.bomb>0)h+=`<button class="warn" onclick="bombMode=true;msg('💣 거점 점령 폭탄: 빈 거점 또는 상대 최하위 도시를 누르세요')">💣 폭탄</button>`;
+    h+='</div>';
   }
   const keep=(document.getElementById('msg')||{}).innerHTML||'';
-  h+='</div><p class="hint">공격 무기와 표적은 주사위가 정합니다 · 내 도시를 누르면 방어 시설/증축 · 바다의 함선·섬을 누르면 정보</p><div id="msg">'+keep+'</div>';
+  h+='<div id="msg">'+keep+'</div>';
   document.getElementById('p-act').innerHTML=h;
+  autoCheck();
 }
 function rangeMod(p){let m=p.rangeBonus+(p.cmd==='V'?2:0)+(p.sats.M?1:0)+(ISLES[1].owner===p.id?1:0)+(cell(10).owner===p.id?1:0)+(cell(p.pos).type==='node'&&cell(p.pos).owner===p.id?1:0)-p.rangePen;if(weather.k==='storm')m-=2;if(weather.k==='fog')m+=1;if(news&&news.k==='magnet')m-=1;return m}
 
+const AV=['🧑‍✈️','👩‍🚀','🕵️','🧑‍💼']; // 지휘관 아바타 (플레이어 순서)
+// 보드 상단에서 주사위가 떨어지며 굴러가는 연출 → 결과 눈
+function diceFx(a,b){if(window.FAST)return;const [x,y]=bcenter();const ty=B().offsetHeight*0.3;
+  [a,b].forEach((v,k)=>{const e=spawn('dicefx',x+(k?24:-24),ty,1150);if(!e)return;e.textContent=1+rnd(6);let n=0;
+    const iv=setInterval(()=>{e.textContent=1+rnd(6);if(++n>9){clearInterval(iv);e.textContent=v}},70)})}
 function roll(){
-  if(busy||phase!=='roll')return;busy=true;
-  const p=P[cur];dice=diceBag(p);sfx.dice();
+  if(busy||phase!=='roll')return;busy=true;phase='moving';
+  const p=P[cur];dice=diceBag(p);sfx.dice();diceFx(dice[0],dice[1]);if(!p.dir){const tot=dice[0]+dice[1];p.dir=tot%2===0?1:-1;const dn=p.dir>0?"↻ 시계":"↺ 반시계";log(`${p.name} 첫 주사위 ${tot} (${tot%2===0?"짝수":"홀수"}) → ${dn} 진행`,p.id);banner(`${dn} 진행`,`${p.name} · 첫 주사위 ${tot}`)}
   {const t=dice[0]+dice[1];st('dice',t);STATS.rolls++;if(STATS.prevTotal[p.id]===t)STATS.rep++;STATS.prevTotal[p.id]=t}
   if(!window.FAST)document.querySelectorAll('.die').forEach(d=>d.classList.add('roll'));
   renderAct();
-  setTimeout(()=>{busy=false;move(p,dice[0]+dice[1])},T(500));
+  const _tot=dice[0]+dice[1];setTimeout(()=>{move(p,_tot)},T(500));
 }
+let moveTok=0,moveSt=null;
+function forceLand(){const m=moveSt;if(!m)return false;moveTok++;moveSt=null;const p=m.p;
+  for(let i=m.n;i<m.steps;i++){p.pos=(p.pos+m.dir+N)%N;if(p.pos===0)try{passStart(p)}catch(e){}}
+  busy=false;try{updateBoard()}catch(e){}landed(p);return true}
 function move(p,steps){
   range=Math.max(1,steps+rangeMod(p));p.rangePen=0;
-  const dir=p.reverse?-1:1;p.reverse=false;let n=0;busy=true;
-  const step=()=>{p.pos=(p.pos+dir+N)%N;n++;if(p.pos===0&&dir===1)passStart(p);updateBoard();if(n<steps)setTimeout(step,T(70));else{busy=false;landed(p)}};
+  const dir=p.dir||1;let n=0;busy=true;phase='moving';
+  const tk=++moveTok;moveSt={p,tk,steps,dir,n:0,t:Date.now()};
+  const step=()=>{if(tk!==moveTok)return;try{p.pos=(p.pos+dir+N)%N;n++;moveSt.n=n;if(p.pos===0)passStart(p);updateBoard()}catch(e){console.error(e)}
+    if(n<steps)setTimeout(step,T(70));else{moveSt=null;busy=false;landed(p)}};
   step();
 }
 function passStart(p){const g=p.cmd==='T'?300:200,a=2*(weather.k==='clear'?2:1);if(p.frozen>0){log(`${p.name} 자산 동결로 월급 없음`,p.id);return}p.gold+=g;p.ap+=a;sfx.coin();log(`${p.name} 출발 통과 ${fmt(g)} + AP${a}`,p.id);chipDelta(p.id,'+'+fmt(g),'p');flyCoins(document.getElementById('c0'),document.getElementById('chip'+p.id),4)}
@@ -669,7 +732,7 @@ function eventCell(p,c){
     case 2:{ if(p.bot){p.quest=p.qdeck.draw();p.ap+=1;break}
       const opts=p.qdeck.peek(2);modal(`<h3>📡 퀘스트 사령부</h3><p>AP +1. 새 퀘스트를 하나 고르세요 (현재 퀘스트는 교체됩니다).</p><div class="btns">${opts.map((q,k)=>`<button onclick="pickQuest(${k})">[${q.t}] ${q.txt} → ${q.rw}</button>`).join('')}<button onclick="closeModal();afterLand(P[cur])">유지</button></div>`);
       window.pickQuest=k=>{const q=opts[k];p.qdeck.pile=p.qdeck.pile.filter(x=>x!==q);p.quest=q;p.ap+=1;log(`${p.name} 퀘스트 선택: ${q.txt}`,p.id);closeModal();renderQuest();updateBoard();afterLand(p)};return}
-    case 5: case 31:{const t=c.i===5?31:5;if(!window.FAST){const [x,y]=cxy(c.i);spawn('warp',x,y,800)}log(`${p.name} 웜홀 통과 → ${cell(t).name}`,p.id);p.pos=t;toast(t,'워프!');if(!window.FAST){const [x,y]=cxy(t);ringAt(x,y,'',2)}updateBoard();break}
+    case 5: case 31:{const t=c.i===5?31:5;if(!window.FAST){const [x,y]=cxy(c.i);spawn('warp',x,y,800)}log(`${p.name} 웜홀 통과 → ${cell(t).name}`,p.id);p.pos=t;flipDir(p);toast(t,'워프!');if(!window.FAST){const [x,y]=cxy(t);ringAt(x,y,'',2)}updateBoard();break}
     case 15: blackMarket(p);return;
     case 21: if(guer<0){guer=21;log('💀 테러 아지트에서 게릴라 출현!');toast(21,'게릴라 출현','bad');banner('💀 게릴라 출현','테러 아지트에 무장 세력이 집결했습니다')}break;
     case 35:{ if(p.bot){setWeather();break}
@@ -689,7 +752,7 @@ function blackMarket(p){
 function applyCard(p,card){
   const t=leader(p);
   if(card.k==='orbit'){const s=rnd(N);for(let k=0;k<4;k++)setTimeout(()=>orbitalStrike((s+k)%N,'위성 타격'),T(k*220))}
-  if(card.k==='jam'&&t){t.reverse=true;log(`${t.name} 다음 턴 역주행`,t.id);chipDelta(t.id,'역주행','m')}
+  if(card.k==='jam'&&t){flipDir(t)}
   if(card.k==='freeze'&&t){t.frozen=1;log(`${t.name} 자산 1라운드 동결`,t.id);chipDelta(t.id,'동결','m')}
   if(card.k==='decoy'&&t){const tc=cities(t)[0];if(tc){guer=(tc.i+1)%N;log(`게릴라가 ${t.name} 영토 옆으로 유인됨`);toast(guer,'게릴라 이동','bad');updateBoard()}}
   if(card.k==='arms'){p.ap+=3;chipDelta(p.id,'AP+3','p')}
@@ -761,7 +824,7 @@ function weaponMenu(p,c){
 }
 function killGuer(p){
   p.ap-=2;STATS.guerKill++;attacked=true;const g=guer;sfx.launch();
-  fly(p.pos,g,'missile',{},(x,y)=>{boom(x,y,'',8);shake();sfx.hit();const mul=news&&news.k==='bounty'?2:1;toast(g,'게릴라 소탕','good');log(`${p.name} 게릴라 소탕! ₲${300*mul} + AP${2*mul}`,p.id);guer=-1;p.gold+=300*mul;p.ap+=2*mul;p.st.terror++;chipDelta(p.id,`+₲${300*mul}`,'p');chain('🚀 미사일','💀 게릴라 소탕',`보상 ₲${300*mul}+AP${2*mul}`);checkQuest(p);updateBoard();renderAct();if(p.bot)setTimeout(endTurn,T(500))});
+  fly(p.pos,g,'missile',{},(x,y)=>{boom(x,y,'',8);shake();sfx.hit();const mul=news&&news.k==='bounty'?2:1;toast(g,'게릴라 소탕','good');log(`${p.name} 게릴라 소탕! ₲${300*mul} + AP${2*mul}`,p.id);guer=-1;p.gold+=300*mul;p.ap+=2*mul;p.st.terror++;chipDelta(p.id,`+₲${300*mul}`,'p');chain('🚀 미사일','💀 게릴라 소탕',`보상 ₲${300*mul}+AP${2*mul}`);checkQuest(p);updateBoard();renderAct();setTimeout(endTurn,T(1100))});
 }
 function attack(p,i,w){
   const c=cell(i),o=P[c.owner],d=dist(p.pos,i);
@@ -776,7 +839,7 @@ function attack(p,i,w){
     steps.push(res);chain(...steps);st('res',res.split(' ')[0]);
     log(`${p.name} → ${o.name} ${c.name}: ${steps.join(' → ')}`,p.id);
     linkToChip(i,o.id);checkQuest(p);updateBoard();renderAct();
-    if(p.bot)setTimeout(endTurn,T(500));
+    setTimeout(endTurn,T(1100));
   };
   const opt={onMid:(mx,my)=>{ if(intercept){ // 요격 포탑 트레이서 → 공중 폭발
       const [tx,ty]=cxy(i);const len=Math.hypot(mx-tx,my-ty),ang=Math.atan2(my-ty,mx-tx)*180/Math.PI;
@@ -805,7 +868,39 @@ function useSkill(){
   if(k==='T'){log(`${p.name} 긴급 보급: 주사위 한 번 더`,p.id);phase='roll';dice=[0,0];clearRange();renderAct();return}
   updateBoard();renderAct();
 }
-function endTurn(){if(busy)return;closeModal();clearRange();drawFx(null);const p=P[cur];p.immune=0;checkQuest(p);nextTurn()}
+// 멈춤 방지: 수동 복구 버튼 + 주기적 점검 (진행이 5초 이상 잠기면 풀어줌)
+function unstick(){if(phase==='moving'&&forceLand()){log('⟲ 이동을 마무리했습니다');return}busy=false;orbitalMode=false;bombMode=false;const p=P[cur];
+  log('⟲ 화면 진행을 다시 맞췄습니다',p?p.id:undefined);
+  if(p&&p.bot&&phase==='roll')botTurn();else renderAct();updateBoard()}
+let _busySince=0;
+setInterval(()=>{
+  if(window.FAST||!P.length)return;
+  const p=P[cur];if(!p)return;
+  if(phase==='moving'&&moveSt&&Date.now()-moveSt.t>6000+moveSt.steps*200){forceLand();_busySince=0;return}
+  if(busy&&phase!=='moving'){if(!_busySince)_busySince=Date.now();else if(Date.now()-_busySince>8000){busy=false;_busySince=0;unstick()}}
+  else _busySince=0;
+  const modalOpen=!document.getElementById('modal').classList.contains('hide');
+  if(!busy&&!modalOpen&&!p.bot&&phase==='roll'&&!document.querySelector('#p-act .big'))renderAct();
+  if(!busy&&!modalOpen&&p.bot&&phase==='roll')botTurn();
+},1500);
+let _errAt=0;
+function _recover(){const t=Date.now();if(t-_errAt<3000)return;_errAt=t;try{if(phase==='moving'&&moveSt)forceLand();else{busy=false;renderAct();updateBoard()}}catch(e){}}
+window.addEventListener('error',_recover);window.addEventListener('unhandledrejection',_recover);
+let autoT=null;
+// 쓸 수 있는 공격이 없으면 자동으로 턴을 넘긴다 (모달이 열려 있으면 닫힐 때까지 대기)
+function autoCheck(){
+  if(autoT){clearTimeout(autoT);autoT=null}
+  const p=P[cur];
+  if(!p||p.bot||phase!=='attack'||attacked||busy||orbitalMode||bombMode)return;
+  if(!document.getElementById('modal').classList.contains('hide')){autoT=setTimeout(autoCheck,600);return}
+  const ao=attackOpts||genOptions(p);
+  if(ao.options.some(o=>o.ok&&p.ap>=o.cost))return;
+  autoT=setTimeout(()=>{autoT=null;if(phase!=='attack'||attacked||busy||p.id!==cur)return;
+    if(!document.getElementById('modal').classList.contains('hide')){autoCheck();return}
+    msg('쓸 수 있는 공격이 없어 턴을 넘깁니다');endTurn()},T(1500));
+}
+let _endQ=null;
+function endTurn(){if(busy){if(!_endQ)_endQ=setTimeout(()=>{_endQ=null;endTurn()},400);return}if(autoT){clearTimeout(autoT);autoT=null}closeModal();clearRange();drawFx(null);const p=P[cur];p.immune=0;checkQuest(p);nextTurn()}
 function nextTurn(){let n=0;do{cur=(cur+1)%P.length;n++}while(!P[cur].alive&&n<P.length);if(cur===alive()[0].id)endRound();else beginTurn()}
 function endRound(){
   if(guer>=0){
@@ -858,8 +953,8 @@ function renderQuest(){if(window.FAST)return;
   `<div class="card"><h4>퀘스트 라이브러리 (${QUESTS.length}종, 덱 순환)</h4>${QUESTS.map(q=>`<div style="font-size:10px">· ${q.txt} → ${q.rw}</div>`).join('')}</div>`;
 }
 function renderWar(){if(window.FAST)return;
-  const rows=[['골드',p=>fmt(p.gold)],['AP',p=>p.ap],['도시',p=>cities(p).length],['거점',p=>nodes(p).length],['전선 도시',p=>cities(p).filter(c=>c.zone==='E').length],['방어 시설',p=>cities(p).reduce((s,c)=>s+c.def.shield+c.def.ciws+c.def.jammer,0)],['사거리 보정',p=>(rangeMod(p)>=0?'+':'')+rangeMod(p)],['퀘스트',p=>p.qpts],['자산 점수',p=>score(p).toLocaleString()]];
-  document.getElementById('p-war').innerHTML=`<table class="cmp"><tr><th></th>${P.map(p=>`<th style="color:${p.color}">${p.name.slice(0,4)}</th>`).join('')}</tr>${rows.map(r=>`<tr><td>${r[0]}</td>${P.map(p=>`<td>${p.alive?r[1](p):'파산'}</td>`).join('')}</tr>`).join('')}</table>
+  const rows=[['지휘관',p=>CMDS[p.cmd].ic+' '+CMDS[p.cmd].n.split(' ')[0]],['골드',p=>fmt(p.gold)],['함대',p=>p.fleet.filter(s=>s.hp>0).length+'척'],['위성',p=>((p.sats.C?'민 ':'')+(p.sats.M?'군 ':'')+(p.sats.T?'통':'')).trim()||'-'],['레이더R·미사일M',p=>ISLES.filter((s,k)=>RADAR_SLOTS.includes(k)&&s.owner===p.id&&s.radar).length+'R · '+cells.filter(c=>baseAt(c)&&c.owner===p.id).length+'M'],['AP',p=>p.ap],['도시',p=>cities(p).length],['거점',p=>nodes(p).length],['전선 도시',p=>cities(p).filter(c=>c.zone==='E').length],['방어 시설',p=>cities(p).reduce((s,c)=>s+c.def.shield+c.def.ciws+c.def.jammer,0)],['사거리 보정',p=>(rangeMod(p)>=0?'+':'')+rangeMod(p)],['퀘스트',p=>p.qpts],['자산 점수',p=>score(p).toLocaleString()]];
+  document.getElementById('p-war').innerHTML=`<table class="cmp"><tr><th></th>${P.map(p=>`<th style="color:${p.color};${p.id===cur?'text-decoration:underline':''}">${AV[p.id]||''}<br>${p.name.slice(0,4)}</th>`).join('')}</tr>${rows.map(r=>`<tr><td>${r[0]}</td>${P.map(p=>`<td>${p.alive?r[1](p):'파산'}</td>`).join('')}</tr>`).join('')}</table>
   <div class="card"><h4>${weather.ic} ${weather.n}</h4>${weather.d} · 3라운드마다 변경 (5종 덱 순환, 연속 중복 없음)</div>
   ${news?`<div class="card" style="border-color:var(--vio)"><h4>${news.ic} 전장 뉴스: ${news.n}</h4>${news.d} · 이번 라운드만</div>`:''}
   ${guer>=0?`<div class="card" style="border-color:var(--red)"><h4>💀 게릴라 — ${cell(guer).name}</h4>라운드 말에 3칸 내 플레이어 골드 10% 갈취, 도시 교란. 사거리 안에서 미사일(AP2)로 소탕 시 ₲300+AP2</div>`:''}`;
@@ -883,6 +978,25 @@ function tgName(t){if(!t)return '-';if(t.kind==='cell')return cell(t.i).ic+' '+c
 function hasU(p,t){return p.fleet.some(s=>s.t===t&&s.hp>0)}
 function anchorD(p,t,i){const ss=p.fleet.filter(s=>s.t===t&&s.hp>0);if(!ss.length)return 99;return Math.min(...ss.map(s=>dist(s.anchor,i)))}
 function tgIdx(t){return t.kind==='cell'?t.i:t.kind==='guer'?guer:t.ship.anchor}
+const RADAR_SLOTS=[1,2], BASE_COST=1200, RADAR_COST=500, SIDE_NAME={N:'북',E:'동',S:'남',W:'서'};
+// 보드를 4면으로: N(0~10, 11칸) · E(11~27) · S(28~38, 11칸) · W(39~55)
+function sideOf(i){return i<=10?'N':i<=27?'E':i<=38?'S':'W'}
+const baseAt=c=>c.mb!=null&&c.mb===c.owner; // 미사일기지: 건설자가 여전히 소유한 도시에만 유효
+function baseOn(p,side){return cells.some(c=>baseAt(c)&&c.owner===p.id&&sideOf(c.i)===side)}
+function sideHasBase(side){return cells.some(c=>baseAt(c)&&sideOf(c.i)===side)}
+function radarOK(p){return ISLES.some((s,k)=>RADAR_SLOTS.includes(k)&&s.owner===p.id&&s.radar===true)}
+function crossSea(p,t){const a=sideOf(p.pos),b=sideOf(t);return (a==='N'&&b==='S')||(a==='S'&&b==='N')}
+function baseBtns(p){
+  const cands=cells.filter(c=>c.owner===p.id&&(c.type==='city'||c.type==='node')&&!baseAt(c)&&!sideHasBase(sideOf(c.i)));
+  if(!cands.length)return '<p class="hint">🚀 미사일기지: 각 면에 1개 · 내 도시가 있고 빈 면이어야 건설 가능</p>';
+  return `<p class="hint">🚀 미사일기지 (₲${BASE_COST}) — 각 면에 1개, 도시 소유가 바뀌면 소멸</p>`+cands.map(c=>`<button ${p.gold<BASE_COST?'disabled':''} onclick="buildBase(${c.i})">🚀 ${SIDE_NAME[sideOf(c.i)]}면 · ${c.name}</button>`).join('');
+}
+function buildBase(i){const p=P[cur],c=cell(i);if(p.gold<BASE_COST||c.owner!==p.id||baseAt(c)||sideHasBase(sideOf(i)))return;
+  p.gold-=BASE_COST;c.mb=p.id;sfx.coin();log(`${p.name} ${SIDE_NAME[sideOf(i)]}면 미사일기지 건설 (${c.name}) ₲${BASE_COST}`,p.id);
+  banner('🚀 미사일기지 건설',`${SIDE_NAME[sideOf(i)]}면 · ${c.name}`);chipDelta(p.id,'−'+fmt(BASE_COST),'m');attackOpts=null;closeModal();updateBoard();renderAct()}
+function buildRadar(k){const p=P[cur],isl=ISLES[k];if(isl.owner!==p.id||isl.radar||p.gold<RADAR_COST)return;
+  p.gold-=RADAR_COST;isl.radar=true;sfx.coin();log(`${p.name} ${isl.n} 레이더기지 건설 ₲${RADAR_COST}`,p.id);
+  banner('📡 레이더기지 가동',`${isl.n} · 바다 건너 다양한 무기 사용 가능`);chipDelta(p.id,'−'+fmt(RADAR_COST),'m');attackOpts=null;closeModal();updateBoard();renderAct()}
 function genOptions(p){
   const truce=news&&news.k==='truce';
   let targets=[];
@@ -897,13 +1011,14 @@ function genOptions(p){
   const options=[];let fallback='';
   const d=target?dist(p.pos,tgIdx(target)):99;
   const isShip=target&&target.kind==='ship',isSub=isShip&&target.ship.t==='sub';
+  const cr=!!(target&&crossSea(p,tgIdx(target))),rd=radarOK(p),longOK=p.sats.M>0||hasU(p,'carrier')||cell(36).owner===p.id||baseOn(p,sideOf(p.pos))||rd,far=cr,nonMissOK=!cr||rd;
   const can={
-    bullet:()=>!isShip&&d<=2, grenade:()=>!isShip&&d<=3,
-    shell:()=>hasU(p,'destroyer')&&anchorD(p,'destroyer',tgIdx(target))<=5&&!isSub,
-    missile:()=>!isSub, drone:()=>hasU(p,'carrier')&&anchorD(p,'carrier',tgIdx(target))<=8&&!isSub,
-    bomber:()=>hasU(p,'carrier')&&anchorD(p,'carrier',tgIdx(target))<=12&&!isSub,
+    bullet:()=>!isShip&&d<=2&&nonMissOK, grenade:()=>!isShip&&d<=3&&nonMissOK,
+    shell:()=>hasU(p,'destroyer')&&(anchorD(p,'destroyer',tgIdx(target))<=5||rd&&far)&&!isSub&&nonMissOK,
+    missile:()=>!isSub&&(!far||longOK), drone:()=>hasU(p,'carrier')&&(anchorD(p,'carrier',tgIdx(target))<=8||rd&&far)&&!isSub&&nonMissOK,
+    bomber:()=>hasU(p,'carrier')&&(anchorD(p,'carrier',tgIdx(target))<=12||rd&&far)&&!isSub&&nonMissOK,
     laser:()=>p.sats.M>0&&!isSub, icbm:()=>p.sats.M>0&&!isSub,
-    emp:()=>!isShip&&target&&target.kind==='cell'&&weather.k!=='solar', strike:()=>!isShip&&target&&target.kind==='cell',
+    emp:()=>!isShip&&target&&target.kind==='cell'&&weather.k!=='solar'&&(!far||longOK), strike:()=>!isShip&&target&&target.kind==='cell'&&nonMissOK,
     para:()=>hasU(p,'carrier')&&target&&target.kind==='cell'&&dice[0]===dice[1],
     torpedo:()=>isShip&&!isSub&&hasU(p,'sub'), depth:()=>isSub&&hasU(p,'destroyer'),
   };
@@ -911,7 +1026,7 @@ function genOptions(p){
   let w=base;
   if(target){
     if(isSub){w='depth';fallback='잠수함은 폭뢰로만'}
-    else if(!can[w]()){const ch=chainMap[w]||['missile'];const f=ch.find(x=>can[x]());if(f){fallback=`${WPN[w].n} 불가 → ${WPN[f].n}`;w=f}else{w=null}}
+    else if(!can[w]()){const ch=chainMap[w]||['missile'];const f=ch.find(x=>can[x]());if(f){fallback=`${WPN[w].n} 불가 → ${WPN[f].n}`;w=f}else{w=null;fallback=far&&!longOK?'🌊 11면→11면 장거리 — 군사위성·항모·핵융합·미사일기지·레이더섬 필요':far?'🌊 바다 건너 — 레이더섬 필요':'쓸 수 있는 무기 없음'}}
     if(w){const cost=w==='emp'?3-(p.cmd==='P'?1:0):WPN[w].ap;options.push({w,cost,ok:true,note:WPN[w].d})}
     if(isShip&&!isSub&&can.torpedo()&&w!=='torpedo')options.push({w:'torpedo',cost:2,ok:true,alt:true,note:WPN.torpedo.d});
     if(dice[0]===dice[1]&&can.para()){const c=cell(target.i);options.push({w:'para',cost:3,ok:true,alt:true,note:c.lvl===0&&!c.def.shield&&!c.def.ciws?'무방비 도시 — 점령 가능!':'방비 중 — 격퇴될 수 있음'})}
@@ -925,7 +1040,7 @@ function fireOpt(k){const ao=attackOpts;if(!ao||attacked||busy)return;const o=ao
 function fireIsle(p,k){const isl=ISLES[k];p.ap-=3;attacked=true;st('atk','para');chipDelta(p.id,'AP−3','m');sfx.launch();
   const s=p.fleet.filter(s=>s.t==='carrier'&&s.hp>0)[0];const [sx,sy]=shipXY(s);const e=document.getElementById('isle'+k);const [tx,ty]=e?localXY(e):bcenter();
   planeFly(sx,sy,tx,ty,'✈️',900,(x,y)=>{if(!window.FAST){[-8,0,8].forEach((dx,n)=>setTimeout(()=>{const q=spawn('para',x+dx,y,1300);q.textContent='🪂'},n*150))}
-    setTimeout(()=>{const old=isl.owner;isl.owner=p.id;ringAt(x,y,'b',2);banner(`${isl.ic} ${isl.n} 점령`,`${p.name} — ${isl.d}`);log(`${p.name} 낙하산부대가 ${isl.n} 점령${old!==null?' ('+P[old].name+'에서 탈취)':''}`,p.id);chain('🪂 낙하산부대',`${isl.n} 점령`,isl.d);updateBoard();renderAct();if(p.bot)setTimeout(endTurn,T(500))},T(1200))})}
+    setTimeout(()=>{const old=isl.owner;isl.owner=p.id;isl.radar=false;ringAt(x,y,'b',2);banner(`${isl.ic} ${isl.n} 점령`,`${p.name} — ${isl.d}`);log(`${p.name} 낙하산부대가 ${isl.n} 점령${old!==null?' ('+P[old].name+'에서 탈취)':''}`,p.id);chain('🪂 낙하산부대',`${isl.n} 점령`,isl.d);updateBoard();renderAct();setTimeout(endTurn,T(1100))},T(1200))})}
 function fire(p,t,w){
   if(t.kind==='guer'){killGuer(p);return}
   if(t.kind==='cell'&&(w==='missile'||w==='emp'||w==='strike')){attack(p,t.i,w);return}
@@ -938,7 +1053,7 @@ function fireCell(p,i,w){
   p.ap-=cost;attacked=true;st('atk',w);if(cost)chipDelta(p.id,'AP−'+cost,'m');sfx.launch();
   const steps=[`${WPN[w].ic} ${WPN[w].n} ${d}칸`];
   const [tx,ty]=cxy(i);
-  const finish=res=>{document.getElementById('c'+i).classList.add('hit');setTimeout(()=>document.getElementById('c'+i).classList.remove('hit'),500);steps.push(res);chain(...steps);st('res',res.split(' ')[0]);log(`${p.name} → ${o.name} ${c.name}: ${steps.join(' → ')}`,p.id);linkToChip(i,o.id);checkQuest(p);updateBoard();renderAct();if(p.bot)setTimeout(endTurn,T(500))};
+  const finish=res=>{document.getElementById('c'+i).classList.add('hit');setTimeout(()=>document.getElementById('c'+i).classList.remove('hit'),500);steps.push(res);chain(...steps);st('res',res.split(' ')[0]);log(`${p.name} → ${o.name} ${c.name}: ${steps.join(' → ')}`,p.id);linkToChip(i,o.id);checkQuest(p);updateBoard();renderAct();setTimeout(endTurn,T(1100))};
   // 공통 피해 판정
   const resolve=(x,y,spec)=>{
     if(spec.shield!==false&&c.def.shield&&c.emp===0){c.def.shield=0;sfx.block();const dm=document.querySelector('#c'+i+' .dome');if(dm)dm.classList.add('flash');spawn('boom blue',x,y,700);o.st.abs++;toast(i,'실드 흡수','good');checkQuest(o);finish('실드가 흡수 (실드 소멸)');return}
@@ -961,20 +1076,20 @@ function fireCell(p,i,w){
       if(w==='drone'){resolve(x,y,{gold:90})}else{ if(!window.FAST){const b=spawn('grenade',x,y-34,500);b.style.background='#ddd';b.style.animation='none';const t0=performance.now();const f=now=>{const t=Math.min(1,(now-t0)/380);b.style.transform=`translateY(${t*34}px)`;if(t<1)requestAnimationFrame(f)};requestAnimationFrame(f)} setTimeout(()=>resolve(x,y,{bld:2,gold:250,big:true}),T(400))}});return}
   if(w==='laser'){ const [sx,sy]=satXY(p);if(!window.FAST){const len=Math.hypot(tx-sx,ty-sy),ang=Math.atan2(ty-sy,tx-sx)*180/Math.PI;spawn('laser',sx,sy,500,{width:len+'px','--ang':ang+'deg'})}
     setTimeout(()=>resolve(tx,ty,{bld:1,gold:200}),T(380));return}
-  if(w==='icbm'){ icbmFly(px,py,tx,ty,(x,y)=>{boom(x,y,'big',14);ringAt(x,y,'r',3);shake();sfx.hit();c.def={shield:0,ciws:0,jammer:0};const lv=c.lvl;c.lvl=0;const g=Math.min(o.gold,300);o.gold-=g;chipDelta(o.id,'−₲'+g,'m');p.st.hits++;if(d>=9)p.st.long++;const res=`건물 전멸(−${lv}) + 방어 소멸 + ₲${g}`;toast(i,'☢️ 초토화','bad');banner('☢️ ICBM 착탄',`${c.name} — ${o.name}`);finish(res)});return}
+  if(w==='icbm'){ icbmFly(px,py,tx,ty,(x,y)=>{boom(x,y,'big',14);ringAt(x,y,'r',3);shake();sfx.hit();c.def={shield:0,ciws:0,jammer:0};c.mb=null;const lv=c.lvl;c.lvl=0;const g=Math.min(o.gold,300);o.gold-=g;chipDelta(o.id,'−₲'+g,'m');p.st.hits++;if(d>=9)p.st.long++;const res=`건물 전멸(−${lv}) + 방어 소멸 + ₲${g}`;toast(i,'☢️ 초토화','bad');banner('☢️ ICBM 착탄',`${c.name} — ${o.name}`);finish(res)});return}
   if(w==='para'){ const s=p.fleet.filter(s=>s.t==='carrier'&&s.hp>0)[0];const [sx,sy]=shipXY(s);
     planeFly(sx,sy,tx,ty,'✈️',1000,(x,y)=>{ if(!window.FAST){[-10,0,10].forEach((dx,k)=>setTimeout(()=>{const e=spawn('para',x+dx,y,1400);e.textContent='🪂'},k*150))}
-      setTimeout(()=>{ if(c.lvl===0&&!c.def.shield&&!c.def.ciws&&P[c.owner].immune===0){const old=c.owner;c.owner=p.id;c.def={shield:0,ciws:0,jammer:0};toast(i,'점령!','good');ringAt(x,y,'b',2);chipDelta(old,'도시 −1','m');chipDelta(p.id,'도시 +1','p');banner('🪂 낙하산부대 점령',`${c.name} → ${p.name}`);log(`${p.name} 낙하산부대 ${c.name} 점령 (${P[old].name})`,p.id);checkQuest(p);updateBoard();renderAct();if(p.bot)setTimeout(endTurn,T(500))}
+      setTimeout(()=>{ if(c.lvl===0&&!c.def.shield&&!c.def.ciws&&P[c.owner].immune===0){const old=c.owner;c.owner=p.id;c.def={shield:0,ciws:0,jammer:0};toast(i,'점령!','good');ringAt(x,y,'b',2);chipDelta(old,'도시 −1','m');chipDelta(p.id,'도시 +1','p');banner('🪂 낙하산부대 점령',`${c.name} → ${p.name}`);log(`${p.name} 낙하산부대 ${c.name} 점령 (${P[old].name})`,p.id);checkQuest(p);updateBoard();renderAct();setTimeout(endTurn,T(1100))}
         else{boom(x,y,'',4);toast(i,'격퇴','bad');finish('방어 부대에 격퇴')}},T(1300))});return}
 }
 function fireShip(p,t,w){
   const s=t.ship,o=P[t.owner],cost=WPN[w].ap;p.ap-=cost;attacked=true;st('atk',w);if(cost)chipDelta(p.id,'AP−'+cost,'m');sfx.launch();
   const [tx,ty]=shipXY(s),[px,py]=cxy(p.pos);const name=`${o.name}의 ${UNITS[s.t].n}`;
   const dmg={shell:1,missile:1,drone:1,bomber:2,laser:1,icbm:9,torpedo:2,depth:2}[w]||1;
-  const finish=(hitOK,why)=>{let res;if(hitOK){s.hp=Math.max(0,s.hp-dmg);if(!window.FAST){const e=document.getElementById('ship'+s.id);if(e)e.classList.add('hitf')}
-      if(s.hp<=0){o.fleet=o.fleet.filter(x=>x!==s);res=`${UNITS[s.t].n} 격침!`;spawn('splash',tx,ty,800);banner(`${UNITS[s.t].ic} ${name} 격침`,`${p.name}의 ${WPN[w].n}`);chipDelta(o.id,UNITS[s.t].n+' 상실','m')}else res=`${UNITS[s.t].n} 내구도 −${dmg} (${s.hp} 남음)`}
+  const finish=(hitOK,why)=>{let res,sinkTxt='';if(hitOK){const sp={bomber:.7,icbm:1,drone:.35,missile:.3,laser:.3,shell:.1,torpedo:.4,depth:.5}[w]||0;if(sp&&Math.random()<sp){s.hp=0;sinkTxt=['bomber','icbm','drone'].includes(w)?'💥 폭격 침몰':'💥 치명타 침몰'}else s.hp=Math.max(0,s.hp-dmg);if(!window.FAST){const e=document.getElementById('ship'+s.id);if(e)e.classList.add('hitf')}
+      if(s.hp<=0){o.fleet=o.fleet.filter(x=>x!==s);res=sinkTxt?`${sinkTxt} · ${UNITS[s.t].n} 격침!`:`${UNITS[s.t].n} 격침!`;spawn('splash',tx,ty,800);if(sinkTxt)boom(tx,ty,'big',10);banner(`${UNITS[s.t].ic} ${name} 격침`,`${p.name}의 ${WPN[w].n}`);chipDelta(o.id,UNITS[s.t].n+' 상실','m')}else res=`${UNITS[s.t].n} 내구도 −${dmg} (${s.hp} 남음)`}
     else res=why;
-    chain(`${WPN[w].ic} ${WPN[w].n}`,res);st('res',res.split(' ')[0]);log(`${p.name} → ${name}: ${WPN[w].n} → ${res}`,p.id);checkQuest(p);updateBoard();renderAct();if(p.bot)setTimeout(endTurn,T(500))};
+    chain(`${WPN[w].ic} ${WPN[w].n}`,res);st('res',res.split(' ')[0]);log(`${p.name} → ${name}: ${WPN[w].n} → ${res}`,p.id);checkQuest(p);updateBoard();renderAct();setTimeout(endTurn,T(1100))};
   if(w==='torpedo'){const my=p.fleet.find(x=>x.t==='sub'&&x.hp>0);const [sx,sy]=shipXY(my);if(!window.FAST){const t0=performance.now();const f=now=>{const t=Math.min(1,(now-t0)/800);spawn('trail v',sx+(tx-sx)*t,sy+(ty-sy)*t,500);if(t<1)requestAnimationFrame(f)};requestAnimationFrame(f)}setTimeout(()=>{spawn('splash',tx,ty,800);boom(tx,ty,'',5);sfx.hit();finish(true)},T(820));return}
   if(w==='depth'){const my=p.fleet.find(x=>x.t==='destroyer'&&x.hp>0);const [sx,sy]=shipXY(my);fly2(sx,sy,tx,ty,'missile',{dur:600,h:30},(x,y)=>{ringAt(x,y,'b',3);spawn('splash',x,y,800);const ok=Math.random()<.5;if(ok){sfx.hit();finish(true)}else{toast(cell(s.anchor).i,'빗나감','');finish(false,'폭뢰 빗나감')}});return}
   if(w==='shell'){const my=p.fleet.filter(x=>x.t==='destroyer'&&x.hp>0)[0];const [sx,sy]=shipXY(my);fly2(sx,sy,tx,ty,'missile',{dur:800,h:90},(x,y)=>{boom(x,y,'',6);sfx.hit();finish(true)});return}
@@ -1020,7 +1135,7 @@ function botAttack(){
 }
 
 /* ---------- 모달 / 튜토리얼 / 종료 ---------- */
-function modal(h){document.getElementById('mbox').innerHTML=h;document.getElementById('modal').classList.remove('hide')}
+function modal(h){const forced=!/닫기|취소/.test(h)||/afterLand/.test(h);document.getElementById('mbox').innerHTML=(forced?'':'<button class="mclose" onclick="closeModal()" aria-label="닫기">✕</button>')+h;document.getElementById('mbox').scrollTop=0;document.getElementById('modal').classList.remove('hide')}
 function closeModal(){document.getElementById('modal').classList.add('hide')}
 const TUT=[
  {t:'1단계 · 이동과 매수',b:'주사위를 굴려 이동합니다. 빈 도시에 서면 매수할 수 있습니다. 동쪽 전선(붉은 칸)은 비싸지만 통행료가 높고, 서쪽 백라인(녹색)은 안전합니다.'},
