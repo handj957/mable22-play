@@ -620,7 +620,9 @@ async function afterMove(p){
   const ch=resolve(p);fixStats();G.players.forEach(ensureCash);
   if(ch&&ch.length&&!p.out){
     if(p.human){G.phase='choice';G.choices=ch;render();fxDiff(p.pos);return;}
-    render();fxDiff(p.pos);await TOUR;await sleep(SPD.ai);aiPick(p,ch);render();fxDiff(p.pos);await TOUR;await sleep(SPD.ai*0.6);return endTurn();
+    render();fxDiff(p.pos);await TOUR;await sleep(SPD.ai);
+    if(aiPick(p,ch)){render();fxDiff(p.pos);return;} // 사람 응답 대기: pick()이 턴을 마무리
+    render();fxDiff(p.pos);await TOUR;await sleep(SPD.ai*0.6);return endTurn();
   }
   render();fxDiff(p.pos);await TOUR;await sleep(p.human?SPD.end:SPD.ai);endTurn();
 }
@@ -634,7 +636,12 @@ function aiPick(p,ch){
   let best=null,bs=-1e9;ch.forEach(c=>{let s=(typeof c.ai==='function'?c.ai():c.ai)??0;if(s>0)s+=Math.random()*2.4-1.2;if(s>bs){bs=s;best=c;}});
   if(!best||bs<=0)best=ch.find(c=>c.pass)||ch[ch.length-1];
   G.src=null;const r=best.fn();fixStats();G.players.forEach(ensureCash);
-  if(Array.isArray(r)&&r.length)aiPick(p,r);
+  if(Array.isArray(r)&&r.length){
+    // 사람이 응답해야 하는 선택지(who = 응답자)면 AI가 고르지 않고 사람 입력을 기다린다(true 반환).
+    if(r[0].who!=null&&G.players[r[0].who].human){G.phase='choice';G.choices=r;return true;}
+    return aiPick(p,r);
+  }
+  return false;
 }
 function endTurn(){
   if(G.phase==='over')return;
@@ -723,11 +730,19 @@ function resolve(p){
     return [C('청년 인구 받기',`인구 +${(th('youth')?2:1)+(has(p,50)?1:0)}`+(p.edu<2?', 혼란 +3':'')+` · 일자리 ${jobsOf(p)}`,()=>{p.pop+=(th('youth')?2:1)+(has(p,50)?1:0);if(p.edu<2)p.unrest+=3;say(`${p.name} 인구 ${p.pop}`,p.edu<2?'교육이 낮아 일자리 부족 → 혼란 +3':'교육이 받쳐 줘 혼란 없음');},()=>p.edu>=2||p.unrest<40?5:-1),PASS('받지 않기')];}
   case 'pact':{
     const cand=alive().filter(o=>o.id!==p.id&&!p.pacts.includes(o.id));
-    say(`${c.ic} ${c.name}`,'협약: 서로 통행료 30% 할인 · 혼란이 매 결산 10%씩 닮아감 · 항구 통행료 +10%/협약');
+    say(`${c.ic} ${c.name}`,'협약: 서로 통행료 30% 할인 · 혼란이 매 결산 10%씩 닮아감 · 항구 통행료 +10%/협약 · 상대가 사람이면 수락·거절 선택(거절 시 효과 없음)');
     if(!cand.length)return null;
+    const pactForm=(a,b)=>{a.pacts.push(b.id);b.pacts.push(a.id);say(`🤝 ${a.name}·${b.name} 상생 협약 체결`,'통행료 30% 할인, 혼란이 서로 닮아감');};
     return [...cand.map(o=>RC(C(`${o.sym} ${o.name}와 협약`,`상대 혼란 ${o.unrest} · 지지 ${o.support}`,()=>{
-        const ok=o.human||Math.random()<(o.unrest>p.unrest?0.75:0.45);
-        if(ok){p.pacts.push(o.id);o.pacts.push(p.id);say(`🤝 ${p.name}·${o.name} 상생 협약 체결`,'통행료 30% 할인, 혼란이 서로 닮아감');}
+        if(o.human){
+          // 사람 상대: 상대가 수락/거절을 고른다(선택지 체인). 거절 시 제안자에게 효과 없음.
+          say(`🤝 ${p.name}이(가) ${o.name}에게 상생 협약 제안`,`${o.name}님, 수락 또는 거절을 고르세요 · 거절 시 효과 없음`);
+          const decC=(label,sub,fn,pass)=>RC({...C(label,sub,fn,0,pass),who:o.id});
+          return [decC('수락','효과: 서로 통행료 30% 할인 · 혼란 닮아감',()=>pactForm(p,o)),
+            decC('거절','효과 없음 (제안자에게 변화 없음)',()=>say(`${o.name}이(가) 협약을 거절`,'거절: 효과 없음'),true)];
+        }
+        // AI 상대: 기존 수락 확률 그대로 사용
+        if(Math.random()<(o.unrest>p.unrest?0.75:0.45))pactForm(p,o);
         else say(`${o.name}이(가) 협약을 거절`,'상대가 내 혼란 전염을 걱정');
       },()=>p.unrest>35&&o.unrest<p.unrest?4:(p.pacts.length<1?2:-1)))),PASS('협약하지 않기')];}
   case 'election':{
@@ -997,8 +1012,9 @@ function render(){
     if(G.theme>=0)h.push(`<div class="theme">🎴 ${G.round}R 테마 「${THEMES[G.theme].t}」 ${THEMES[G.theme].d}</div>`);
     if(G.msg&&!(canRoll&&G.phase==='roll'))h.push(srcWrap('msg',G.src,G.msg,'msgline'));
     if(G.chain)h.push(`<div class="chain">↳ ${G.chain}</div>`);
-    if(p.human&&G.phase==='choice'&&G.choices)h.push(`<div class="btns">${G.choices.map((c,i)=>`<button class="btn ${c.pass?'alt':''}" data-i="${i}"><span>${c.label}</span><span class="sb"><span>${c.sub||''}</span>${pvHtml(c)}</span></button>`).join('')}</div>`);
-    if(!p.human&&G.phase!=='over')h.push(`<div class="msg" style="color:var(--muted)">AI가 생각하는 중…</div>`);
+    const chooser=G.choices&&G.choices[0]&&G.choices[0].who!=null?G.players[G.choices[0].who]:p; // 응답자(사람 상대) 또는 현재 턴 지도자
+    if(chooser.human&&G.phase==='choice'&&G.choices)h.push(`<div class="btns">${G.choices.map((c,i)=>`<button class="btn ${c.pass?'alt':''}" data-i="${i}"><span>${c.label}</span><span class="sb"><span>${c.sub||''}</span>${pvHtml(c)}</span></button>`).join('')}</div>`);
+    if(!p.human&&G.phase!=='over'&&G.phase!=='choice')h.push(`<div class="msg" style="color:var(--muted)">AI가 생각하는 중…</div>`);
     if(G.report&&G.report.length&&G.round>1)h.push(`<div class="report"><b>지난 결산</b>${G.report.slice(0,6).map((t,k)=>{const d=G.repSrc&&G.repSrc[k];return d?srcWrap('',{d,v:G.dice[d],label:`${DIEN[d]} ${G.dice[d]}`,seq:'r'+G.repSeq},t,'rep-'+d):`<div>${t}</div>`;}).join('')}</div>`);
   }
   if(VIEW.info!=null)h.push(infoCard(VIEW.info));
@@ -1062,7 +1078,7 @@ function tabBody(f,fc){
   <h4>원인 → 결과 10가지</h4><ol class="ol"><li>금리 인상 → 대출 이자 증가 → 기업 이익 감소</li><li>원자재 상승 → 기업 원가 상승, 평야·해안·산업도시 통행료 상승</li><li>교육 투자 → 생산성 상승 → 이익 증가 → 재투자</li><li>경기 호황·불황 → 통행료 ±15%, 기업 매출 ±20%</li><li>인플레(원자재 평균 130 초과) → 금리 인상 → 1번</li><li>교육 → 혼란 감소 → 생산성 → 기업 이익</li><li>세금 정책 → 지지율 → 선거 → 정책 유지 또는 초기화</li><li>자동화 → 이익 +30% → 일자리 감소 → 혼란 증가</li><li>인구 유입 → 매출 +10%, 교육이 낮으면 혼란 증가</li><li>문화력 → 관광 통행료·국제 행사 → 지지율</li></ol>
   <h4>세금 정책</h4>감세: 세수 150, 지지 +2/R · 표준: 세수 250 · 증세: 세수 350, 지지 −3/R, 혼란 +2/R. 국회의사당을 지날 때 세수를 받고, 결산마다 그 5분의 1을 더 받습니다.
   <h4>선거 (6라운드마다)</h4>사회 주사위 + 지지율/10 + 교육/2 ≥ 10이면 재신임. 실패하면 세율이 표준으로 돌아가고 지지율이 40 이하로 떨어지며, 가장 큰 기업이 1라운드 영업 정지.
-  <h4>협력</h4>상생 협약을 맺으면 서로 통행료 30% 할인, 대신 혼란이 결산마다 10%씩 닮아갑니다. 평균 혼란이 60을 넘으면 국가 재정 위기가 모두를 덮칩니다.
+  <h4>협력</h4>상생 협약을 맺으면 서로 통행료 30% 할인, 대신 혼란이 결산마다 10%씩 닮아갑니다. 상대가 사람이면 상대가 수락·거절을 고르며(거절 시 제안자에게 효과 없음), AI 상대는 상대 혼란이 제안자보다 높으면 75%, 아니면 45% 확률로 수락합니다. 평균 혼란이 60을 넘으면 국가 재정 위기가 모두를 덮칩니다.
   <h4>건물</h4>마을 회관 → 복합 타운 → 지역 명소. 단계마다 땅값의 50%. 같은 지방 3곳을 모두 가지면 통행료 2배.
   <h4>국정 정책 (국회의사당)</h4>복지 확대(₵40/R, 혼란 −3, 지지 +1) · 산업 진흥(기업 이익 +15%, 혼란 +1) · 문화 육성(문화 투자 −25%, 지지 +1).
   <h4>더 이어지는 연결</h4><ol class="ol"><li>지지율 70 이상 → 세수 ×1.2, 30 미만 → ×0.8(조세 저항)</li><li>원자재 비축 → 철강은 제조 원가 절반, 식량은 식품 원가 절반·물가 시위 완화, 석유는 에너지 이익 +15%</li><li>문화력 → 결산마다 콘텐츠 수출 ₵15×문화력</li><li>일자리(3 + 기업 단계 합) &lt; 인구 → 혼란 +2, 청년 유출 위험</li><li>섬 연락선 → 내 청솔섬 통행료 +20% · 광역 순환 버스 → 내 수도권 통행료 +15%</li></ol>
