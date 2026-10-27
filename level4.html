@@ -1358,7 +1358,7 @@ const CELLS=[
  city(2,'상파울루','상파울루','브라질',100,'food',1.0,'S','sa','세계의 곡물·대두 창고.'),
  sp('event','글로벌 이벤트','이벤트','세계 정세 카드.'),
  city(2,'자카르타','자카르타','인도네시아',100,'food',1.15,'S','as','팜유·니켈 강국.'),
- sp('jail','분쟁지대 억류','억류','군사 주사위 + 군사력/2 ≥ 10이면 탈출. 최대 2번, 실패하면 다음 턴 석방.'),
+ sp('jail','분쟁지대 억류','억류','군사 주사위 + 군사력/2 + 특수부대 (+터미네이터) ≥ 10이면 탈출. 실패하면 턴이 끝나고, 두 번 모두 실패하면 다음 턴 석방. 휴전 비용으로도 나갈 수 있습니다.'),
  city(2,'시드니','시드니','호주',120,'steel',.85,'P','oc','철광석·리튬 수출 허브.'),
  sp('refugee','국경 난민 캠프','난민캠프','난민을 수용하면 UN 지원금과 노동력(교육 2+면 생산성)을 얻지만 사회 혼란이 오릅니다.'),
  city(3,'리야드','리야드','사우디아라비아',140,'oil',.9,'S','me','탈석유 메가시티로 전환 중인 원유 강국.'),
@@ -1403,7 +1403,7 @@ const CELLS=[
  city(9,'대서양 해저 데이터센터','해저DC','대서양 해저',340,'ai',.5,'N','ocean','해수 냉각 초대형 연산 단지.'),
  sp('satwpn','위성무기 기지','위성무기','₵150 공격. 주사위+군사력/2+우주개발+함대 ≥ 8+상대 함대×2면 명중(상대 현금 10% 몰수 · 우주개발 −1 · 혼란 +4). 실패 시 지지율 −4 · 제재 2R.'),
  sp('dip','유엔 안보리','안보리','정상회담 또는 제재 결의.'),
- sp('terror','테러 경보 구역','테러경보','군사 주사위 + 특수부대×2 ≥ 8이면 무사통과, 아니면 테러 피해. 세계 테러 위협이 높을수록 위험.'),
+ sp('terror','테러 경보 구역','테러경보','군사 주사위 + 특수부대×2 (+터미네이터·첩보국) ≥ 8이면 무사통과, 아니면 테러 피해. 세계 테러 위협이 높을수록 위험.'),
  city(10,'섀클턴 달 기지','달기지','달',380,'gas',.6,'N','space','헬륨-3 채굴. 핵융합 연료.'),
  sp('mars','화성 기지','화성기지','단계 투자(최고 3). 개척 지수 +3/단계, 매 라운드 탐사 수입(개척 지수 연동). 우주 자산.'),
  city(10,'소행성대 채굴단','소행성','소행성대',380,'gold',.5,'N','space','백금족·니켈 소행성 채굴.'),
@@ -1974,14 +1974,14 @@ function ensure(p,n){if(p.cash>=n)return true;borrow(p,Math.ceil((n-p.cash)/100)
 // 받는 쪽 생산성이 수입에 반영(초과분의 절반을 국가 재정에서 보전)
 function payTo(p,n,q,why){n=Math.round(n);if(n<=0)return;
   if(!ensure(p,n)){const left=p.cash;if(q)q.cash+=left;else S.fund+=left;led(p,q||null,left,(why||'지급')+' (부도)');p.cash=0;bankrupt(p);return}
-  p.cash-=n;if(q){q.cash+=n;led(p,q,n,why);const bonus=Math.round(n*(prod(q)-100)/200);q.cash+=bonus;if(bonus)led(null,q,bonus,'생산성 보정')}else{S.fund+=n;led(p,null,n,why)}}
+  p.cash-=n;if(q){q.cash+=n;led(p,q,n,why);const bonus=Math.max(0,Math.round(n*(prod(q)-100)/200));q.cash+=bonus;if(bonus)led(null,q,bonus,'생산성 보정')}else{S.fund+=n;led(p,null,n,why)}}
 function payFund(p,n,why){if(n<=0)return;payTo(p,n,null,why||'무역기금 납부');log(`${pn(p)} −${won(n)} (무역기금)`)}
 function payBank(p,n,why){n=Math.round(n);if(n<=0)return;if(!ensure(p,n)){led(p,null,p.cash,(why||'은행 납부')+' (부도)');p.cash=0;bankrupt(p);return}p.cash-=n;led(p,null,n,why||'은행 납부')}
 function bankrupt(p){if(p.bankrupt)return;p.bankrupt=true;p.debt=0;ownedIdx(p).forEach(i=>delete S.props[i]);S.treaties=S.treaties.filter(t=>t.a!==p.id&&t.b!==p.id);log(`${pn(p)} 국가 부도.`)}
 function passStart(p){let div=0;ownedCities(p).forEach(c=>div+=Math.round(priceOf(c)*.05*idxOf(c.tag)/100));const pr=prod(p),sal=Math.round(pl(200)*pr/100);div=Math.round(div*pr/100);p.cash+=sal+div;led(null,p,sal,'국가 예산(출발)');if(div)led(null,p,div,'원자재 배당');apc(p,1);log(`${pn(p)} 출발 통과: 예산 ${won(sal)}${div?` + 배당 ${won(div)}`:''} (생산성 ${pr}%)`)}
 function buyMil(p,n){const c=milCost(p);let k=0;while(k<n&&p.M<12&&p.cash>=c){p.cash-=c;p.M++;k++}if(k){led(p,null,c*k,'군비 증강');S.mkt.steel=clamp(S.mkt.steel*(1+.006*k),30,300);log(`${pn(p)} 군사력 +${k} → ${p.M}`)}}
 function leader(ex){return alive().filter(q=>q!==ex).sort((a,b)=>netWorth(b)-netWorth(a))[0]}
-function lvCost(base,lv){return pl(base*(lv+1))}
+function lvCost(base,lv,p,key){return pl(base*(lv+1))}
 
 /* ═════════ 군사·외교·사회 행동 ═════════ */
 function weatherAttack(p,k,v){
@@ -2104,11 +2104,11 @@ function aiWeather(p){if(p.M<8||!canPay(p,pl(150))||p.strategy!=='military'||Mat
   const L=leader(p);if(!L)return null;let best=null,bn=0;Object.entries(WXR).forEach(([k,w])=>{const n=ownedCities(L).filter(c=>w.r.includes(c.region)).length-ownedCities(p).filter(c=>w.r.includes(c.region)).length;if(n>bn&&!S.wx[k]){bn=n;best=k}});return best}
 function aiStrike(p){if(p.strategy!=='military'||p.M<7||!canPay(p,pl(200),100)||Math.random()<.55)return null;const t=strikeTargets(p).filter(q=>q.M<p.M);return t.sort((a,b)=>netWorth(b)-netWorth(a))[0]||null}
 function aiCoerce(p,o,t){return p.M>=3&&o.nuke<3&&rel(p.bloc,o.bloc)>=1&&!treaty(p,o)&&t>=pl(60)&&(p.strategy==='military'||p.M-o.M>=3)}
-function aiEdu(p){const want={tech:5,bloc:4,contra:3,resource:2,military:2}[p.strategy];return p.edu<want&&canPay(p,lvCost(120,p.edu),100)}
-function aiCult(p){return p.cult<5&&(p.un>30||p.ap<45||p.strategy==='bloc')&&canPay(p,lvCost(100,p.cult),100)}
-function aiRobot(p){const want={tech:3,resource:1,bloc:2,contra:1,military:2}[p.strategy];return p.phys<want&&p.phys<=p.edu&&canPay(p,lvCost(180,p.phys),100)}
+function aiEdu(p){const want={tech:5,bloc:4,contra:3,resource:2,military:2}[p.strategy];return p.edu<want&&canPay(p,lvCost(120,p.edu,p,'edu'),100)}
+function aiCult(p){return p.cult<5&&(p.un>30||p.ap<45||p.strategy==='bloc')&&canPay(p,lvCost(100,p.cult,p,'cult'),100)}
+function aiRobot(p){const want={tech:3,resource:1,bloc:2,contra:1,military:2}[p.strategy];return p.phys<want&&p.phys<=p.edu&&canPay(p,lvCost(180,p.phys,p,'phys'),100)}
 function aiRefugee(p){return p.edu>=2||p.cash<400||p.strategy==='bloc'}
-function aiSoft(p){const tour=ownedCities(p).filter(c=>c.tag==='tour').length;const want={bloc:4,contra:3,tech:3,resource:2,military:1}[p.strategy]+(tour>=2?1:0);return p.soft<Math.min(5,want)&&canPay(p,lvCost(110,p.soft),100)}
+function aiSoft(p){const tour=ownedCities(p).filter(c=>c.tag==='tour').length;const want={bloc:4,contra:3,tech:3,resource:2,military:1}[p.strategy]+(tour>=2?1:0);return p.soft<Math.min(5,want)&&canPay(p,lvCost(110,p.soft,p,'soft'),100)}
 function aiNuke(p){return p.nuke<3&&p.strategy==='military'&&canPay(p,pl(250),300)}
 
 /* ═════════ 턴 진행 ═════════ */
@@ -2119,7 +2119,7 @@ async function moveSteps(p,n){for(let k=0;k<n;k++){p.pos=(p.pos+1)%N;if(p.pos===
 async function moveTo(p,to){await moveSteps(p,(to-p.pos+N)%N)}
 function sendJail(p,why){p.pos=JAIL;p.jail=2;selected=JAIL;log(`${pn(p)} 분쟁지대 억류: ${why}`)}
 async function levelUp(p,key,base,max,label,after){
-  const lv=p[key],cost=lvCost(base,lv);if(lv>=max){if(p.human)await ok(`${label}이 이미 최고 단계입니다.`);return}
+  const lv=p[key],cost=lvCost(base,lv,p,key);if(lv>=max){if(p.human)await ok(`${label}이 이미 최고 단계입니다.`);return}
   let y;
   if(p.human)y=await ask(`${label} ${lv} → ${lv+1}? ${won(cost)}<small>${after}</small>`,[{id:'y',l:`투자 ${won(cost)}`,dis:p.cash<cost},{id:'n',l:'패스',g:1}])==='y';
   else{await sleep(delay());y=({edu:aiEdu,cult:aiCult,phys:aiRobot,soft:aiSoft})[key](p)}
@@ -2251,7 +2251,7 @@ async function takeTurn(p){
   }
 }
 function checkOver(){if(alive().length<=1||S.players[0].bankrupt||S.round>S.maxRounds)S.over=true}
-function advance(){let t=S.turn;do{t=(t+1)%S.players.length;if(t===0){S.round++;if(S.round<=S.maxRounds)roundEnd()}}while(S.players[t].bankrupt&&alive().length>0);S.turn=t}
+function advance(){let t=S.turn;do{t=(t+1)%S.players.length;if(t===(S.roundStart||0)){S.round++;if(S.round<=S.maxRounds)roundEnd()}}while(S.players[t].bankrupt&&alive().length>0);S.turn=t}
 async function gameLoop(){const g=gen;while(!S.over){if(S.phase==='done'){advance();checkOver();if(S.over)break}S.phase='move';S.dest=null;save();const p=cur();if(!p.bankrupt)await takeTurn(p);if(g!==gen)return;S.phase='done';save();checkOver();if(S.over)break}S.ask=null;S.phase=null;save();render();showResult()}
 function save(){try{localStorage.setItem('bm22L4',JSON.stringify(Object.assign({},S,{ask:null})))}catch(e){}}
 function loadSave(){try{const s=JSON.parse(localStorage.getItem('bm22L4')||'null');return s&&!s.over&&s.players?s:null}catch(e){return null}}
@@ -2386,9 +2386,9 @@ function renderDetail(){
     <dt>다음 건설비</dt><dd>${pr?pr.level<3?won(buildCost(c,pr.level)):'최고 단계':won(buildCost(c,0))+' (매입 후)'}</dd>`;
   }else if(c.t==='cp'){h+=`<dt>상태</dt><dd>${S.cps[selected].b?`<span class="pill bad">봉쇄 ${S.cps[selected].b}R</span>`:'<span class="pill good">통행 가능</span>'}</dd><dt>매입가</dt><dd>${won(priceOf(c))}</dd><dt>소유</dt><dd>${o?pn(o):'없음'}</dd>`}
   else if(c.t==='util'){h+=`<dt>매입가</dt><dd>${won(priceOf(c))}</dd><dt>소유</dt><dd>${o?pn(o):'없음'}</dd>`}
-  else if(c.t==='edu'){h+=`<dt>내 교육</dt><dd>${me.edu}/5 · 다음 ${won(lvCost(120,me.edu))}</dd>`}
-  else if(c.t==='cult'){h+=`<dt>내 종교·문화</dt><dd>${me.cult}/5 · 다음 ${won(lvCost(100,me.cult))}</dd>`}
-  else if(c.t==='robot'){h+=`<dt>내 피지컬 AI</dt><dd>${me.phys}/3 · 다음 ${won(lvCost(180,me.phys))}</dd>`}
+  else if(c.t==='edu'){h+=`<dt>내 교육</dt><dd>${me.edu}/5 · 다음 ${won(lvCost(120,me.edu,me,'edu'))}</dd>`}
+  else if(c.t==='cult'){h+=`<dt>내 종교·문화</dt><dd>${me.cult}/5 · 다음 ${won(lvCost(100,me.cult,me,'cult'))}</dd>`}
+  else if(c.t==='robot'){h+=`<dt>내 피지컬 AI</dt><dd>${me.phys}/3 · 다음 ${won(lvCost(180,me.phys,me,'phys'))}</dd>`}
   else if(c.t==='nuke'){h+=`<dt>핵 단계</dt><dd>${S.players.map(p=>`${esc(p.name)} ${NUKE[p.nuke]}`).join(' · ')}</dd>`}
   else if(c.t==='refugee'){h+=`<dt>세계 난민</dt><dd>${Math.round(S.refugees)}</dd>`}
   $('#detail').innerHTML=h+'</dl>';
@@ -2495,18 +2495,24 @@ function rulesHTML(){
 <tr><td>해양·우주 개척지</td><td>7</td><td>해양 개척권 3, 우주 개척권 4. 통행료 × (0.6 + 개척 지수/100).</td></tr>
 <tr><td>전략 해협</td><td>5</td><td>파나마·수에즈·호르무즈·말라카·북극 항로. ₵40 × 2^(보유 수−1), 봉쇄 중 2배.</td></tr>
 <tr><td>기간시설</td><td>2</td><td>AI 연구소·궤도 우주항.</td></tr>
-<tr><td>방위산업</td><td>2</td><td>군사력·특수부대 구입, 기상무기, 국지전.</td></tr>
+<tr><td>방위산업청</td><td>1</td><td>군사력·특수부대 구입, 기상무기, 국지전.</td></tr>
+<tr><td>우주함대 사령부</td><td>1</td><td>함대 건조(최고 3척). 척당 군사력 +1 · 대전 위기 +3 · 위성무기 방어 +2.</td></tr>
+<tr><td>위성무기 기지</td><td>1</td><td>상대 현금 10% 몰수 공격. 주사위 + 군사력/2 + 우주개발 + 함대 ≥ 8 + 상대 함대×2면 명중.</td></tr>
 <tr><td>핵 연구소</td><td>1</td><td>핵개발 단계 진행.</td></tr>
-<tr><td>교육 혁신원</td><td>2</td><td>교육 단계 상승.</td></tr>
+<tr><td>교육 혁신원</td><td>1</td><td>교육 단계 상승.</td></tr>
 <tr><td>종교·문화 센터</td><td>1</td><td>종교·문화 결속 상승.</td></tr>
 <tr><td>피지컬 AI 공장</td><td>1</td><td>로봇·자율 공장 도입.</td></tr>
-<tr><td>난민 캠프·구조센터</td><td>2</td><td>난민 수용 또는 거부.</td></tr>
+<tr><td>국경 난민 캠프</td><td>1</td><td>난민 수용 또는 거부.</td></tr>
 <tr><td>유엔 정상회의·안보리</td><td>2</td><td>정상회담 또는 제재 결의.</td></tr>
 <tr><td>세계 중앙은행</td><td>1</td><td>국채 발행·상환.</td></tr>
-<tr><td>탄소세·부유세</td><td>2</td><td>세금 납부.</td></tr>
-<tr><td>테러 경보 구역</td><td>1</td><td>군사 주사위 + 특수부대×2 ≥ 8이면 무사, 아니면 테러 피해.</td></tr>
+<tr><td>세계 증권거래소</td><td>1</td><td>주식 배당·매매.</td></tr>
+<tr><td>해군 조선소</td><td>1</td><td>항모 20% 할인 건조. 철강·석유 보너스.</td></tr>
+<tr><td>화성 기지</td><td>1</td><td>단계 투자(최고 3단계). 개척 지수 +3/단계, 매 라운드 탐사 수입(개척 지수 연동). 우주 자산.</td></tr>
+<tr><td>테러 경보 구역</td><td>1</td><td>군사 주사위 + 특수부대×2 (+터미네이터·첩보국) ≥ 8이면 무사, 아니면 테러 피해.</td></tr>
 <tr><td>대중문화 스튜디오</td><td>1</td><td>영화·음악·콘텐츠·관광 소프트파워 투자.</td></tr>
-<tr><td>글로벌 이벤트·공급망</td><td>3·2</td><td>세계 정세 카드, 개인 카드 16종.</td></tr>
+<tr><td>글로벌 이벤트</td><td>2</td><td>세계 정세 카드.</td></tr>
+<tr><td>국가 정책</td><td>1</td><td>정책 9종 중 하나가 발동(지지·난민·생산성·시장·협정 등).</td></tr>
+<tr><td>공급망</td><td>2</td><td>개인 카드 16종.</td></tr>
 <tr><td>모서리</td><td>4</td><td>출발·분쟁지대 억류·우주 무역기금·사이버·첩보 본부(해킹·산업스파이·정치인 매수).</td></tr>
 </table></div>
 
@@ -2527,7 +2533,7 @@ function rulesHTML(){
 <tr><td>이동</td><td>1~12칸. 12면 한 번 더(세 번이면 억류).</td></tr>
 <tr><td>${dc('pol')}</td><td>라운드 끝 10+ 국제 정세 속보. 선거: 주사위 + 지지율/10 + 교육/2 + (종교·문화 3+면 1) − (혼란 60+면 2) ≥ 10. 혼란 70+면 주사위 < 혼란/10일 때 폭동.</td></tr>
 <tr><td>${dc('eco')}</td><td>주사위 + (인플레−3)×1.2: 15+ 금리 +0.75, 13+ +0.5, 10+ +0.25, 4 이하 −0.25, 0 이하 −0.5. 대공황 중엔 무조건 인하. 고금리 7%+·부동산 65 미만에서 4 이하면 대공황 발생.</td></tr>
-<tr><td>${dc('mil')}</td><td>압박: +군사력+지지율/25(+핵 2) ≥ 상대+8. 국지전: +군사력 ≥ 상대+6. 탈출: +군사력/2 ≥ 10. 전쟁 방어: +군사력 ≥ 10. 기상무기: +군사력/3 ≥ 9. 핵개발: +교육/2 ≥ 7.</td></tr>
+<tr><td>${dc('mil')}</td><td>압박: +군사력+지지율/25(+핵 2) ≥ 상대+8. 국지전: +군사력 ≥ 상대+6. 탈출: 군사 주사위 + 군사력/2 + 특수부대 (+터미네이터) ≥ 10. 전쟁 방어: +군사력 ≥ 10. 기상무기: +군사력/3 ≥ 9. 핵개발: +교육/2 ≥ 7.</td></tr>
 <tr><td>${dc('dip')}</td><td>정상회담 ≥ 9, 제재 결의 ≥ 10 (지지율/20 + 블록 보정).</td></tr>
 <tr><td>${dc('res')}</td><td>1 공급 과잉 · 2 비축유 방출 · 10 광산 파업 · 11 곡물 수출 금지 · 12 자원 민족주의.</td></tr>
 <tr><td>${dc('re')}</td><td>건설 시 10+ 반값. 라운드 끝 1~2 버블 붕괴, 11~12 개발 붐.</td></tr>
@@ -2544,7 +2550,7 @@ function rulesHTML(){
 <li><b>핵개발</b>: 연구→농축→보유. 성공할 때마다 국제 제재 3라운드, 안정 하락, 적대·중립국 군사력 +1(군비 경쟁). 보유하면 국지전·압박·전쟁 피해 면제, 압박 +2, 유지비.</li>
 <li><b>우주·바다 개발</b>: 개척 지수가 매 라운드 +1.5, 개척지 건물마다 더 오릅니다. 개척지 통행료가 커지고 철강 공급이 늘어 철강 지수를 누릅니다. 우주 쓰레기·태양 폭풍은 개척 지수를 깎습니다.</li>
 <li><b>세금</b>: 감세(세수 ×0.5, 지지율 +1/R, 생산성 +3%, 혼란 −1) · 표준 · 증세(세수 ×1.6, 지지율 −2/R, 생산성 −4%, 혼란 +2). 세수 = (₵20 + 도시×8 + 건물×3) × 물가 × 생산성.</li>
-<li><b>테러</b>: 테러 위협 = 이전×0.9 + 난민×0.05 + 전쟁×3 + 평균 혼란×0.05 − 특수부대 합×1.5. 매 라운드 각국 테러 확률 = 혼란×0.15% + 위협×0.2% (+제재 5%) − 특수부대×6%. 발생 시 군사 주사위 + 특수부대×2 ≥ 8이면 저지(지지율 +3), 실패하면 가장 비싼 건물 1단계 파괴, 지지율 −6, 혼란 +5, 안정 −3, 부동산 −2.</li>
+<li><b>테러</b>: 세계 테러 위협(매 결산) = 이전×0.9 + 난민×0.05 + 전쟁×3 + 평균 혼란×0.05 − 특수부대 합×1.5. 각국 위험도 = (난민 수용 + 사회 혼란×0.35 + 극단주의 방송 + 군사력 약함 + 정보력 낮음 + 제재 고립 + 매수 파문) × 0.6, 최대 70%. 방어 = 특수부대×8 + 항모×5 + 핵잠×4 + 우주 1단계 이상 +3. 첩보국은 단계당 방어 +6(위험 약 −4%p). 위험 16% 이상이면 경보가 뜨고, 다음 결산에도 위험 12% 이상이면 위험/100 + 35% 확률로 그 나라 도시에서 테러가 일어납니다(해군이 사전 차단할 수 있습니다). 발생 시 군사 주사위 + 특수부대×2 (+터미네이터·첩보국) ≥ 8이면 저지(지지율 +3 · 위협 −4). 실패하면 가장 높은 단계의 도시 1단계 파괴, 지지율 −6, 혼란 +5, 안정 −3, 부동산 −2(주사위 합계가 4 이하인 대형 테러는 지지율 −9 · 혼란 +8).</li>
 <li><b>특수부대</b> (0~3, 방위산업에서 ₵120×단계): 테러 방어 +2/단계, 국지전 공격·방어 +1/단계, 억류 탈출 +1/단계.</li>
 <li><b>전염병·기상무기</b>: 관광 붕괴·디지털 수요 상승 / 지역 인공 가뭄과 기후 난민.</li>
 </ol>
@@ -6021,7 +6027,7 @@ async function v33Draft(){const t0=S.turn;
       if(p.human){S.turn=p.id;const id=await ask(`👑 ${esc(p.name)}님, 지도자를 고르세요 (숙련 드래프트 · ${order.indexOf(p)+1}/${order.length}번째)<small>마지막에 고른 지도자가 첫 차례를 가져갑니다. 강점·약점은 규칙 › Level 4에 있습니다.</small>`,pool.map(x=>({id:x.id,l:`${x.e} ${x.n} · ${x.s}`})));l=LEADBY[id]}
       else l=aiPickLeader(p,pool);
       pool=pool.filter(x=>x!==l);giveLeader(p,l)}
-    S.turn=order[order.length-1].id}
+    S.turn=order[order.length-1].id;S.roundStart=S.turn}
   else{const deck=shuffle(LEAD);let k=0;
     for(const p of alive()){const hand=deck.slice(k,k+3);k+=3;let l;
       if(p.human){S.turn=p.id;let id=await ask(`👑 ${esc(p.name)}님, 지도자 1명을 고르세요<small>${hand.map(x=>`${x.e} <b>${esc(x.n)}</b> 약점: ${esc(x.w)} · 시작: ${esc(x.pk)} · ${x.v.map(k=>VIC[k].e+VIC[k].n).join('·')}`).join('<br>')}</small>`,hand.map(x=>({id:x.id,l:`${x.e} ${x.n} · ${x.s}`})).concat([{id:'rnd',l:'🎲 무작위로 맡기기',g:1}]));if(id==='rnd')id=hand[Math.random()*hand.length|0].id;l=LEADBY[id]}
@@ -6043,7 +6049,7 @@ const _prodV33=prod;prod=function(p){let v=_prodV33(p);const k=ldr(p);if(k==='pr
 const _brV33=bondRate;bondRate=function(p){return _brV33(p)-(ldr(p)==='banker'?1:0)};
 const _bcV33=borrowCap;borrowCap=function(p){if(ldr(p)!=='banker')return _bcV33(p);return Math.max(0,Math.floor((600+assets(p)*.5-p.debt)/100)*100)};
 const LUMUL={edu:{reformer:.6,admiral:1.2},soft:{icon:.8},phys:{priest:1.2,tycoon:.7}};
-const _lcV33=lvCost;lvCost=function(base,lv){const c=_lcV33(base,lv),u=V33.lu;if(!u)return c;const m=(LUMUL[u.key]||{})[ldr(u.p)];return m?Math.round(c*m):c};
+const _lcV33=lvCost;lvCost=function(base,lv,p0,key){const c=_lcV33(base,lv),u=p0?{p:p0,key}:V33.lu;if(!u||!u.key)return c;const m=(LUMUL[u.key]||{})[ldr(u.p)];return m?Math.round(c*m):c};
 const _luV33=levelUp;levelUp=function(p,key,...r){V33.lu={p,key};try{return _luV33(p,key,...r)}finally{V33.lu=null}};
 if(typeof buildCV==='function'){const _cvV33=buildCV;buildCV=function(p,disc=1){return _cvV33(p,ldr(p)==='admiral'?disc*.8:disc)}}
 /* 군사 판정: 지도자 보정 + 승리 경보 견제 +2 */
@@ -6062,13 +6068,6 @@ const _coV33=covertOp;covertOp=async function(p,op,q){const add=(ldr(p)==='spy'?
 const _ldV33=leader;leader=function(ex){if(ex&&L4()){const a=alive().filter(q=>q!==ex&&alarmed(q)).sort((x,y)=>v33Top(y).v-v33Top(x).v)[0];if(a)return a}return _ldV33(ex)};
 
 /* 승리 진행 */
-function marsIdx(){return CELLS.findIndex(c=>c.name==='화성 전진기지')}
-function v33Prog(p){const mi=marsIdx(),mars=mi>=0&&S.props[mi]&&S.props[mi].owner===p.id?1:0,cp=countType(p.id,'cp');
-  const P=(lab,v,t)=>[lab,Math.min(1,Math.max(0,v)/t)];
-  const o={heg:[P(`제국 ${p._empR||0}/6R`,p._empR||0,6),P(`해협 ${cp}/3`,cp,3)],
-   cul:[P(`대중문화 ${p.soft||0}/5`,p.soft||0,5),P(`종교·문화 ${p.cult}/3`,p.cult,3),P(`개최 ${p.megaN||0}/2`,p.megaN||0,2),P(`지지율 ${p.ap}/70`,p.ap,70)],
-   tech:[P(`교육 ${p.edu}/5`,p.edu,5),P(`양자 ${p.qt||0}/3`,p.qt||0,3),P(`화성 기지 ${mars}/1`,mars,1),P(`스카이넷 통제 ${p._skyC||0}/3R`,p._skyC||0,3)]};
-  const r={};Object.keys(o).forEach(k=>{const parts=o[k];r[k]={parts,v:parts.reduce((a,x)=>a+x[1],0)/parts.length,done:parts.every(x=>x[1]>=1)}});return r}
 function v33Top(p){const r=v33Prog(p);return Object.keys(r).map(k=>({k,...r[k]})).sort((a,b)=>b.v-a.v)[0]}
 function alarmed(q){return !!(L4()&&q&&!q.bankrupt&&q._al&&Object.values(q._al).some(Boolean))}
 function v33Tick(){const ch=[];
@@ -6117,20 +6116,20 @@ const _rulesV33=rulesHTML;rulesHTML=function(){return _rulesV33()+`<h2 id="level
  <div class="scroll"><table class="tbl"><tr><th>지도자</th><th>강점</th><th>약점</th><th>시작</th><th>어울리는 승리</th></tr>${LEAD.map(l=>`<tr><td>${l.e} ${l.n}</td><td>${l.s}</td><td>${l.w}</td><td>${l.pk}</td><td>${l.v.map(k=>VIC[k].n).join('·')}</td></tr>`).join('')}</table></div>`};
 
 /* ═════════ v33.1: Level 4 균형 — AI 승리 목표 추구 · 패권/기술 조건 조정 ═════════ */
-v33Prog=function(p){const cp=countType(p.id,'cp'),sp=spaceAssets(p),fg=fullGroups(p);
+function v33Prog(p){const cp=countType(p.id,'cp'),sp=spaceAssets(p),fg=fullGroups(p);
   const P=(lab,v,t)=>[lab,Math.min(1,Math.max(0,v)/t)];
   const empPart=(p._empR||0)/4,milPart=(Math.min(1,p.M/9)+Math.min(1,fg))/2,base=Math.max(empPart,milPart);
   const o={heg:[P(`해협 ${cp}/2`,cp,2),[empPart>=milPart?`제국 ${p._empR||0}/4R`:`군사력 ${p.M}/9·독점 ${fg}/1`,Math.min(1,base)]],
    cul:[P(`대중문화 ${p.soft||0}/5`,p.soft||0,5),P(`종교·문화 ${p.cult}/2`,p.cult,2),P(`개최 ${p.megaN||0}/3`,p.megaN||0,3),P(`지지율 ${p.ap}/70`,p.ap,70)],
    tech:[P(`교육 ${p.edu}/5`,p.edu,5),P(`양자 ${p.qt||0}/2`,p.qt||0,2),P(`우주 자산 ${sp}/2`,sp,2),(()=>{const sv=(p.sky||0)/2,tv=(p.term||0)/1;return sv>=tv?[`스카이넷 ${p.sky||0}/2`,Math.min(1,sv)]:[`터미네이터 ${p.term||0}/1`,Math.min(1,tv)]})()]};
-  const gate=v33Gate(),r={};Object.keys(o).forEach(k=>{const parts=o[k];r[k]={parts,v:parts.reduce((a,x)=>a+x[1],0)/parts.length,done:S.round>=gate&&parts.every(x=>x[1]>=1)}});return r};
+  const gate=v33Gate(),r={};Object.keys(o).forEach(k=>{const parts=o[k];r[k]={parts,v:parts.reduce((a,x)=>a+x[1],0)/parts.length,done:S.round-1>=gate&&parts.every(x=>x[1]>=1)}});return r};
 function v33Gate(){return Math.max(8,Math.round((S.maxRounds||30)*.4))}
 function v33Goal(p){if(!L4()||p.human)return null;if(p._goal&&p._goalR===S.round)return p._goal;const l=LEADBY[p.leader],pref=l?l.v.find(k=>k!=='econ'):null;
   let g=pref;if(!g){const r=v33Prog(p);g=['heg','cul','tech'].sort((a,b)=>r[b].v-r[a].v)[0];if(r[g].v<.45)g='econ'}p._goal=g;p._goalR=S.round;return g}
-const _aiCultV331=aiCult;aiCult=function(p){if(v33Goal(p)==='cul'&&p.cult<2&&canPay(p,lvCost(100,p.cult),20))return true;return _aiCultV331(p)};
-const _aiSoftV331=aiSoft;aiSoft=function(p){if(v33Goal(p)==='cul'&&p.soft<5&&canPay(p,lvCost(110,p.soft),60))return true;return _aiSoftV331(p)};
-const _aiEduV331=aiEdu;aiEdu=function(p){if(v33Goal(p)==='tech'&&p.edu<5&&canPay(p,lvCost(120,p.edu),60))return true;return _aiEduV331(p)};
-const _aiRobotV331=aiRobot;aiRobot=function(p){if(v33Goal(p)==='tech'&&p.phys<2&&canPay(p,lvCost(180,p.phys),80))return true;return _aiRobotV331(p)};
+const _aiCultV331=aiCult;aiCult=function(p){if(v33Goal(p)==='cul'&&p.cult<2&&canPay(p,lvCost(100,p.cult,p,'cult'),20))return true;return _aiCultV331(p)};
+const _aiSoftV331=aiSoft;aiSoft=function(p){if(v33Goal(p)==='cul'&&p.soft<5&&canPay(p,lvCost(110,p.soft,p,'soft'),60))return true;return _aiSoftV331(p)};
+const _aiEduV331=aiEdu;aiEdu=function(p){if(v33Goal(p)==='tech'&&p.edu<5&&canPay(p,lvCost(120,p.edu,p,'edu'),60))return true;return _aiEduV331(p)};
+const _aiRobotV331=aiRobot;aiRobot=function(p){if(v33Goal(p)==='tech'&&p.phys<2&&canPay(p,lvCost(180,p.phys,p,'phys'),80))return true;return _aiRobotV331(p)};
 const _aiBidV331=aiBid;aiBid=function(p){if(v33Goal(p)==='cul'&&p.gov!=='ana'&&canPay(p,pl(300),80))return true;return _aiBidV331(p)};
 const _aiMilV331=aiMil;aiMil=function(p){if(v33Goal(p)==='heg'){const c=milCost(p);return p.M<9&&canPay(p,c*2,150)?2:p.M<9&&canPay(p,c,150)?1:0}return _aiMilV331(p)};
 const _wV331=weight;weight=function(p,i){let w=_wV331(p,i);const g=v33Goal(p),c=CELLS[i];
