@@ -71,7 +71,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .cell.fn .nm{color:var(--accent2)}
 .cell.cur{box-shadow:inset 0 0 0 2px var(--accent)}
 .tokens{position:absolute;bottom:1px;left:0;right:0;display:flex;justify-content:center;gap:1px;flex-wrap:wrap}
-.tok{font-size:clamp(8px,1.9vw,12px);line-height:1;filter:drop-shadow(0 0 1px var(--panel))}
+.tok{display:inline-grid;place-items:center;width:clamp(14px,3.6vw,20px);height:clamp(14px,3.6vw,20px);border-radius:50%;background:var(--pc);border:1.5px solid var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.35);font-size:clamp(9px,2.3vw,13px);line-height:1}
 .center{grid-area:2/2/22/11;background:var(--panel);border-radius:10px;display:flex;flex-direction:column;align-items:stretch;gap:clamp(4px,1vw,7px);padding:clamp(6px,1.4vw,10px);text-align:center;min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;font-size:clamp(10px,1.9vw,12.5px);scrollbar-width:thin}
 .ctop{display:flex;flex-direction:column;gap:4px}
 .cbar{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;min-width:0}
@@ -147,6 +147,18 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .jrl{list-style:none;margin:0;padding:4px 10px 8px;display:flex;flex-direction:column;gap:3px;font-size:12.5px;border-top:1px solid var(--line)}
 .jrl li{padding:3px 0;border-bottom:1px dashed var(--line)}
 .jrl li:last-child{border-bottom:0}
+.corec{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:4px}
+.costat{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;padding:2px 0}
+.costat b{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.cobars{display:flex;align-items:center;gap:2px;height:44px;margin:6px 0 2px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:2px 0;overflow-x:auto}
+.cobars i{position:relative;flex:0 0 14px;height:100%;display:flex;flex-direction:column;justify-content:center;font-style:normal}
+.cobars i::before{content:"";position:absolute;left:2px;right:2px;height:var(--hp);min-height:2px;background:var(--cc);border-radius:2px;top:calc(50% * var(--dir));bottom:auto}
+.cobars i[style*="--dir:0"]::before{bottom:50%;top:auto}
+.cobars i[style*="--dir:1"]::before{top:50%;bottom:auto}
+.cobars em{position:absolute;bottom:-1px;left:0;right:0;text-align:center;font-size:7.5px;color:var(--muted)}
+.colog{list-style:none;margin:0;padding:0;font-size:12.5px;display:flex;flex-direction:column;gap:3px}
+.colog li{padding:3px 0;border-bottom:1px dashed var(--line)}
+
 .jrank{display:flex;flex-wrap:wrap;gap:3px;padding:4px 8px 6px;border-top:1px dashed var(--line);background:color-mix(in srgb,var(--panel) 60%,var(--panel2))}
 .jrank span{display:inline-flex;align-items:center;gap:3px;font-size:11px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--pc);border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
 .jrank span b{font-family:var(--f-display);color:var(--pc);font-size:12px}
@@ -299,56 +311,56 @@ const CARDS=[
  ['재개발 무산','재개발 계획이 무산됐습니다. 재개발 효과가 사라지고 A 구역 주인은 ₵30씩 손실.',0,S=>{S.redev=0;owners('A').forEach(p=>pay(p,30,'재개발 무산'))},['무산','A 구역 값↓']],
  ['금리 인하','중앙은행이 금리를 0.75%p 내렸습니다.',1,S=>{S.rate=clamp(S.rate-.75,2,8)},['금리↓','이자↓','주거단지↑','금융가↓']],
  ['금리 인상','중앙은행이 금리를 0.75%p 올렸습니다.',0,S=>{S.rate=clamp(S.rate+.75,2,8)},['금리↑','이자↑','주거단지↓','금융가↑']],
- ['석유 급등','중동 파이프라인 사고로 석유 +25.',0,S=>{S.mkt.oil+=25},['석유↑','전력공사 통행료↑','에너지 기업 매출↑','항만↑']],
+ ['석유 급등','중동 파이프라인 사고로 석유 +25.',0,S=>{S.mkt.oil=clamp(S.mkt.oil+25,40,230)},['석유↑','전력공사 통행료↑','에너지 기업 매출↑','항만↑']],
  ['석유 급락','신에너지 보급으로 석유 −25.',1,S=>{S.mkt.oil=Math.max(40,S.mkt.oil-25)},['석유↓','에너지 기업 매출↓','항만↓']],
  ['식량 풍년','대풍년으로 식량 −20. 식품 기업 원가 하락.',1,S=>{S.mkt.food=Math.max(40,S.mkt.food-20)},['식량↓','식품 원가↓','전통시장 통행료↓']],
- ['식량 흉작','가뭄으로 식량 +20. 전통시장 통행료 상승.',0,S=>{S.mkt.food+=20},['식량↑','전통시장↑','식품 원가↑']],
- ['반도체 호황','AI 수요 폭발로 반도체 +25.',1,S=>{S.mkt.chip+=25},['반도체↑','테크밸리↑','IT 원가↑']],
+ ['식량 흉작','가뭄으로 식량 +20. 전통시장 통행료 상승.',0,S=>{S.mkt.food=clamp(S.mkt.food+20,40,230)},['식량↑','전통시장↑','식품 원가↑']],
+ ['반도체 호황','AI 수요 폭발로 반도체 +25.',1,S=>{S.mkt.chip=clamp(S.mkt.chip+25,40,230)},['반도체↑','테크밸리↑','IT 원가↑']],
  ['반도체 공급 과잉','재고가 쌓여 반도체 −25.',0,S=>{S.mkt.chip=Math.max(40,S.mkt.chip-25)},['반도체↓','테크밸리↓','IT 원가↓']],
- ['철강 급등','건설 붐으로 철강 +25. 건설비 상승.',0,S=>{S.mkt.steel+=25},['철강↑','건설비↑','제조 원가↑']],
+ ['철강 급등','건설 붐으로 철강 +25. 건설비 상승.',0,S=>{S.mkt.steel=clamp(S.mkt.steel+25,40,230)},['철강↑','건설비↑','제조 원가↑']],
  ['철강 급락','철강 −25. 지금이 건물 지을 때.',1,S=>{S.mkt.steel=Math.max(40,S.mkt.steel-25)},['철강↓','건설비↓']],
- ['경기 호황 선언','시 경제가 호황 국면에 들어섰습니다. 이번 라운드 경기 호황 확정.',1,S=>{S.boom=1;S.boomLock=1;S.bi=75},['호황','스카이라인↑','기업 매출 +20%']],
- ['경기 불황 선언','소비가 얼어붙었습니다. 이번 라운드 경기 불황 확정.',0,S=>{S.boom=-1;S.boomLock=-1;S.bi=25},['불황','스카이라인↓','기업 매출 −20%']],
+ ['경기 호황 선언','시 경제가 호황 국면에 들어섰습니다. 이번 라운드 경기 호황 확정.',1,S=>{S.boom=1;S.boomLock=1;S.bi=75},['호황','스카이라인↑','기업 매출↑']],
+ ['경기 불황 선언','소비가 얼어붙었습니다. 이번 라운드 경기 불황 확정.',0,S=>{S.boom=-1;S.boomLock=-1;S.bi=25},['불황','스카이라인↓','기업 매출↓']],
  ['관광 붐','2101 엑스포에 관광객이 몰립니다. 스카이라인(H) 주인은 건물 1동당 ₵40.',1,S=>{owners('H').forEach(p=>gain(p,40*bldOf(p,'H'),'관광 붐'))},['관광↑','H 구역 수입']],
  ['관광 침체','사이버 테러 소문으로 관광객이 끊겼습니다. 관광 기업 이번 라운드 매출 0.',0,S=>{S.tourOff=1},['관광↓','관광 기업 매출 0']],
  ['무역 확대','자유무역 협정이 체결됐습니다. 항만(E) 주인은 땅 1곳당 ₵30.',1,S=>{owners('E').forEach(p=>gain(p,30*landOf(p,'E'),'무역 확대'))},['무역↑','E 구역 수입']],
  ['무역 분쟁','관세 전쟁이 터졌습니다. 항만(E) 주인은 땅 1곳당 ₵30 손실, 제조 기업 원가 2배.',0,S=>{owners('E').forEach(p=>pay(p,30*landOf(p,'E'),'무역 분쟁'));S.mfgCost=2},['무역↓','E 손실','제조 원가↑']],
  ['IT 투자 열풍','벤처 자금이 쏟아집니다. IT 기업 보유자는 ₵80, 테크밸리(F) 땅값 +10%.',1,S=>{S.players.forEach(p=>{if(p.comp.it)gain(p,80,'IT 투자 열풍')});S.fMod=1.1},['IT↑','F 구역↑']],
- ['닷컴 버블 붕괴','거품이 꺼졌습니다. IT 기업 1단계 하락, 테크밸리(F) 땅값 −10%.',0,S=>{S.players.forEach(p=>{if(p.comp.it){p.comp.it--;log(`${pn(p)} IT 기업 1단계 하락`)}});S.fMod=.9},['IT↓','F 구역↓']],
+ ['닷컴 버블 붕괴','거품이 꺼졌습니다. IT 기업 1단계 하락, 테크밸리(F) 땅값 −10%.',0,S=>{S.players.forEach(p=>{if(p.comp.it){p.comp.it--;log(`${pn(p)} IT 기업 1단계 하락`);dropCo(p,'it')}});S.fMod=.9},['IT↓','F 구역↓']],
  ['교육 바우처','시에서 교육비를 지원합니다. 다음 교육 비용 절반.',1,S=>{S.eduDisc=1},['교육↑','생산성↑']],
  ['대학 등록금 인상','교육비가 오릅니다. 다음 교육 비용 1.5배.',0,S=>{S.eduUp=1},['교육 비용↑']],
  ['복구 지원금','지난 재해 복구 지원금이 나왔습니다. 모두 건물 1동당 ₵15.',1,S=>{S.players.forEach(p=>gain(p,15*bldOf(p),'복구 지원금'))},['지원금']],
  ['태풍 피해','슈퍼 태풍이 덮쳤습니다. 보험이 없는 사람은 건물 1동당 ₵25 피해.',0,S=>{S.players.forEach(p=>{if(p.ins){p.ins=0;log(`${pn(p)} 보험으로 피해 면제`)}else pay(p,25*bldOf(p),'태풍 피해')})},['재해','보험 없으면 손실']],
  ['배당 보너스','기업 실적이 좋아 모든 기업 이번 라운드 이익 +50%.',1,S=>{S.profitMod=1.5},['기업 이익↑','배당↑']],
  ['기업 횡령 사건','회계 부정이 드러났습니다. 모든 기업 이번 라운드 이익 절반.',0,S=>{S.profitMod=.5},['기업 이익↓','배당↓']],
- ['은행 보너스 이자','은행이 예금 이자를 특별 지급합니다. 모두 현금의 5%(최대 ₵100).',1,S=>{S.players.forEach(p=>gain(p,Math.min(100,Math.round(p.cash*.05)),'보너스 이자'))},['이자 수입']],
- ['대출 회수','은행이 대출 일부를 회수합니다. 대출이 있으면 즉시 ₵100 상환.',0,S=>{S.players.forEach(p=>{if(p.debt>0){const a=Math.min(100,p.debt);pay(p,a,'대출 회수');p.debt-=a}})},['대출↓','현금↓']],
+ ['은행 보너스 이자','은행이 예금 이자를 특별 지급합니다. 모두 현금의 5%(최대 ₵100).',1,S=>{alive().forEach(p=>gain(p,Math.min(100,Math.round(p.cash*.05)),'보너스 이자'))},['이자 수입']],
+ ['대출 회수','은행이 대출 일부를 회수합니다. 대출이 있으면 즉시 ₵100 상환.',0,S=>{alive().forEach(p=>{if(p.debt>0){const a=Math.min(100,p.debt);pay(p,a,'대출 회수');p.debt-=a}})},['대출↓','현금↓']],
  ['주택 수요 증가','인구가 늘어 주거단지(D) 땅값 +15%.',1,S=>{S.dMod=1.15},['D 구역↑']],
  ['주택 규제','투기 규제로 주거단지(D) 땅값 −15%.',0,S=>{S.dMod=.85},['D 구역↓']]];
 
 /* ═════════ 상태 ═════════ */
 let S=null,askResolve=null,selected=null,tab='act',gen=0,TQ=[],newsOpen=false;
-const AINAME=[['마루','#2e8b8b','🦊','estate'],['솔','#3f6fd6','🐻','company'],['하늘','#8f6fd6','🦉','finance']];
+const AINAME=[['마루','#1f9d4a','👷','estate'],['솔','#2563eb','👩‍🦰','company'],['하늘','#c026d3','🧔','finance']];
 const STRATN={estate:'부동산형',company:'기업형',finance:'분산 투자형'};
 const STRATD={estate:'땅을 많이 사서 통행료로 번다',company:'기업을 키워 라운드 이익으로 번다',finance:'금리와 원자재를 보며 나누어 투자한다'};
 function makePlayer(id,name,color,emoji,human,strat){return{id,name,color,emoji,human,strat,cash:1500,pos:0,edu:1,debt:0,ins:0,rest:0,hyper:0,bankrupt:false,
- comp:{mfg:0,it:0,food:0,energy:0,tour:0},compLoss:{mfg:0,it:0,food:0,energy:0,tour:0},shares:{},com:{oil:0,food:0,steel:0,chip:0},hist:[]}}
+ comp:{mfg:0,it:0,food:0,energy:0,tour:0},compLoss:{mfg:0,it:0,food:0,energy:0,tour:0},shares:{},com:{oil:0,food:0,steel:0,chip:0},coHist:[],coTotal:0,coEvents:[]}}
 function newState(name,nai,diff,rounds,speed){
- const ps=[makePlayer(0,name||'나','#e0702e','😀',true,'human')];
+ const ps=[makePlayer(0,name||'나','#e8452c','🧑‍💼',true,'human')];
  AINAME.slice(0,nai).forEach((a,k)=>ps.push(makePlayer(k+1,a[0],a[1],a[2],false,a[3])));
  const s={round:1,maxRounds:rounds,turn:0,players:ps,props:{},rate:3+Math.floor(Math.random()*5)*.5,boom:0,infl:2.5,mkt:{oil:85+Math.floor(Math.random()*31),food:85+Math.floor(Math.random()*31),steel:85+Math.floor(Math.random()*31),chip:85+Math.floor(Math.random()*31)},prev:null,fund:0,
   redev:0,bi:44+Math.floor(Math.random()*13),tourOff:0,mfgCost:1,fMod:1,dMod:1,eduDisc:0,eduUp:0,profitMod:1,deck:[],diff,speed:speed||'normal',dv:{move:'–',econ:'–'},hot:null,
   demand:{mfg:1,it:1,food:1,energy:1,tour:1},ipo:{},stag:false,depr:false,shockDeck:[],rank:{},
   news:{k:'🏙️ 네오 아틀라스',t:'2101년, 메가시티에 오신 것을 환영합니다',d:'땅을 사고, 은행을 쓰고, 기업을 키워 15라운드 뒤 순자산 1위가 되세요.',chain:['이동 주사위','도착','선택','라운드 결산']},
-  log:[],ask:null,over:false,winner:null,why:'',tut:0,auctioned:[],last:null};
+  log:[],ask:null,over:false,winner:null,why:'',tut:0,boomLock:0};
  // 시작 패키지: A·B 구역 필지 1곳
  const pool=shuffle(CELLS.map((c,i)=>i).filter(i=>CELLS[i].t==='land'&&'AB'.includes(CELLS[i].d)));
  ps.forEach((p,k)=>{const i=pool[k];s.props[i]={owner:p.id,level:0}});
  s.deck=buildDeck(diff);
  return s}
-function buildDeck(diff){const good=CARDS.filter(c=>c[2]),bad=CARDS.filter(c=>!c[2]);const g=diff==='easy'?6:diff==='hard'?4:5;
- const pickN=(a,n)=>{const out=[];for(let i=0;i<n;i++)out.push(shuffle(a)[0]);return out};
- return shuffle(good.concat(pickN(good,Math.max(0,g-5)),bad,pickN(bad,Math.max(0,5-g)))).map(c=>CARDS.indexOf(c))}
+function buildDeck(diff){const good=CARDS.filter(c=>c[2]),bad=CARDS.filter(c=>!c[2]);const ng=diff==='easy'?18:diff==='hard'?12:15;// 30장: 쉬움 6:4, 보통 5:5, 어려움 4:6
+ const take=(a,n)=>{const s=shuffle(a);const out=[];for(let i=0;i<n;i++)out.push(s[i%s.length]);return out};
+ return shuffle(take(good,ng).concat(take(bad,30-ng))).map(c=>CARDS.indexOf(c))}
 const cur=()=>S.players[S.turn];
 const alive=()=>S.players.filter(p=>!p.bankrupt);
 const pn=p=>`<b style="color:${p.color}">${p.emoji} ${esc(p.name)}</b>`;
@@ -371,7 +383,7 @@ const SHOCKS=[
  ['bad','✊ 총파업','생산 차질 — 모든 업종 이번 수요 −15%',S=>{Object.keys(S.demand).forEach(k=>S.demand[k]=Math.max(.7,S.demand[k]-.15))}],
  ['bad','📉 환율 급변','수입 원자재 전반 상승',S=>{Object.keys(S.mkt).forEach(k=>S.mkt[k]=clamp(S.mkt[k]+8,40,230))}],
  ['bad','🏦 신용 경색','은행이 대출을 조임 — 대출자 이자 +₵30',S=>{alive().forEach(p=>{if(p.debt>0)pay(p,30,'신용 경색 추가 이자')})}],
- ['bad','🌪️ 자연재해','보험 없는 건물 1동당 −₵15',S=>{alive().forEach(p=>{if(!p.ins)pay(p,15*bldOf(p),'자연재해')})}]];
+ ['bad','🌪️ 자연재해','보험 없는 건물 1동당 −₵15',S=>{alive().forEach(p=>{if(p.ins){p.ins=0;log(`${pn(p)} 보험으로 재해 면제`)}else pay(p,15*bldOf(p),'자연재해')})}]];
 async function shockTick(chain){const ph=phase()[1];
  // 확률: 보통 25%, 호황↑/불황↑. 국면이 좋으면 호재, 나쁘면 악재 가중
  let prob=.25;if(ph==='활황'||ph==='대공황')prob=.5;else if(ph==='불황'||ph==='성장')prob=.38;
@@ -379,7 +391,7 @@ async function shockTick(chain){const ph=phase()[1];
  const goodBias=S.boom>0?.65:S.boom<0?.3:.5;
  const pool=SHOCKS.filter(x=>x[0]===(Math.random()<goodBias?'good':'bad'));
  const sk=pick(pool.length?pool:SHOCKS);sk[3](S);
- chain.push(`${sk[1]}`);log(`${sk[1]} — ${esc(sk[2])}`);S._shock={t:sk[1],d:sk[2],g:sk[0]==='good'};
+ chain.push(`${sk[1]}`);log(`${sk[1]} — ${esc(sk[2])}`);
  toast(`${esc(sk[1])} — ${esc(sk[2])}`);if(fxOn())await sleep(600)}
 
 /* 경기 국면: 지수(bi)로 6단계, boom(-1/0/1)과 동기화. 스태그플레이션·대공황 판정 */
@@ -414,15 +426,16 @@ function netWorth(p){return assets(p)-p.debt}
 function loanCap(p){return Math.max(300,Math.floor((assets(p)-p.cash)*.5/100)*100)}
 function gain(p,a,why){if(a<=0)return;p.cash+=a;if(why)log(`${pn(p)} +${won(a)} (${why})`);fxMoney(p,a)}
 function pay(p,a,why,to){a=Math.round(a);if(a<=0)return 0;
- if(p.cash<a){const need=a-p.cash;const can=Math.min(need,Math.max(0,loanCap(p)-p.debt));if(can>0){const b=Math.ceil(can/50)*50;p.cash+=b;p.debt+=b;log(`${pn(p)} 긴급 대출 ${won(b)}`)}}
+ if(p.cash<a){const need=a-p.cash;const can=Math.min(need,Math.max(0,loanCap(p)-p.debt));if(can>0){const b=Math.min(Math.ceil(can/50)*50,Math.max(0,loanCap(p)-p.debt));p.cash+=b;p.debt+=b;log(`${pn(p)} 긴급 대출 ${won(b)}`)}}
  if(p.cash<a)liquidate(p,a-p.cash);
  if(p.cash<a){const paid=Math.max(0,p.cash);p.cash=0;if(to)to.cash+=paid;goBankrupt(p);return paid}
  p.cash-=a;if(to)to.cash+=a;if(why)log(`${pn(p)} −${won(a)} (${why})`);fxMoney(p,-a);if(to)fxMoney(to,a);return a}
+function dropCo(p,sec){if(p.comp[sec])return;const k=p.id+'_'+sec;delete S.ipo[k];S.players.forEach(q=>delete q.shares[k])}
 function liquidate(p,need){const mine=()=>Object.entries(S.props).filter(([,pr])=>pr.owner===p.id).map(([i])=>+i);
  let guard=0;while(p.cash<need&&guard++<60){const bl=mine().filter(i=>S.props[i].level>0).sort((a,b)=>S.props[b].level-S.props[a].level)[0];
   if(bl!=null){const v=Math.round(buildCost(bl,S.props[bl].level)*.5);S.props[bl].level--;p.cash+=v;log(`${pn(p)} ${esc(CELLS[bl].name)} 건물 헐값 매각 +${won(v)}`);continue}
-  const sec=Object.keys(p.comp).find(k=>p.comp[k]>0);if(sec){const v=Math.round(COMPCOST[p.comp[sec]-1]*.5);p.comp[sec]--;p.cash+=v;log(`${pn(p)} ${SECT[sec].n} 기업 축소 +${won(v)}`);continue}
-  const ck=Object.keys(p.com).find(k=>p.com[k]>0);if(ck){p.com[ck]--;p.cash+=S.mkt[ck];continue}
+  const sec=Object.keys(p.comp).find(k=>p.comp[k]>0);if(sec){const v=Math.round(COMPCOST[p.comp[sec]-1]*.5);p.comp[sec]--;dropCo(p,sec);p.cash+=v;log(`${pn(p)} ${SECT[sec].n} 기업 축소 +${won(v)}`);continue}
+  const ck=Object.keys(p.com).find(k=>p.com[k]>0);if(ck){const v=Math.round(S.mkt[ck]*.5);p.com[ck]--;p.cash+=v;log(`${pn(p)} ${COM[ck].n} 헐값 매각 +${won(v)}`);continue}
   const ld=mine().sort((a,b)=>priceOf(b)-priceOf(a))[0];if(ld!=null){const v=Math.round(priceOf(ld)*.5);delete S.props[ld];p.cash+=v;log(`${pn(p)} ${esc(CELLS[ld].name)} 헐값 매각 +${won(v)}`);continue}
   break}}
 function goBankrupt(p){if(p.bankrupt)return;p.bankrupt=true;Object.keys(S.props).forEach(i=>{if(S.props[i].owner===p.id)delete S.props[i]});Object.keys(p.comp).forEach(k=>p.comp[k]=0);
@@ -491,7 +504,7 @@ async function roll(k){const v=d12();const el=document.getElementById('die-'+k);
 function toast(h){TQ.push(h);if(TQ.length===1)showToast()}
 function showToast(){if(!TQ.length)return;const el=document.createElement('div');el.className='toast';el.innerHTML=TQ[0];document.body.appendChild(el);setTimeout(()=>{el.remove();TQ.shift();showToast()},S.speed==='fast'?250:1500)}
 function save(){try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}}
-function load(){try{const s=JSON.parse(localStorage.getItem(SAVE));if(s&&s.players&&!s.over&&s.v===2)return s}catch(e){}return null}
+function load(){try{const s=JSON.parse(localStorage.getItem(SAVE));if(s&&s.players&&!s.over&&s.v===4)return s}catch(e){}return null}
 
 async function gameLoop(){const g=gen;
  while(S&&!S.over&&g===gen){const p=cur();
@@ -504,7 +517,7 @@ function nextTurn(){const n=S.players.length;let k=S.turn;for(let s=0;s<n;s++){k
  const wrapped=k<=S.turn;S.turn=k;if(wrapped)S._endRound=true}
 async function playTurn(p){
  if(S._endRound){S._endRound=false;await roundEnd();if(S.over)return}
- S.ask=null;S.last=null;S._built=0;render();
+ S.ask=null;S._built=0;render();
  if(p.human&&S.tut<3){S.tut++}
  // 휴가섬
  if(p.rest>0){const v=await roll('move');if(p.rest===1&&v<7){p.rest=2;log(`${pn(p)} 휴가섬에서 하루 더 (주사위 ${v})`);if(p.human)await okMsg(`🏝️ 휴가섬에서 하루 더 쉽니다 (주사위 ${v}, 7 이상이면 출발)<small>쉬는 동안에도 통행료는 받습니다.</small>`);return}
@@ -565,30 +578,33 @@ async function landProp(p,i){const c=CELLS[i],pr=S.props[i];
   else if(aiWantBuy(p,i,price))buy(p,i,price);
   return}
  const o=S.players[pr.owner];
- if(o===p){if(c.t!=='land'||pr.level>=3)return;const lvl=pr.level+1,cost=buildCost(i,lvl);
+ if(o===p){if(c.t!=='land'||pr.level>=3||S._built)return;const lvl=pr.level+1,cost=buildCost(i,lvl);
   if(p.human){const id=await ask(`${BLDE[lvl]} 내 땅 <b>${esc(c.name)}</b>에 ${BLD[lvl]}을(를) 지을까요? 비용 ${won(cost)}<small>지금 통행료 ${won(rent(i,null))} → 건설 후 ${won(Math.round(rent(i,null)*BLDMUL[lvl]/BLDMUL[pr.level]))} · 철강 시세 ${S.mkt.steel}이 건설비에 반영됩니다.</small>`,
    [{id:'b',l:`${BLD[lvl]} 건설 ${won(cost)}`,dis:p.cash<cost},{id:'n',l:'다음에',g:1}]);if(id==='b')build(p,i,lvl,cost)}
   else if(p.cash-cost>aiReserve(p)&&(p.strat!=='company'||lvl<=1))build(p,i,lvl,cost);
   return}
  const r=rent(i,p);if(!r)return;fxArrow($cell(i),$chip(o),{label:'통행료 '+won(r)});const paid=pay(p,r,`${esc(c.name)} 통행료 → ${esc(o.name)}`,o);
- S.last={t:'rent',i,r:paid,o};if(p.human&&S.speed!=='fast')await okMsg(`💸 ${esc(o.name)}의 <b>${esc(c.name)}</b> 통행료 ${won(paid)}를 냈습니다.<small>${rentWhy(i)}</small>`);
+ if(p.human&&S.speed!=='fast')await okMsg(`💸 ${esc(o.name)}의 <b>${esc(c.name)}</b> 통행료 ${won(paid)}를 냈습니다.<small>${rentWhy(i)}</small>`);
  else if(o.human)toast(`💰 ${esc(p.name)} → ${esc(c.name)} 통행료 ${won(paid)}`)}
 function rentWhy(i){const c=CELLS[i],pr=S.props[i],o=S.players[pr.owner];const w=[];w.push(`기본 ${BLD[pr.level]}`);if(c.t==='land'&&ownsAll(o,c.d))w.push('구역 독점 ×2');
  if(c.d==='A'&&S.redev)w.push('재개발 ×2');if(c.d==='B')w.push(`교육 ${o.edu}단계 +${o.edu*10}%`);if(c.d==='C')w.push(`식량 ${S.mkt.food}`);if(c.d==='E')w.push(`석유 ${S.mkt.oil} · ${boomN()}`);if(c.d==='F')w.push(`반도체 ${S.mkt.chip}${o.comp.it?' · IT 기업 +10%':''}`);if(c.d==='G')w.push(`금리 ${S.rate.toFixed(2)}%`);if(c.d==='H')w.push(boomN());return w.join(' · ')}
 function buy(p,i,price){p.cash-=price;S.props[i]={owner:p.id,level:0};fxArrow($chip(p),$cell(i),{label:'매입 '+won(price)});fxMoney(p,-price);log(`${pn(p)} ${esc(CELLS[i].name)} 매입 ${won(price)}`);if(!p.human)toast(`${esc(p.name)} ${esc(CELLS[i].name)} 매입`);
  const m=monopolies(p);if(CELLS[i].t==='land'&&ownsAll(p,CELLS[i].d)){const d=CELLS[i].d;if(!p._mono)p._mono={};if(!p._mono[d]){p._mono[d]=1;const bonus=Math.round(DIST[d].price*2);gain(p,bonus,`${DIST[d].n} 구역 완성 보너스`);log(`🏆 ${pn(p)} ${DIST[d].n} 구역 독점! 통행료 2배 + 완성 보너스 ${won(bonus)}`);toast(`🏆 ${esc(p.name)} ${DIST[d].n} 독점 (${m.length}/2) +${won(bonus)}`)}}}
-function build(p,i,lvl,cost){p.cash-=cost;S.props[i].level=lvl;fxArrow($chip(p),$cell(i),{label:BLDE[lvl]+' '+BLD[lvl]});fxMoney(p,-cost);log(`${pn(p)} ${esc(CELLS[i].name)} ${BLD[lvl]} 건설 ${won(cost)}`)}
+function build(p,i,lvl,cost){p.cash-=cost;S.props[i].level=lvl;S._built=1;fxArrow($chip(p),$cell(i),{label:BLDE[lvl]+' '+BLD[lvl]});fxMoney(p,-cost);log(`${pn(p)} ${esc(CELLS[i].name)} ${BLD[lvl]} 건설 ${won(cost)}`)}
 /* 기업 */
+function profitWith(p,sec,dem){const cur=S.demand;S.demand=dem;try{return compProfit(p,sec)}finally{S.demand=cur}}
+function drawDemand(){const d={};Object.keys(S.demand).forEach(k=>d[k]=+(0.80+Math.random()*0.40).toFixed(2));return d}
 function compProfit(p,sec){const lv=p.comp[sec];if(!lv)return{rev:0,cost:0,profit:0};const s=SECT[sec];let rev=COMPREV[lv]*(1+.05*p.edu)*boomF()*(S.demand?.[sec]??1);
  if(sec==='energy')rev*=S.mkt.oil/100;if(sec==='tour'){rev*=S.tourOff?0:(S.boom>0?1.25:S.boom<0?.85:1.05);rev*=1+.12*landOf(p,'H')}
  let cost=s.inp?lv*12*S.mkt[s.inp]/100*(sec==='mfg'?S.mfgCost:1):0;if(S.stag)cost*=1.25;
- let profit=(rev-cost)*S.profitMod;if(S.depr)profit-=lv*8;return{rev:Math.round(rev),cost:Math.round(cost),profit:Math.round(profit),listed:!!(S.ipo&&S.ipo[p.id+'_'+sec])}}
+ let profit=rev-cost;if(profit>0)profit*=S.profitMod;if(S.depr)profit-=lv*8;return{rev:Math.round(rev),cost:Math.round(cost),profit:Math.round(profit),listed:!!(S.ipo&&S.ipo[p.id+'_'+sec])}}
 async function hqAct(p,i){const sec=CELLS[i].sector,s=SECT[sec],lv=p.comp[sec];if(lv>=3){if(p.human)await okMsg(`${s.e} ${s.n} 기업은 이미 대기업입니다.`);return}
  const cost=COMPCOST[lv];const pr=compProfit({...p,comp:{...p.comp,[sec]:lv+1}},sec);
  if(p.human){const id=await ask(`${s.e} <b>${esc(CELLS[i].name)}</b> · ${s.n} 기업 ${lv?COMPN[lv]+' → ':''}${COMPN[lv+1]} ${won(cost)}<small>예상 라운드 이익 ${won(pr.profit)} (매출 ${won(pr.rev)} − ${s.inp?COM[s.inp].n+' 원가 '+won(pr.cost):'원가 없음'}) · 생산성 +${p.edu*5}%(교육) · ${s.d} 구역 통행료 +10%</small>`,
   [{id:'y',l:`${lv?'확장':'설립'} ${won(cost)}`,dis:p.cash<cost},{id:'n',l:'다음에',g:1}]);if(id==='y'){found(p,sec,cost);S.ask=null;await autoPeek('co',$cell(i),`#co-${sec}`,`${s.n} ${COMPN[p.comp[sec]]}`)}}
  else if(aiWantComp(p,sec,cost))found(p,sec,cost)}
-function found(p,sec,cost){p.cash-=cost;p.comp[sec]++;fxArrow($chip(p),$cell(p.pos),{label:SECT[sec].e+' '+COMPN[p.comp[sec]]});fxMoney(p,-cost);fxDist(SECT[sec].d).slice(0,2).forEach(i=>fxArrow($cell(p.pos),$cell(i),{dot:true,label:'+10%'}));log(`${pn(p)} ${SECT[sec].e} ${SECT[sec].n} 기업 ${COMPN[p.comp[sec]]} (${won(cost)})`);if(!p.human)toast(`${esc(p.name)} ${SECT[sec].n} 기업 ${COMPN[p.comp[sec]]}`)}
+function coEvent(p,txt){if(!p.coEvents)p.coEvents=[];p.coEvents.unshift({r:S.round,t:txt});if(p.coEvents.length>60)p.coEvents.pop()}
+function found(p,sec,cost){p.cash-=cost;p.comp[sec]++;fxArrow($chip(p),$cell(p.pos),{label:SECT[sec].e+' '+COMPN[p.comp[sec]]});fxMoney(p,-cost);fxDist(SECT[sec].d).slice(0,2).forEach(i=>fxArrow($cell(p.pos),$cell(i),{dot:true,label:'+10%'}));log(`${pn(p)} ${SECT[sec].e} ${SECT[sec].n} 기업 ${COMPN[p.comp[sec]]} (${won(cost)})`);coEvent(p,`${SECT[sec].e} ${SECT[sec].n} ${COMPN[p.comp[sec]]} ${p.comp[sec]>1?'확장':'설립'} −${won(cost)}`);if(!p.human)toast(`${esc(p.name)} ${SECT[sec].n} 기업 ${COMPN[p.comp[sec]]}`)}
 /* 은행 */
 async function bankAct(p,i){const c=CELLS[i];const cap=loanCap(p),room=Math.max(0,cap-p.debt);
  if(c.kind==='save'){const b=Math.min(100,Math.round(p.cash*S.rate/200));gain(p,b,'예금 보너스 이자')}
@@ -615,14 +631,14 @@ function shareOffers(p){const out=[];alive().forEach(o=>{if(o===p)return;Object.
  out.push({k,o,sec,price:Math.round([0,150,450,950][o.comp[sec]]*.25/5)*5,div:Math.max(0,Math.round(compProfit(o,sec).profit*.25))})})});return out}
 function compWorth(p,sec){return[0,150,450,950][p.comp[sec]]||0}
 function ipoCash(p,sec){return Math.round(compWorth(p,sec)*.6/5)*5}       // 상장 조달액
-function seoCash(p,sec){return Math.round(compWorth(p,sec)*.25/5)*5}      // 유상증자
+function seoCash(p,sec){return Math.max(0,Math.min(Math.round(compWorth(p,sec)*.25/5)*5,Math.floor(assets(p)*.3/5)*5))}      // 유상증자: 기업가치 25%, 단 내 총자산의 30%를 넘지 않음
 function delistCost(p,sec){return Math.round(compWorth(p,sec)*.5/5)*5}    // 상장폐지 되사기
 async function stockAct(p,i){
  if(p.human){let again=true;while(again){
   const offers=shareOffers(p);const opts=[];
   // 내 기업 자본조달
   Object.keys(p.comp).forEach(sec=>{const lv=p.comp[sec];if(!lv)return;const k=p.id+'_'+sec;
-   if(!S.ipo[k]&&lv>=2)opts.push({id:'ipo_'+sec,l:`📢 ${SECT[sec].e}${SECT[sec].n} 상장 — 조달 +${won(ipoCash(p,sec))} (이익 30% 공모주주行)`});
+   if(!S.ipo[k]&&lv>=2)opts.push({id:'ipo_'+sec,l:`📢 ${SECT[sec].e}${SECT[sec].n} 상장 — 조달 +${won(ipoCash(p,sec))} (이익 30%는 공모주주에게)`});
    else if(S.ipo[k]){opts.push({id:'seo_'+sec,l:`💵 ${SECT[sec].n} 유상증자 +${won(seoCash(p,sec))}`});opts.push({id:'del_'+sec,l:`🔚 ${SECT[sec].n} 상장폐지 −${won(delistCost(p,sec))}`,g:1})}});
   // 남의 지분 매수
   offers.forEach(x=>opts.push({id:'buy_'+x.k,l:`${x.o.emoji} ${esc(x.o.name)} ${SECT[x.sec].e}${SECT[x.sec].n} 지분 20% ${won(x.price)} · 배당 ~${won(x.div)}/R`,dis:p.cash<x.price}));
@@ -630,9 +646,9 @@ async function stockAct(p,i){
   const id=await ask(`📈 <b>증권거래소</b> · 자본조달(상장·유상증자)과 지분 매매<small>상장하면 큰돈을 당겨 쓰지만 이익의 30%를 공모주주에게 나눠 줍니다. 자금이 급할 때 유용합니다.</small>`,opts);
   if(id==='n'){again=false;continue}
   const[act,...rest]=id.split('_');const sec=rest.join('_').includes('_')?rest.slice(-1)[0]:rest[0];
-  if(act==='ipo'){const c=ipoCash(p,sec);S.ipo[p.id+'_'+sec]=1;gain(p,c,`${SECT[sec].n} 상장 조달`);log(`📢 ${pn(p)} ${SECT[sec].n} 기업 상장 — 자본 ${won(c)} 조달`);toast(`📢 ${esc(p.name)} ${SECT[sec].n} 상장 +${won(c)}`)}
-  else if(act==='seo'){const c=seoCash(p,sec);gain(p,c,`${SECT[sec].n} 유상증자`);log(`💵 ${pn(p)} ${SECT[sec].n} 유상증자 +${won(c)}`)}
-  else if(act==='del'){const c=delistCost(p,sec);if(p.cash>=c){pay(p,c,`${SECT[sec].n} 상장폐지`);delete S.ipo[p.id+'_'+sec];log(`🔚 ${pn(p)} ${SECT[sec].n} 상장폐지`)}else await okMsg('현금이 부족합니다.')}
+  if(act==='ipo'){const c=ipoCash(p,sec);S.ipo[p.id+'_'+sec]=1;gain(p,c,`${SECT[sec].n} 상장 조달`);coEvent(p,`📢 ${SECT[sec].n} 상장 — 자본 +${won(c)}`);log(`📢 ${pn(p)} ${SECT[sec].n} 기업 상장 — 자본 ${won(c)} 조달`);toast(`📢 ${esc(p.name)} ${SECT[sec].n} 상장 +${won(c)}`)}
+  else if(act==='seo'){const c=seoCash(p,sec);gain(p,c,`${SECT[sec].n} 유상증자`);coEvent(p,`💵 ${SECT[sec].n} 유상증자 +${won(c)}`);log(`💵 ${pn(p)} ${SECT[sec].n} 유상증자 +${won(c)}`)}
+  else if(act==='del'){const c=delistCost(p,sec);if(p.cash>=c){pay(p,c,`${SECT[sec].n} 상장폐지`);delete S.ipo[p.id+'_'+sec];coEvent(p,`🔚 ${SECT[sec].n} 상장폐지 −${won(c)}`);log(`🔚 ${pn(p)} ${SECT[sec].n} 상장폐지`)}else await okMsg('현금이 부족합니다.')}
   else if(act==='buy'){const x=shareOffers(p).find(o=>o.k===rest.join('_'));if(x)buyShare(p,x)}
  }}
  else{ // AI: 자금 부족하면 상장으로 조달, 저평가 지분은 매수
@@ -656,7 +672,7 @@ async function insAct(p,i){if(p.ins){if(p.human)await okMsg('🛡️ 이미 재�
  else if(bldOf(p)>=2&&p.cash>cost+200){p.cash-=cost;p.ins=1;log(`${pn(p)} 재해 보험 가입`)}}
 /* 세금 */
 async function taxAct(p,i){const c=CELLS[i];let a;if(c.kind==='income')a=Math.round(p.cash*.1/5)*5;else a=bldOf(p)*20;
- if(a>0){pay(p,a,c.name);S.fund+=a;if(p.human)await okMsg(`🧾 ${esc(c.name)} ${won(a)}를 냈습니다.<small>${c.kind==='income'?'현금의 10%':'건물 1동당 ₵20'} · 시민 복지기금에 쌓입니다(현재 ${won(S.fund)}).</small>`)}
+ if(a>0){S.fund+=pay(p,a,c.name);if(p.human)await okMsg(`🧾 ${esc(c.name)} ${won(a)}를 냈습니다.<small>${c.kind==='income'?'현금의 10%':'건물 1동당 ₵20'} · 시민 복지기금에 쌓입니다(현재 ${won(S.fund)}).</small>`)}
  else if(p.human)await okMsg(`🧾 ${esc(c.name)}: 낼 세금이 없습니다.`)}
 /* 뉴스 */
 async function newsAct(p){if(!S.deck.length)S.deck=buildDeck(S.diff);const idx=S.deck.shift();const card=CARDS[idx];card[3](S);S.news={k:`📰 경제 뉴스 · ${card[2]?'호재':'악재'}`,t:card[0],d:card[1],chain:card[4]};log(`📰 ${esc(card[0])}`);render();fxNews(card,card[2]);if(fxOn())await sleep(900);
@@ -682,19 +698,21 @@ function aiWantComp(p,sec,cost){if(p.cash-cost<aiReserve(p))return false;if(sec=
 
 /* ═════════ 라운드 결산 ═════════ */
 async function roundEnd(){const chain=[];S.prev={...S.mkt};
- // 0. 다음 라운드 업종 수요 랜덤(0.80~1.20) — 같은 상황도 결과가 달라짐
- Object.keys(S.demand).forEach(k=>{S.demand[k]=+(0.80+Math.random()*0.40).toFixed(2)});
+ // 0. 수요: 기준값(base)으로 정상 이익을 계산하고, 직전 돌발 사건이 바꾼 수요(eff)와의 차이는 '특별손익'으로만 반영
+ const eff={...S.demand};const base=S.demandBase||{...eff};
  // 1. 기업 이익·배당·흑자적자·부도
- alive().forEach(p=>{let tot=0;Object.keys(p.comp).forEach(sec=>{if(!p.comp[sec])return;const r=compProfit(p,sec);let keep=r.profit;
+ alive().forEach(p=>{let tot=0;Object.keys(p.comp).forEach(sec=>{if(!p.comp[sec])return;const r=profitWith(p,sec,base);const spc=profitWith(p,sec,eff).profit-r.profit;let keep=r.profit;
+  if(spc)log(`⚡ ${pn(p)} ${SECT[sec].n} 돌발 특별손익 ${spc>0?'+':'−'}${won(Math.abs(spc))}`);tot+=spc;
   // 상장(IPO) 시 이익의 30%가 공모주주(시장)로 유출 — 이익일 때만
   if(r.profit>0&&S.ipo[p.id+'_'+sec]){const drain=Math.round(r.profit*.30);keep-=drain;log(`${pn(p)} ${SECT[sec].n} 공모주주 배당 −${won(drain)}`)}
   // 동료 지분 배당(이익의 25%)
-  const holders=alive().filter(q=>q!==p&&q.shares[p.id+'_'+sec]);if(r.profit>0&&holders.length){const d=Math.round(r.profit*.25);holders.forEach(q=>{p.cash-=d;q.cash+=d;log(`${pn(q)} ${esc(p.name)} ${SECT[sec].n} 배당 +${won(d)}`)})}
+  const holders=alive().filter(q=>q!==p&&q.shares[p.id+'_'+sec]);if(r.profit>0&&holders.length){const d=Math.round(r.profit*.25);holders.forEach(q=>{keep-=pay(p,d,null,q);log(`${pn(q)} ${esc(p.name)} ${SECT[sec].n} 배당 +${won(d)}`)})}
   tot+=keep;
   // 흑자/적자 연속 추적 → 3연속 적자면 기업 부도(1단계 하락, 상장·지분 소멸)
-  if(r.profit<0){p.compLoss[sec]=(p.compLoss[sec]||0)+1;if(p.compLoss[sec]>=3){p.comp[sec]--;p.compLoss[sec]=0;delete S.ipo[p.id+'_'+sec];S.players.forEach(q=>delete q.shares[p.id+'_'+sec]);log(`💥 ${pn(p)} ${SECT[sec].n} 기업 부도 — ${COMPN[p.comp[sec]]||'폐업'}로 축소`);toast(`💥 ${esc(p.name)} ${SECT[sec].n} 기업 부도`)}}
+  if(r.profit<0){p.compLoss[sec]=(p.compLoss[sec]||0)+1;if(p.compLoss[sec]>=3){p.comp[sec]--;p.compLoss[sec]=0;delete S.ipo[p.id+'_'+sec];S.players.forEach(q=>delete q.shares[p.id+'_'+sec]);log(`💥 ${pn(p)} ${SECT[sec].n} 기업 부도 — ${COMPN[p.comp[sec]]||'폐업'}로 축소`);coEvent(p,`💥 ${SECT[sec].n} 기업 부도 → ${COMPN[p.comp[sec]]||'폐업'}`);toast(`💥 ${esc(p.name)} ${SECT[sec].n} 기업 부도`)}}
   else p.compLoss[sec]=0;});
-  if(tot>0){gain(p,tot,'기업 흑자');const hq=Object.keys(p.comp).find(k=>p.comp[k]);if(hq)fxArrow($cell(CELLS.findIndex(c=>c.t==='hq'&&c.sector===hq)),$chip(p),{label:'흑자 '+won(tot)})}else if(tot<0)pay(p,-tot,'기업 적자')});
+  const anyComp=Object.values(p.comp).some(Boolean);if(anyComp||tot!==0){p.coHist.push({r:S.round,v:Math.round(tot)});if(p.coHist.length>30)p.coHist.shift();p.coTotal=(p.coTotal||0)+Math.round(tot)}
+  if(tot>0){gain(p,tot,'기업 흑자');coEvent(p,`흑자 +${won(tot)}`);const hq=Object.keys(p.comp).find(k=>p.comp[k]);if(hq)fxArrow($cell(CELLS.findIndex(c=>c.t==='hq'&&c.sector===hq)),$chip(p),{label:'흑자 '+won(tot)})}else if(tot<0){pay(p,-tot,'기업 적자');coEvent(p,`적자 −${won(-tot)}`)}});
  // 2. 이자
  alive().forEach(p=>{if(p.debt>0){const it=Math.round(p.debt*S.rate/100);pay(p,it,`대출 이자 ${S.rate.toFixed(2)}%`)}});
  // 3. 시장 결산(경기는 각자 차례의 경제 주사위가 정한 지수 기준)
@@ -704,13 +722,15 @@ async function roundEnd(){const chain=[];S.prev={...S.mkt};
  const r0=S.rate;if(S.infl>=3.5)S.rate=clamp(S.rate+.5,2,8);else if(S.infl<=1.5)S.rate=clamp(S.rate-.5,2,8);else S.rate=clamp(S.rate+(S.rate>4?-.25:S.rate<4?.25:0),2,8);
  render();if(S.rate!==r0&&fxOn()){const tr=$('#t-rate');fxPulse(tr);fxArrow(tr,$cell(fxDist('D')[0]),{dot:true,label:S.rate>r0?'D ↓':'D ↑',color:S.rate>r0?'var(--danger)':'var(--ok)'});fxArrow(tr,$cell(fxDist('G')[0]),{dot:true,label:S.rate>r0?'G ↑':'G ↓',color:S.rate>r0?'var(--ok)':'var(--danger)'});alive().filter(q=>q.debt>0).forEach(q=>fxArrow(tr,$chip(q),{dot:true,label:'이자'}));fxFlow(tr,['fl-infl','fl-rate'],`금리 ${S.rate>r0?'↑':'↓'}`,S.rate>r0?'var(--danger)':'var(--ok)');await sleep(900)}
  chain.push(`원자재 평균 ${Math.round(avg)}`,`${inflN()} ${S.infl.toFixed(1)}%`);if(S.stag)chain.push('⚠️ 스태그플레이션 — 원가↑·경기↓');if(S.depr)chain.push('🥶 대공황 — 기업 추가 손실');if(S.rate!==r0)chain.push(`금리 ${S.rate>r0?'↑':'↓'} ${S.rate.toFixed(2)}%`,S.rate>r0?'이자↑ · 주거단지↓ · 금융가↑':'이자↓ · 주거단지↑ · 금융가↓');
- if(S.boom)chain.push(S.boom>0?'스카이라인·항만↑ · 매출 +20%':'스카이라인·항만↓ · 매출 −20%');
+ if(S.boom)chain.push(S.boom>0?`스카이라인·항만↑ · 기업 매출 ×${boomF()}`:`스카이라인·항만↓ · 기업 매출 ×${boomF()}`);
  // 돌발 사건(국면에 따라 호·악재 확률 가중)
  await shockTick(chain);
+ // 다음 결산용 수요: 새 기준값 + 이번 돌발 사건의 변화분 (직전 특별손익은 이미 반영되어 제외)
+ {const dl={};Object.keys(S.demand).forEach(k=>dl[k]=+((S.demand[k]??1)-(eff[k]??1)).toFixed(2));const nb=drawDemand();S.demandBase=nb;S.demand={};Object.keys(nb).forEach(k=>S.demand[k]=+(nb[k]+(dl[k]||0)).toFixed(2))}
  // 일회성 효과 해제
  S.tourOff=0;S.mfgCost=1;S.profitMod=1;if(S.redev>0)S.redev--;
- alive().forEach(p=>p.hist.push(Math.round(netWorth(p))));
- S.rank=S.rank||{};S.rank[S.round]=S.players.slice().sort((a,b)=>(a.bankrupt?-1:1)*netWorth(a)<(b.bankrupt?-1:1)*netWorth(b)?1:-1).map(p=>({e:p.emoji,n:p.name,c:p.color,nw:Math.round(netWorth(p)),bk:p.bankrupt}));
+ 
+ S.rank=S.rank||{};S.rank[S.round]=S.players.slice().sort((a,b)=>(a.bankrupt?-1e9:netWorth(a))<(b.bankrupt?-1e9:netWorth(b))?1:-1).map(p=>({e:p.emoji,n:p.name,c:p.color,nw:Math.round(netWorth(p)),bk:p.bankrupt}));
  S.news={k:`📊 R${S.round} 결산`,t:`경기 ${boomN()} · 금리 ${S.rate.toFixed(2)}%`,d:alive().map(p=>`${p.emoji}${p.name} ${won(netWorth(p))}`).join(' · '),chain};
  log(`📊 R${S.round} 결산 — ${chain.join(' / ')}`);
  S.round++;if(S.round>S.maxRounds){finish('rounds')}else{checkWin();if(cur().human&&S.speed!=='fast')await okMsg(`📊 라운드 ${S.round-1} 결산<small>${esc(chain.join(' → '))}</small>`);if(S.players[0].human&&!S.over)await peekRankIfChanged($('#c-fund'))}
@@ -776,9 +796,17 @@ function logHTML(){if(!S.log.length)return`<div class="sub">아직 기록이 없
 function renderTab(){const el=$('#tabbody');const me=S.players[0];
  if(tab==='act'){el.innerHTML=(S.tut<=3&&S.round<=2?`<div class="hint"><b>튜토리얼</b> ${S.tut<=1?'주사위를 굴려 도착한 땅을 사세요. 땅은 통행료를, 기업은 라운드 이익을 줍니다.':S.tut===2?'같은 구역을 다 모으면 통행료 2배. 금리가 오르면 주거단지(D)는 내리고 금융가(G)는 오릅니다.':'원자재는 쌀 때 사 두면 건설비·기업 원가를 보며 팔 수 있습니다. 15라운드 뒤 순자산 1위가 승리!'}</div>`:'')+cellDetail()+`<h3>원인 → 결과 (지금 살아 있는 연결)</h3><div class="flow">${flows()}</div><h3>일지 <span style="font-size:11px;color:var(--muted);font-weight:400">라운드별</span></h3>${logHTML()}`}
  else if(tab==='co'){el.innerHTML=`<h2>🏢 ${esc(me.name)}의 회사<span>라운드마다 이익이 들어옵니다</span></h2><div class="scroll"><table class="tbl"><tr><th>업종</th><th>단계</th><th>매출</th><th>원가</th><th>이익/R</th></tr>${Object.keys(SECT).map(s=>{const r=compProfit(me,s);const st=!me.comp[s]?'':r.profit>0?'<span style="color:var(--ok)">흑자</span>':r.profit<0?`<span style="color:var(--danger)">적자${me.compLoss[s]?' '+me.compLoss[s]+'/3':''}</span>`:'균형';const ip=S.ipo[me.id+'_'+s]?' 📢상장':'';return`<tr id="co-${s}"><td>${SECT[s].e} ${SECT[s].n}${ip}</td><td>${COMPN[me.comp[s]]}<br><small style="color:var(--muted)">${st}</small></td><td class="n">${me.comp[s]?won(r.rev):'–'}</td><td class="n">${me.comp[s]?won(r.cost):'–'}</td><td class="n" style="color:${r.profit>0?'var(--ok)':r.profit<0?'var(--danger)':'inherit'}">${me.comp[s]?won(r.profit):'–'}</td></tr>`}).join('')}</table></div>
-  <h3>📈 보유 지분</h3>${Object.keys(me.shares).filter(k=>me.shares[k]).map(k=>{const[oid,sec]=k.split('_');const o=S.players[oid];return`<div>${o.emoji} ${esc(o.name)} ${SECT[sec].n} 20% · 배당 약 ${won(Math.max(0,compProfit(o,sec).profit*.2))}/R</div>`}).join('')||'<div class="sub">없음 — 증권거래소에서 살 수 있습니다</div>'}
+  <h3>📊 기업 성적 <span style="font-size:11px;color:var(--muted);font-weight:400">게임 내내 기록</span></h3>
+  <div class="corec">${(()=>{const h=me.coHist||[];const tot=me.coTotal||0;const best=h.reduce((a,x)=>Math.max(a,x.v),0),worst=h.reduce((a,x)=>Math.min(a,x.v),0);const mx=Math.max(1,best,-worst);
+   return`<div class="costat"><span>누적 기업 손익</span><b style="color:${tot>=0?'var(--ok)':'var(--danger)'}">${tot>=0?'+':''}${won(tot)}</b></div>
+    <div class="costat"><span>최고 흑자 / 최대 적자</span><b>${won(best)} / ${worst<0?'−'+won(-worst):'₵0'}</b></div>
+    <div class="cobars">${h.length?h.map(x=>`<i title="R${x.r}: ${x.v>=0?'+':''}${won(x.v)}" style="--hp:${Math.round(Math.abs(x.v)/mx*100)}%;--cc:${x.v>=0?'var(--ok)':'var(--danger)'};--dir:${x.v>=0?'0':'1'}"><em>${x.r}</em></i>`).join(''):'<span class="sub">아직 결산이 없습니다</span>'}</div>
+    <div class="sub" style="margin-top:2px">라운드별 기업 순손익(배당·공모주주 유출 반영). 위=흑자, 아래=적자.</div>`})()}</div>
+  <h3>📜 기업 일지 <span style="font-size:11px;color:var(--muted);font-weight:400">설립·확장·상장·부도·손익</span></h3>
+  <ul class="colog">${(me.coEvents&&me.coEvents.length)?me.coEvents.slice(0,20).map(e=>`<li><span class="lvl">R${e.r}</span> ${esc(e.t)}</li>`).join(''):'<li class="sub">아직 기업 활동이 없습니다. 기업 본사(🏢) 칸에서 회사를 세워 보세요.</li>'}</ul>
+  <h3>📈 보유 지분</h3>${Object.keys(me.shares).filter(k=>me.shares[k]).map(k=>{const[oid,sec]=k.split('_');const o=S.players[oid];return`<div>${o.emoji} ${esc(o.name)} ${SECT[sec].n} 20% · 배당 약 ${won(Math.max(0,compProfit(o,sec).profit*.25))}/R</div>`}).join('')||'<div class="sub">없음 — 증권거래소에서 살 수 있습니다</div>'}
   <h3>📦 보유 원자재</h3><div>${Object.keys(COM).map(k=>`${COM[k].e} ${COM[k].n} ${me.com[k]} (시세 ${S.mkt[k]})`).join(' · ')}</div>
-  <h3>🏘️ 내 땅 (${landOf(me)}곳 · 독점 ${monopolies(me).length}/3)</h3><div class="scroll"><table class="tbl"><tr><th>칸</th><th>구역</th><th>건물</th><th>통행료</th><th>가치</th></tr>${Object.entries(S.props).filter(([,pr])=>pr.owner===me.id).map(([i,pr])=>`<tr><td>${esc(CELLS[i].name)}</td><td>${CELLS[i].d?DIST[CELLS[i].d].e+CELLS[i].d:CEM[CELLS[i].t]}</td><td>${CELLS[i].t==='land'?BLD[pr.level]:'–'}</td><td class="n">${won(rent(i,null))}</td><td class="n">${won(propValue(i))}</td></tr>`).join('')}</table></div>
+  <h3>🏘️ 내 땅 (${landOf(me)}곳 · 독점 ${monopolies(me).length}/2)</h3><div class="scroll"><table class="tbl"><tr><th>칸</th><th>구역</th><th>건물</th><th>통행료</th><th>가치</th></tr>${Object.entries(S.props).filter(([,pr])=>pr.owner===me.id).map(([i,pr])=>`<tr><td>${esc(CELLS[i].name)}</td><td>${CELLS[i].d?DIST[CELLS[i].d].e+CELLS[i].d:CEM[CELLS[i].t]}</td><td>${CELLS[i].t==='land'?BLD[pr.level]:'–'}</td><td class="n">${won(rent(i,null))}</td><td class="n">${won(propValue(i))}</td></tr>`).join('')}</table></div>
   <div class="sub" style="margin-top:8px">순자산 = 현금 ${won(me.cash)} + 땅·건물 + 기업 ${won(compValue(me))} + 지분 ${won(shareValue(me))} + 원자재 ${won(comValue(me))} − 대출 ${won(me.debt)} = <b>${won(netWorth(me))}</b></div>`}
  else if(tab==='rank'){const ps=alive().slice().sort((a,b)=>netWorth(b)-netWorth(a));const mx=Math.max(...ps.map(netWorth),1);
   el.innerHTML=`<h2>🏅 순위<span>순자산 기준</span></h2>`+ps.map((p,k)=>`<div class="pl" id="rk-${p.id}" style="--pc:${p.color}"><span>${k+1}위 ${p.emoji}</span><span><b style="font-family:var(--f-body)">${esc(p.name)}</b> ${p.human?'':'<small>'+STRATN[p.strat]+'</small>'}</span><b>${won(netWorth(p))}</b><span class="m">현금 ${won(p.cash)} · 땅 ${landOf(p)} · 건물 ${bldOf(p)} · 기업 ${Object.values(p.comp).filter(Boolean).length} · 교육 ${EDUN[p.edu]} · 대출 ${won(p.debt)} · 독점 ${monopolies(p).length}</span><span class="m" style="grid-column:2/4"><span class="bar"><i style="width:${Math.round(netWorth(p)/mx*100)}%"></i></span></span></div>`).join('')+
@@ -788,7 +816,7 @@ function cellDetail(){if(selected==null)return'';const i=selected,c=CELLS[i],pr=
  if(c.t==='land'){d+=`<dt>시세</dt><dd>${won(priceOf(i))} (기준 ${won(c.price)})</dd><dt>반응</dt><dd>${esc(DIST[c.d].note)}</dd><dt>주인</dt><dd>${o?`${o.emoji} ${esc(o.name)} · ${BLD[pr.level]}${ownsAll(o,c.d)?' · 독점 ×2':''}`:'없음'}</dd><dt>통행료</dt><dd>${o?won(rent(i,null))+' — '+esc(rentWhy(i)):won(Math.round(c.price*.1))+' (땅만)'}</dd><dt>건설비</dt><dd>상가 ${won(buildCost(i,1))} · 빌딩 ${won(buildCost(i,2))} · 랜드마크 ${won(buildCost(i,3))}</dd>`}
  else if(c.t==='transit')d+=`<dt>가격</dt><dd>${won(c.price)}</dd><dt>통행료</dt><dd>보유 수에 따라 ₵25 → 50 → 100 → 200</dd><dt>주인</dt><dd>${o?o.emoji+' '+esc(o.name):'없음'}</dd>`;
  else if(c.t==='util')d+=`<dt>가격</dt><dd>${won(c.price)}</dd><dt>통행료</dt><dd>주사위 × ₵10 (둘 다 가지면 ×₵25)${c.kind==='power'?' · 석유 시세 반영':''}</dd><dt>주인</dt><dd>${o?o.emoji+' '+esc(o.name):'없음'}</dd>`;
- else d+=`<dt>효과</dt><dd>${{start:'지나가면 ₵200, 도착하면 ₵100 더',rest:'1~2턴 쉬기(7 이상 굴리면 출발)',fund:'쌓인 세금을 모두 가져감',hyper:'다음 턴 원하는 칸으로 이동',hq:`${SECT[c.sector]?SECT[c.sector].n:''} 기업 설립·확장 (₵150 → 300 → 500)`,bank:c.kind==='save'?'예금 보너스 이자 + 대출·상환':'대출·상환',xch:(c.goods||[]).map(k=>COM[k].n).join('·')+' 1단위씩 사고팔기',edu:'교육 +1 (₵100 → 200 → 300)',stock:'남의 기업 지분 20% 사기 → 이익의 20% 배당',auction:'빈 땅 하나를 경매(시작가 시세 60%)',ins:'재해 보험 ₵40 — 다음 재해 피해 면제',tax:c.kind==='income'?'현금의 10% → 복지기금':'건물 1동당 ₵20 → 복지기금',news:'경제 뉴스 카드 1장(호재·악재)',quiz:'경제 상식 문제, 맞히면 ₵50(+교육×₵10)'}[c.t]}</dd>`;
+ else d+=`<dt>효과</dt><dd>${{start:'지나가면 ₵200, 도착하면 ₵100 더',rest:'1~2턴 쉬기(7 이상 굴리면 출발)',fund:'쌓인 세금을 모두 가져감',hyper:'다음 턴 원하는 칸으로 이동',hq:`${SECT[c.sector]?SECT[c.sector].n:''} 기업 설립·확장 (₵150 → 300 → 500)`,bank:c.kind==='save'?'예금 보너스 이자 + 대출·상환':'대출·상환',xch:(c.goods||[]).map(k=>COM[k].n).join('·')+' 1단위씩 사고팔기',edu:'교육 +1 (₵200 → 300)',stock:'남의 기업 지분 20% 사기 → 이익의 25% 배당',auction:'빈 땅 하나를 경매(시작가 시세 60%)',ins:'재해 보험 ₵40 — 다음 재해 피해 면제',tax:c.kind==='income'?'현금의 10% → 복지기금':'건물 1동당 ₵20 → 복지기금',news:'경제 뉴스 카드 1장(호재·악재)',quiz:'경제 상식 문제, 맞히면 ₵50(+교육×₵10)'}[c.t]}</dd>`;
  return d+'</dl></div>'}
 function flows(){const f=[];f.push(`<div id="fl-rate"><span>금리 ${S.rate.toFixed(2)}%</span><em>→</em><span>이자 ${S.rate.toFixed(2)}%/R</span><em>·</em><span>주거단지(D) 시세 ${Math.round(clamp(1-(S.rate-4)*.05,.6,1.3)*S.dMod*100)}%</span><em>·</em><span>금융가(G) 통행료 +${Math.round(Math.max(0,S.rate-4)*5)}%</span></div>`);
  f.push(`<div id="fl-com"><span>원자재 ${Object.keys(COM).map(k=>COM[k].e+S.mkt[k]).join(' ')}</span><em>→</em><span>건설비 ×${(S.mkt.steel/100).toFixed(2)}</span><em>·</em><span>기업 원가</span><em>·</em><span>전통시장 ×${(S.mkt.food/100).toFixed(2)} · 테크밸리 ×${(S.mkt.chip/100).toFixed(2)}</span></div>`);
@@ -801,10 +829,10 @@ function rulesHTML(){return`<div class="rule"><h2>📖 규칙 (2쪽)<span>Level 
  <h3>목표</h3><p>2101년 메가시티 '네오 아틀라스'의 사업가가 되어 <b>${S.maxRounds}라운드 뒤 순자산 1위</b>를 노립니다. 상대가 전원 파산하거나 <b>구역 2개를 독점</b>하면 즉시 승리합니다. 나라·전쟁·외교는 없고, 돈이 어떻게 도는지만 다룹니다.</p>
  <h3>한 턴</h3><ul><li>차례마다 <b>이동 주사위(12면)</b>를 굴려 시계 방향으로 가고 도착 칸을 처리합니다. 월급날을 지나면 ₵200.</li><li>이어서 <b>경제 주사위(12면)</b>가 바로 굴러갑니다. 높을수록 경기 지수(0~100)가 오르고(65 이상 호황, 35 이하 불황) 원자재 한 종류가 움직입니다.</li><li>주사위를 굴리기 전에 내 땅 1곳에 건물을 지을 수 있습니다(한 턴에 1곳).</li><li>빈 땅: 시세로 매입. 내 땅: 건물 건설(상가 → 빌딩 → 랜드마크, 통행료 ×2.5 → ×5 → ×9). 남의 땅: 통행료.</li><li>같은 구역을 모두 가지면 통행료 2배. 기능 칸은 각각의 효과(아래).</li></ul>
  <h3>8구역과 반응 지표</h3><div class="scroll"><table class="tbl"><tr><th>구역</th><th>기준가</th><th>반응</th></tr>${Object.keys(DIST).map(d=>`<tr><td>${DIST[d].e} ${d} ${DIST[d].n}</td><td class="n">${won(DIST[d].price)}</td><td>${esc(DIST[d].note)}</td></tr>`).join('')}</table></div><p>주거단지(D)와 금융가(G)는 금리에 반대로 움직입니다. 둘을 같이 가지면 금리 변화에 버티는 분산 투자가 됩니다.</p>
- <h3>기능 칸</h3><ul><li>🏢 <b>기업 본사 5곳</b>(제조·IT·식품·에너지·관광): 스타트업 ₵150 → 중견 ₵300 → 대기업 ₵500. 라운드 이익 = 매출 × 생산성(교육 1단계마다 +5%) × 경기(호황 +20%, 불황 −20%) − 원자재 원가. 제조는 철강, IT는 반도체, 식품은 식량을 쓰고, 에너지는 석유가 오르면 매출이 늘며, 관광은 경기를 타고, 스카이라인(H) 땅이 많을수록 매출이 늘어납니다. 같은 업종 구역(IT↔테크밸리, 식품↔전통시장, 에너지·제조↔항만, 관광↔스카이라인) 통행료 +10%.</li>
+ <h3>기능 칸</h3><ul><li>🏢 <b>기업 본사 5곳</b>(제조·IT·식품·에너지·관광): 스타트업 ₵150 → 중견 ₵300 → 대기업 ₵500. 라운드 이익 = 매출 × 생산성(교육 1단계마다 +5%) × 경기 국면 승수(활황 ×1.3 · 성장 ×1.15 · 둔화 ×0.9 · 불황 ×0.8 · 대공황 ×0.62) − 원자재 원가. 제조는 철강, IT는 반도체, 식품은 식량을 쓰고, 에너지는 석유가 오르면 매출이 늘며, 관광은 경기를 타고, 스카이라인(H) 땅이 많을수록 매출이 늘어납니다. 같은 업종 구역(IT↔테크밸리, 식품↔전통시장, 에너지·제조↔항만, 관광↔스카이라인) 통행료 +10%.</li>
  <li>🏦 <b>은행 2곳</b>: 대출(₵300·600)과 상환. 이자는 라운드마다 대출 × 금리. 한도는 자산(현금 제외)의 절반. 저축은행은 예금 보너스 이자.</li>
  <li>📦 <b>원자재 거래소 2곳</b>: 석유·식량 / 철강·반도체를 시세로 1단위씩 사고팝니다(최대 5). 보유분은 시세대로 순자산에 들어갑니다.</li>
- <li>📚 <b>교육 3곳</b>: 기초 → 전문 → 석사(₵100·200·300). 생산성, 대학가 통행료, 퀴즈 상금이 오릅니다.</li>
+ <li>📚 <b>교육 3곳</b>: 기초 → 전문 → 석사(₵200·300). 생산성, 대학가 통행료, 퀴즈 상금이 오릅니다.</li>
  <li>📈 증권거래소: 남의 기업 지분을 사면 이익의 25%를 배당으로. 🔨 경매장: 빈 땅 하나를 시세 60%부터 경매. 🛡️ 보험사: ₵40으로 다음 재해 면제. 🧾 세금: 소득세(현금 10%)·재산세(건물당 ₵20)는 복지기금에 쌓이고 🏛️ 복지기금 칸에 도착한 사람이 가져갑니다. 🏝️ 휴가섬: 7 이상을 굴리면 출발. 🚄 하이퍼루프: 다음 턴 원하는 칸으로.</li>
  <li>📰 경제 뉴스 5곳: 카드 30장(호재·악재 15쌍). ❓ 경제 퀴즈 2곳: 맞히면 ₵50(+교육×₵10).</li></ul>
  <h3>라운드 결산</h3><ul><li>기업 이익·배당 → 대출 이자 → 경기(그 라운드 경제 주사위들이 만든 지수) 반영 → 원자재 시세 정리 → 인플레 계산(3.5% 이상이면 금리 +0.5, 1.5% 이하면 −0.5, 금리 2~8%).</li></ul>
@@ -825,11 +853,11 @@ function renderSetup(){const saved=load();$('#hdr').innerHTML='';$('#who').inner
  <div class="field"><label>④ 라운드</label><div class="opts">${[[15,'15라운드','35분 · 짧게'],[20,'20라운드','45~50분 · 기본'],[30,'30라운드','70분 · 길게']].map(([v,l,s])=>`<label><input type="radio" name="len" value="${v}" ${v===20?'checked':''}><span>${l}<small>${s}</small></span></label>`).join('')}</div></div>
  <div class="field"><label>⑤ 속도</label><div class="opts">${[['normal','보통','AI 차례와 결산을 보여 줌'],['fast','빠름','AI 차례 즉시 진행']].map(([v,l,s])=>`<label><input type="radio" name="speed" value="${v}" ${v==='normal'?'checked':''}><span>${l}<small>${s}</small></span></label>`).join('')}</div></div>
  <div class="field"><label>⑥ 기기 프레임 <span class="sub">(화면이 크면 보드도 비례해 커집니다)</span></label><div class="opts">${FRAMES.map(([v,l])=>`<label><input type="radio" name="frame" value="${v}" ${v===getFrame()?'checked':''}><span>${l}</span></label>`).join('')}</div></div>
- <p class="sub">시작 패키지: 현금 ₵1,500 + 재개발촌·대학가 필지 1곳 + 교육 기초. 승리: ${'라운드 종료 시 순자산 1위, 상대 전원 파산, 구역 3개 독점.'}</p>
+ <p class="sub">시작 패키지: 현금 ₵1,500 + 재개발촌·대학가 필지 1곳 + 교육 기초. 승리: 라운드 종료 시 순자산 1위, 상대 전원 파산, 구역 2개 독점.</p>
  <button class="btn" type="submit" style="width:100%;font-size:15px;min-height:44px">🎲 게임 시작</button></form></div>`;
  if(saved)$('#btnResume').onclick=()=>{S=saved;S.ask=null;gen++;render();gameLoop()};
  document.querySelectorAll('#setupForm input[name=frame]').forEach(r=>r.onchange=()=>applyFrame(r.value));
- $('#setupForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);applyFrame(f.get('frame'));S=newState(f.get('nm').trim()||'나',+f.get('nai'),f.get('diff'),+f.get('len'),f.get('speed'));S.v=2;syncCycle();gen++;selected=S.players[0].pos;render();gameLoop()}}
+ $('#setupForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);applyFrame(f.get('frame'));S=newState(f.get('nm').trim()||'나',+f.get('nai'),f.get('diff'),+f.get('len'),f.get('speed'));S.v=4;syncCycle();gen++;selected=S.players[0].pos;render();gameLoop()}}
 (function(){const nj=$('#nojs');if(nj)nj.remove();applyFrame(getFrame());renderSetup()})();
 let _rzT;window.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{if(getFrame()==='auto')applyFrame('auto');fitBoard()},150)});
 window.addEventListener('error',e=>{const el=document.createElement('div');el.className='sub';el.style.color='var(--danger)';el.textContent='오류: '+e.message;document.body.appendChild(el)});
