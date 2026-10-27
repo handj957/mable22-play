@@ -436,7 +436,7 @@ function forecast(p){ // 다음 결산 혼란·지지 예상
   if(p.policy==='welfare'){du-=3;ds+=1;parts.push(['복지 확대 정책',-3,1]);}
   if(p.policy==='industry'){du+=1;parts.push(['산업 진흥 정책',+1,0]);}
   if(p.policy==='culture'){ds+=1;parts.push(['문화 육성 정책',0,1]);}
-  const so=p.comps.filter(c=>c.ind==='사회적').length;if(so){const v=2*so*lb;du-=v;ds+=so;parts.push([`사회적 기업 ${so}곳`,-v,so]);}
+  const so=p.comps.filter(c=>c.ind==='사회적').length;if(so){const v=2*so*lb,sv=so*lb;du-=v;ds+=sv;parts.push([`사회적 기업 ${so}곳`,-v,sv]);}
   const au=p.comps.filter(c=>c.auto).length;if(au){const v=Math.max(0,au*((p.edu<3?3:1)-(has(p,33)?1:0)))*lb;du+=v;parts.push([`자동화 ${au}곳(교육 ${p.edu})`,v,0]);}
   const e=p.edu;if(e){du-=e;parts.push([`교육 ${p.edu}단계`,-e,0]);}
   const cu=p.culture;if(cu){du-=cu;parts.push([`문화력 ${p.culture}`,-cu,0]);}
@@ -711,7 +711,7 @@ function resolve(p){
   case 'bank':{
     say(`${c.ic} ${c.name} · 대출 ${won(p.loans)} · 금리 ${G.rate}%`,'금리↑ → 이자↑ → 기업 이익↓');
     const o=[];
-    if(p.loans+300<=900)o.push(C('대출 ₵300 받기',`결산마다 이자 약 ${Math.round(300*G.rate/50)}`,()=>{p.loans+=300;p.cash+=300;say(`${p.name} 대출 ₵300`,'부채 600 초과 시 지지율 −2/R');},()=>p.cash<200?6:-1));
+    if(p.loans+300<=900)o.push(C('대출 ₵300 받기',`결산마다 이자 약 ${Math.round(300*G.rate/100)}`,()=>{p.loans+=300;p.cash+=300;say(`${p.name} 대출 ₵300`,'부채 600 초과 시 지지율 −2/R');},()=>p.cash<200?6:-1));
     if(p.loans>0&&p.cash>=300)o.push(C('₵300 갚기','이자 부담↓',()=>{p.loans-=300;p.cash-=300;say(`${p.name} 대출 ₵300 상환`,'');},()=>p.cash>850?5:-1));
     o.push(PASS());return o;}
   case 'market':say(`${c.ic} ${c.name}`,'비축 효과: 철강 → 제조 원가 절반 · 식량 → 식품 원가 절반·물가 시위 완화 · 석유 → 에너지 이익 +15%');return marketChoices(p);
@@ -846,7 +846,7 @@ function endRound(){
   // 지도자별
   alive().forEach(p=>{
     let prof=0;p.comps.forEach(co=>{prof+=compProfit(p,co);if(co.susp>0)co.susp--;});
-    const intr=p.freeInt?0:Math.round(p.loans*G.rate/50*(th('austere')?2:1));p.freeInt=false;const ti=Math.round(TAX[p.tax].inc/5*taxMul(p));prof+=ti;
+    const intr=p.freeInt?0:Math.round(p.loans*G.rate/100*(th('austere')?2:1));p.freeInt=false;const ti=Math.round(TAX[p.tax].inc/5*taxMul(p));prof+=ti;
     prof+=15*p.culture;if(p.policy==='welfare')prof-=40;
     const f=forecast(p);const ds=Math.round(f.ds*(th('sup15')?1.5:1));
     p.cash+=prof-intr;p.unrest+=f.du;p.support+=ds;
@@ -981,7 +981,7 @@ function render(){
   h.push(`<div class="dash" aria-label="${f.name}의 지방 9대 지표">`+
     tile('현금',won(f.cash),f.loans?`대출 ${won(f.loans)}`:'대출 없음',null,f.cash<150?'warn':'')+
     tile('순자산',won(worth(f)),`순위 ${rankOf(f)}위`)+
-    tile('금리',G.rate.toFixed(2)+'%',`이자 ${f.freeInt?0:Math.round(f.loans*G.rate/50*(th('austere')?2:1))}/R`)+
+    tile('금리',G.rate.toFixed(2)+'%',`이자 ${f.freeInt?0:Math.round(f.loans*G.rate/100*(th('austere')?2:1))}/R`)+
     tile('원자재',`<span style="font-size:10px;letter-spacing:-.3px">${G.food}·${G.oil}·${G.steel}</span>`,'식량·석유·철강')+
     tile('교육',`${f.edu}/4`,`생산성 +${f.edu*5}%`,[f.edu*25,'var(--green)'])+
     tile('지지율',f.support,`선거 확률 ${Math.round(electionProb(f)*100)}% · ${sg(fc.ds)}/R`,[f.support,'var(--green)'],f.support<35?'crit':f.support<45?'warn':'')+
