@@ -320,7 +320,7 @@ const THEMES=[
  {t:'교육 주간',d:'교육 투자비 −30%',k:'edu'},{t:'노동절',d:'자동화 혼란·사회적 기업 효과 2배',k:'labor'},
  {t:'문화의 달',d:'문화 투자비 −25%, 문화 붐이 잘 일어남',k:'culture'},{t:'부동산 규제',d:'건설비 +30%',k:'reg'},
  {t:'청년 박람회',d:'귀향 센터에서 인구 +2',k:'youth'},{t:'태풍 시즌',d:'결산 때 산골·해안 건물 피해 위험',k:'storm'},
- {t:'축제 시즌',d:'시민 광장 주사위 +3',k:'fest'},{t:'긴축 재정',d:'대출 이자 2배, 결산 세수 −20%',k:'austere'},
+ {t:'축제 시즌',d:'시민 광장 주사위 +3',k:'fest'},{t:'긴축 재정',d:'대출 이자 2배, 세수 −20%',k:'austere'},
  {t:'수출 붐',d:'기업 이익 +25%',k:'export'},{t:'가짜뉴스 범람',d:'사회 뉴스 악재 확률 +15%p',k:'fake'}];
 const POLICY={none:{n:'정책 없음',d:'국회의사당에서 정할 수 있음'},welfare:{n:'복지 확대',d:'₵40/R · 혼란 −3 · 지지 +1'},
  industry:{n:'산업 진흥',d:'기업 이익 +15% · 혼란 +1'},culture:{n:'문화 육성',d:'문화 투자 −25% · 지지 +1'}};
@@ -617,7 +617,7 @@ async function doRoll(p){
   await move(p,d);await afterMove(p);
 }
 async function afterMove(p){
-  const ch=resolve(p);fixStats();ensureCash(p);
+  const ch=resolve(p);fixStats();G.players.forEach(ensureCash);
   if(ch&&ch.length&&!p.out){
     if(p.human){G.phase='choice';G.choices=ch;render();fxDiff(p.pos);return;}
     render();fxDiff(p.pos);await TOUR;await sleep(SPD.ai);aiPick(p,ch);render();fxDiff(p.pos);await TOUR;await sleep(SPD.ai*0.6);return endTurn();
@@ -626,14 +626,14 @@ async function afterMove(p){
 }
 function pick(i){
   const p=cur();if(G.phase!=='choice'||!G.choices)return;
-  G.src=null;const r=G.choices[i].fn();fixStats();ensureCash(p);
+  G.src=null;const r=G.choices[i].fn();fixStats();G.players.forEach(ensureCash);
   if(Array.isArray(r)&&r.length){G.choices=r;render();fxDiff(p.pos);return;}
   G.choices=null;G.phase='done';render();fxDiff(p.pos);TOUR.then(()=>setTimeout(endTurn,window.__FAST?0:(fxOn('B')||fxOn('D')?700:400)));
 }
 function aiPick(p,ch){
   let best=null,bs=-1e9;ch.forEach(c=>{let s=(typeof c.ai==='function'?c.ai():c.ai)??0;if(s>0)s+=Math.random()*2.4-1.2;if(s>bs){bs=s;best=c;}});
   if(!best||bs<=0)best=ch.find(c=>c.pass)||ch[ch.length-1];
-  G.src=null;const r=best.fn();fixStats();ensureCash(p);
+  G.src=null;const r=best.fn();fixStats();G.players.forEach(ensureCash);
   if(Array.isArray(r)&&r.length)aiPick(p,r);
 }
 function endTurn(){
@@ -678,7 +678,7 @@ function resolve(p){
       const can=p.cash>=c.price;const opts=[];
       say(`${c.ic} ${c.name} · 주인 없음 (${won(c.price)})`,c.t==='prop'?`반응: ${PROV[c.pv].rx}`:c.t==='public'?'공공시설: 누가 들르면 주인 지지율 +2, 매 결산 혼란 −1 · 고유 효과 '+PUBFX[c.i]:'교통: 2개 모두 가지면 통행료 2배');
       opts.push(C(`매입 ${won(c.price)}`,can?`예상 통행료 ${c.t==='public'?10:c.t==='transport'?40:Math.round(c.price*0.12)}`:'현금 부족',()=>{if(p.cash<c.price)return;p.cash-=c.price;s.o=p.id;say(`${p.name} ${c.name} 매입`, c.t==='public'?'공공시설 → 지지율·혼란 관리':'');},()=>aiBuy(p,c)));
-      if(!can&&p.loans<900)opts.push(C('대출 ₵300 받고 매입',`금리 ${G.rate}% 이자`,()=>{p.loans+=300;p.cash+=300;if(p.cash>=c.price){p.cash-=c.price;s.o=p.id;say(`${p.name} 대출로 ${c.name} 매입`,'빚 증가 → 결산 이자↑');}},()=>c.t==='prop'&&p.loans<300&&worth(p)>1500?3:-1));
+      if(!can&&p.loans+300<=900)opts.push(C('대출 ₵300 받고 매입',`금리 ${G.rate}% 이자`,()=>{p.loans+=300;p.cash+=300;if(p.cash>=c.price){p.cash-=c.price;s.o=p.id;say(`${p.name} 대출로 ${c.name} 매입`,'빚 증가 → 결산 이자↑');}},()=>c.t==='prop'&&p.loans<300&&worth(p)>1500?3:-1));
       opts.push(PASS());if(!can)opts[0].sub='현금 부족';
       return opts.filter(o=>!(o.label.startsWith('매입')&&!can));
     }
@@ -711,7 +711,7 @@ function resolve(p){
   case 'bank':{
     say(`${c.ic} ${c.name} · 대출 ${won(p.loans)} · 금리 ${G.rate}%`,'금리↑ → 이자↑ → 기업 이익↓');
     const o=[];
-    if(p.loans<900)o.push(C('대출 ₵300 받기',`결산마다 이자 약 ${Math.round(300*G.rate/50)}`,()=>{p.loans+=300;p.cash+=300;say(`${p.name} 대출 ₵300`,'부채 600 초과 시 지지율 −2/R');},()=>p.cash<200?6:-1));
+    if(p.loans+300<=900)o.push(C('대출 ₵300 받기',`결산마다 이자 약 ${Math.round(300*G.rate/50)}`,()=>{p.loans+=300;p.cash+=300;say(`${p.name} 대출 ₵300`,'부채 600 초과 시 지지율 −2/R');},()=>p.cash<200?6:-1));
     if(p.loans>0&&p.cash>=300)o.push(C('₵300 갚기','이자 부담↓',()=>{p.loans-=300;p.cash-=300;say(`${p.name} 대출 ₵300 상환`,'');},()=>p.cash>850?5:-1));
     o.push(PASS());return o;}
   case 'market':say(`${c.ic} ${c.name}`,'비축 효과: 철강 → 제조 원가 절반 · 식량 → 식품 원가 절반·물가 시위 완화 · 석유 → 에너지 이익 +15%');return marketChoices(p);
@@ -735,7 +735,7 @@ function resolve(p){
     say(`${c.ic} ${c.name} · 다음 정기 선거까지 ${next}라운드`,`재신임 조건: 사회 주사위 + 지지율/10 + 교육/2 ≥ 10`);
     return [C('여론조사',`재신임 확률 ${pr}%`,()=>{say(`📊 ${p.name} 여론조사: 재신임 확률 ${pr}%`,pr<50?'지지율·교육을 올려야 안전':'현재 안정권');},0),
       C('선거 캠페인 ₵100','지지율 +5',()=>{if(p.cash<100)return;p.cash-=100;p.support+=5;say(`${p.name} 선거 캠페인`,'지지율 +5 → 재신임 확률↑');},()=>p.support<55&&p.cash>350&&next<=2?6:-1),
-      RC(C('조기 선거','성공: 지지율 +8 · 실패: 세율 표준·기업 1곳 정지',()=>election(p,true),()=>pr>=85&&p.support<80?3:-1)),PASS()];}
+      RC(C('조기 선거','성공: 지지율 +8 · 실패: 세율 표준·지지율 40 이하·기업 1곳 정지',()=>election(p,true),()=>pr>=85&&p.support<80?3:-1)),PASS()];}
   case 'taxoffice':{
     const rate=p.support<=30?0.04:th('austere')?0.10:p.tax==='high'?0.12:0.08;const pay=Math.round(Math.max(0,p.cash)*rate);p.cash-=pay;G.fund+=pay;
     say(`${c.ic} 국세청 · 국세 ${won(pay)} 납부(현금 ${Math.round(rate*100)}%)`,p.support<=30?'지지 30 이하 조세 저항으로 세율 인하':'납부액은 국민 축제 광장 기금으로');
@@ -746,12 +746,12 @@ function resolve(p){
   case 'expo':{
     say(`${c.ic} ${c.name} · 문화력 ${p.culture} · 개최 ${p.expo}회`,'유치: 사회 주사위 + 문화력×2 ≥ 12');
     if(p.culture<1)return null;
-    const film=p.culture>=2?[RC(C('국제 영화제 유치 ₵120',`주사위 + 문화력×2 ≥ 10 · 확률 ${Math.round(Math.max(0,Math.min(12,13-(10-p.culture*2)))/12*100)}%`,()=>{
+    const film=p.culture>=2?[RC(C('국제 영화제 유치 ₵120',`주사위 + 문화력×2 ≥ 10 · 확률 ${Math.round(Math.max(0,Math.min(12,13-(10-p.culture*2-(has(p,57)?2:0))))/12*100)}%`,()=>{
       if(p.cash<120)return;p.cash-=120;const d=d12();G.dice.so=d;setSrc('so',d);
       if(d+p.culture*2+(has(p,57)?2:0)>=10){p.expo++;p.cash+=80+30*p.culture;p.support+=4;say(`🎬 ${p.name} 국제 영화제 유치 성공 (주사위 ${d})`,`관광 수입 +${80+30*p.culture}, 지지율 +4, 국제 행사 개최 +1`);}
       else{p.cash+=60;say(`${p.name} 영화제 유치 실패 (주사위 ${d})`,'신청비 절반 환급');}
     },()=>p.culture>=2&&p.cash>300?(p.strat==='문화'?8:4):-1))]:[];
-    return [RC(C('세계 엑스포 유치 신청 ₵200',`성공 확률 ${Math.round(Math.max(0,Math.min(12,13-(12-p.culture*2)))/12*100)}%`,()=>{
+    return [RC(C('세계 엑스포 유치 신청 ₵200',`성공 확률 ${Math.round(Math.max(0,Math.min(12,13-(12-p.culture*2-(has(p,57)?2:0))))/12*100)}%`,()=>{
       if(p.cash<200)return;p.cash-=200;const d=d12();G.dice.so=d;setSrc('so',d);
       if(d+p.culture*2+(has(p,57)?2:0)>=12){p.expo++;p.cash+=150+40*p.culture;p.support+=8;p.unrest-=5;pend(p,'tour',2);say(`🎪 ${p.name} 국제 행사 유치 성공! (주사위 ${d})`,`관광 수입 +${150+40*p.culture}, 지지율 +8, 혼란 −5`);}
       else{p.cash+=100;say(`${p.name} 유치 실패 (주사위 ${d})`,'신청비 절반 환급');}
@@ -763,7 +763,7 @@ function resolve(p){
     if(p.pos===0){say('🏛️ 국회의사당 도착',`세금 또는 국정 정책 1개를 바꿀 수 있습니다 · 현재 ${TAX[p.tax].n}·${POLICY[p.policy].n}`);return taxChoices(p,true).concat(policyChoices(p),[PASS('그대로 두기')]);}
     if(p.pos===10){p.skip=1;if(p.unrest>=50){say('🏡 귀농 마을','한 턴 쉬지만 혼란 50 이상이라 인구 유입 없음');return null;}const g=th('youth')?2:1;p.pop+=g;say('🏡 귀농 마을',`한 턴 쉬고 인구 +${g}${th('youth')?' (청년 박람회 효과)':''}`);return null;}
     if(p.pos===31){const f=G.fund;p.cash+=f;G.fund=0;p.unrest-=5;say(`🎉 국민 축제 광장 · 기금 ${won(f)} 획득`,'혼란 −5'+(p.culture>=3?' · 문화력 3 이상이면 여기서 국제 행사를 유치할 수 있습니다':''));
-      if(p.culture>=3)return [RC(C('세계 엑스포 유치 신청 ₵200',`주사위 + 문화력×2 ≥ 12 · 확률 ${Math.round(Math.max(0,Math.min(12,13-(12-p.culture*2)))/12*100)}%`,()=>{
+      if(p.culture>=3)return [RC(C('세계 엑스포 유치 신청 ₵200',`주사위 + 문화력×2 ≥ 12 · 확률 ${Math.round(Math.max(0,Math.min(12,13-(12-p.culture*2-(has(p,57)?2:0))))/12*100)}%`,()=>{
         if(p.cash<200)return;p.cash-=200;const d=d12();G.dice.so=d;setSrc('so',d);
         if(d+p.culture*2+(has(p,57)?2:0)>=12){p.expo++;p.cash+=150+40*p.culture;p.support+=8;p.unrest-=5;pend(p,'tour',2);say(`🎪 ${p.name} 국제 행사 유치 성공! (주사위 ${d})`,`관광 수입 +${150+40*p.culture}, 지지율 +8, 혼란 −5`);}
         else{p.cash+=100;say(`${p.name} 유치 실패 (주사위 ${d})`,'신청비 절반 환급');}
@@ -776,13 +776,13 @@ function resolve(p){
 function policyChoices(p){return Object.entries(POLICY).filter(([k])=>k!==p.policy&&k!=='none').map(([k,v])=>C(`정책: ${v.n}`,v.d,()=>{p.policy=k;say(`${p.name} 국정 정책 → ${v.n}`,v.d);},()=>aiPolicy(p)===k&&aiPolicy(p)!==p.policy?6:-1));}
 function aiPolicy(p){if(p.unrest>45||p.strat==='복지')return'welfare';if(p.strat==='문화')return'culture';if(p.comps.length>=2)return'industry';return'welfare';}
 function taxChoices(p,noPass){
-  return Object.entries(TAX).filter(([k])=>k!==p.tax).map(([k,t])=>C(`${t.n}으로 바꾸기`,`세수 ${t.inc} · 지지 ${sg(t.sup)}/R${t.un?` · 혼란 +${t.un}/R`:''}`,()=>{p.tax=k;say(`${p.name} 세금 정책 → ${t.n}`,k==='high'?'세수↑ → 지지율↓ → 선거 위험':k==='low'?'세수↓ → 지지율↑':'');},()=>aiTax(p)===k?5:-1)).concat(noPass?[]:[PASS(`${TAX[p.tax].n} 유지`)]);
+  return Object.entries(TAX).filter(([k])=>k!==p.tax).map(([k,t])=>C(`${t.n}으로 바꾸기`,`세수 ${t.inc}${t.sup?` · 지지 ${sg(t.sup)}/R`:' · 지지 변화 없음'}${t.un?` · 혼란 +${t.un}/R`:''}`,()=>{p.tax=k;say(`${p.name} 세금 정책 → ${t.n}`,k==='high'?'세수↑ → 지지율↓ → 선거 위험':k==='low'?'세수↓ → 지지율↑':'');},()=>aiTax(p)===k?5:-1)).concat(noPass?[]:[PASS(`${TAX[p.tax].n} 유지`)]);
 }
 function companyChoices(p,c){
   say(`${c.ic} ${c.name} · 내 기업 ${p.comps.length}/3`,'기업 이익 = 매출 × 생산성(교육·혼란·인구) − 원가 − 이자');
   const o=[];
   p.comps.forEach((co,k)=>{if(co.tier<3){const cost=TIERCOST[co.tier+1];o.push(C(`${IND[co.ind].ic} ${co.ind} ${TIER[co.tier]} → ${TIER[co.tier+1]} ${won(cost)}`,'매출 2배',()=>{if(p.cash<cost)return;p.cash-=cost;co.tier++;say(`${p.name} ${co.ind} 기업 ${TIER[co.tier]}로 성장`,'');},()=>p.cash-cost>300?7:-1));}
-    if(!co.auto&&co.tier>=2&&(co.ind==='제조'||co.ind==='에너지'||co.ind==='식품'))o.push(C(`${IND[co.ind].ic} ${co.ind} 공장 자동화 ₵150`,`이익 +30% · 혼란 +${p.edu<3?3:1}/R`,()=>{if(p.cash<150)return;p.cash-=150;co.auto=true;say(`${p.name} ${co.ind} 자동화`,'이익↑ → 일자리 대체 → 혼란↑');},()=>p.unrest<40&&p.cash>450?5:-1));});
+    if(!co.auto&&co.tier>=2&&(co.ind==='제조'||co.ind==='에너지'||co.ind==='식품'))o.push(C(`${IND[co.ind].ic} ${co.ind} 공장 자동화 ₵150`,`이익 +30% · 혼란 +${Math.max(0,(p.edu<3?3:1)-(has(p,33)?1:0))}/R`,()=>{if(p.cash<150)return;p.cash-=150;co.auto=true;say(`${p.name} ${co.ind} 자동화`,'이익↑ → 일자리 대체 → 혼란↑');},()=>p.unrest<40&&p.cash>450?5:-1));});
   if(p.comps.length<3){
     if(c.social)o.push(C('🌻 사회적 기업 설립 ₵150','이익 절반 · 혼란 −2·지지 +1/R',()=>found(p,'사회적'),()=>p.cash>400&&(p.unrest>35||p.strat==='문화'||p.strat==='복지')?7:-1));
     else o.push(C('새 기업 설립 ₵150','업종 고르기 →',()=>Object.keys(IND).filter(k=>k!=='사회적').map(k=>C(`${IND[k].ic} ${k} ${won(foundCost(p,k))}`,`${IND[k].d} · 예상 이익 ${previewProfit(p,k)}${foundCost(p,k)<150?' · 이 칸 할인':''}`,()=>found(p,k),()=>previewProfit(p,k))),()=>p.cash>400?7:-1));
@@ -799,12 +799,13 @@ function marketChoices(p){
   });
   o.push(PASS('거래 끝내기'));return o;
 }
-function election(p,early){
+function election(p,early,quiet){
+  const msg=(m,ch)=>quiet?(G.msg=m,G.chain=ch||''):say(m,ch);
   const d=d12();G.dice.so=d;setSrc('so',d);const sc=d+p.support/10+p.edu/2+(has(p,59)?1:0);
-  if(sc>=10){p.support+=early?8:3;say(`🗳️ ${p.name} ${early?'조기 ':''}선거 재신임 (${d}+${(p.support/10).toFixed(1)}+${p.edu/2})`,early?'지지율 +8':'지지율 +3, 정책 유지');return true;}
+  if(sc>=10){p.support+=early?8:3;msg(`🗳️ ${p.name} ${early?'조기 ':''}선거 재신임 (${d}+${(p.support/10).toFixed(1)}+${p.edu/2})`,early?'지지율 +8':'지지율 +3, 정책 유지');return true;}
   p.tax='std';p.support=Math.min(p.support,40);
   const co=p.comps.slice().sort((a,b)=>b.tier-a.tier)[0];if(co)co.susp=1;
-  say(`🗳️ ${p.name} 선거 패배 (점수 ${sc.toFixed(1)})`,'세율 표준으로 초기화'+(co?`, ${co.ind} 기업 1라운드 영업 정지`:''));
+  msg(`🗳️ ${p.name} 선거 패배 (점수 ${sc.toFixed(1)})`,'세율 표준으로 초기화, 지지율 40 이하'+(co?`, ${co.ind} 기업 1라운드 영업 정지`:''));
   return false;
 }
 
@@ -839,7 +840,7 @@ function endRound(){
   const avgC=(G.food+G.oil+G.steel)/3;
   if(avgC>130){rateChg(0.5);rep.push(`원자재 평균 ${Math.round(avgC)} → 인플레 → 금리 +0.5%p`);}
   // 사회 주사위
-  let so=d12();G.dice.so=so;if(th('culture')&&so===9)so=10;
+  let so=d12();if(th('culture')&&so===9)so=10;G.dice.so=so;
   {const [n,f]=RSOC[so];G.repSrc[rep.length]='so';rep.push(`📢 사회 주사위 ${G.dice.so} → ${n}: ${f()}`);}
   G.repSeq=(G.repSeq||0)+1;
   // 지도자별
@@ -876,7 +877,7 @@ function endRound(){
     alive().forEach(p=>{const v=Math.round(Math.max(0,p.cash)*(p===top?0.2:0.1));p.cash-=v;});
     rep.push(`⚠️ 평균 혼란 ${Math.round(avg)} > 60 → 국가 재정 위기: 모두 현금 −10%, ${top.name} −20%`);}
   // 선거
-  if(G.round%6===0){rep.push(`🗳️ ${G.round}라운드 정기 선거`);alive().forEach(p=>{election(p,false);rep.push('  '+G.msg+' · '+G.chain);});}
+  if(G.round%6===0){rep.push(`🗳️ ${G.round}라운드 정기 선거`);alive().forEach(p=>{election(p,false,true);rep.push('  '+G.msg+' · '+G.chain);});}
   fixStats();
   alive().forEach(p=>ensureCash(p));
   rep.forEach(t=>log(t));
@@ -980,7 +981,7 @@ function render(){
   h.push(`<div class="dash" aria-label="${f.name}의 지방 9대 지표">`+
     tile('현금',won(f.cash),f.loans?`대출 ${won(f.loans)}`:'대출 없음',null,f.cash<150?'warn':'')+
     tile('순자산',won(worth(f)),`순위 ${rankOf(f)}위`)+
-    tile('금리',G.rate.toFixed(2)+'%',`이자 ${Math.round(f.loans*G.rate/50)}/R`)+
+    tile('금리',G.rate.toFixed(2)+'%',`이자 ${f.freeInt?0:Math.round(f.loans*G.rate/50*(th('austere')?2:1))}/R`)+
     tile('원자재',`<span style="font-size:10px;letter-spacing:-.3px">${G.food}·${G.oil}·${G.steel}</span>`,'식량·석유·철강')+
     tile('교육',`${f.edu}/4`,`생산성 +${f.edu*5}%`,[f.edu*25,'var(--green)'])+
     tile('지지율',f.support,`선거 확률 ${Math.round(electionProb(f)*100)}% · ${sg(fc.ds)}/R`,[f.support,'var(--green)'],f.support<35?'crit':f.support<45?'warn':'')+
@@ -1020,7 +1021,7 @@ function render(){
 }
 function rankOf(p){return G.players.filter(x=>!x.out).sort((a,b)=>worth(b)-worth(a)).indexOf(p)+1||'-';}
 function cellClick(i){
-  const p=cur();
+  if(!G)return;const p=cur();
   if(G&&G.phase==='hsr'&&p.human){if(i===p.pos){G.msg='이미 있는 칸입니다. 다른 칸을 고르세요.';render();return;}p.hsr=false;G.phase='moving';VIEW.info=null;travelTo(p,i).then(()=>afterMove(p));return;}
   VIEW.info=VIEW.info===i?null:i;render();
 }
@@ -1030,7 +1031,7 @@ function infoCard(i){
     edu:'교육 +1 (생산성 +5%, 혼란↓, 선거 유리)',company:c.social?'사회적 기업 설립 또는 기업 성장':'기업 설립·성장·자동화',bank:'대출 ₵300 · 상환',market:'식량·석유·철강 사고팔기',
     plaza:'사회 주사위: 1~4 시위, 5~8 평온, 9~12 축제',pop:'인구 +1 (매출↑, 교육 낮으면 혼란↑)',pact:'다른 지도자와 상생 협약',election:'여론조사 또는 조기 선거',
     taxoffice:'현금 8% 납부 후 세금 정책 변경',welfare:'₵50 + 현금 5% 납부 → 축제 기금',expo:'문화력 1 이상이면 국제 행사 유치 신청',news:c.k==='s'?'사회·문화 카드 1장':'경제 카드 1장',
-    transport:'교통: 통행료 40, 2개 모두 가지면 80',corner:{0:'지나가면 세수, 도착하면 세금 정책 변경',10:'한 턴 쉬고 인구 +1',31:'쌓인 기금 받기, 혼란 −5',41:'다음 차례에 원하는 칸으로 이동'}[i]}[c.t];
+    transport:'교통: 통행료 40, 2개 모두 가지면 80',corner:{0:'지나가면 세수, 도착하면 세금·국정 정책 변경',10:'한 턴 쉬고 인구 +1',31:'쌓인 기금 받기, 혼란 −5',41:'다음 차례에 원하는 칸으로 이동'}[i]}[c.t];
   const lk=linksOf(i);const extra=(lk.length?`<br><b style="font-size:12px">영향을 주는 칸</b>${lk.map(L=>`<br>→ ${L.to.slice(0,6).map(t=>CELLS[t].sn).join('·')}${L.to.length>6?' 외':''}: ${L.t}`).join('')}`:'')+(PUBFX[i]?`<br>고유 효과: ${PUBFX[i]}`:'')+(VENUE[i]?`<br>✦ 첫 투자 인증: ${VENUE[i]}`:'')+(FOUNDDISC[i]?`<br>이 칸 설립 할인: ${FOUNDDISC[i].join('·')} −₵50${i===12?', 설립 시 혼란 −2':''}`:'')+(i===5?'<br>보유 시 내 청솔섬 통행료 +20%, 여객선 결항 면제':'')+(i===39?'<br>보유 시 내 수도권 통행료 +15%':'');
   return `<div class="info"><button class="btn alt" id="infox" style="float:right;width:auto;min-height:0;padding:2px 8px">닫기</button><b>${c.ic} ${c.name}</b><br>${desc}${extra}${c.price?`<br>가격 ${won(c.price)}`:''}${o?`<br>주인 <span style="color:${o.col}">${o.sym} ${o.name}</span> · 건물 ${s.l}단계 · 통행료 ${won(rent(i))}`:c.price?'<br>주인 없음':''}</div>`;
 }
@@ -1047,11 +1048,11 @@ function tabBody(f,fc){
   if(VIEW.tab==='mind'){
     const avg=Math.round(alive().reduce((a,p)=>a+p.unrest,0)/Math.max(1,alive().length));
     return `<h4>다음 결산에서 바뀌는 민심</h4><table class="${hlOn('mind')?'flash':''}"><tr><th>원인</th><th>혼란</th><th>지지</th></tr>${fc.parts.map(x=>`<tr><td>${x[0]}</td><td>${x[1]?sg(x[1]):''}</td><td>${x[2]?sg(x[2]):''}</td></tr>`).join('')}<tr><th>합계</th><th>${sg(fc.du)}</th><th>${sg(fc.ds)}</th></tr></table>
-    <h4>국정 정책</h4>${POLICY[f.policy].n} · ${POLICY[f.policy].d}<br><span style="color:var(--muted)">세수 배율 ×${taxMul(f).toFixed(1)} (지지율 70↑ ×1.2, 30↓ ×0.8) · 일자리 ${jobsOf(f)} / 인구 ${f.pop}</span>
+    <h4>국정 정책</h4>${POLICY[f.policy].n} · ${POLICY[f.policy].d}<br><span style="color:var(--muted)">세수 배율 ×${taxMul(f).toFixed(2)} (지지율 70↑ ×1.2, 30↓ ×0.8) · 일자리 ${jobsOf(f)} / 인구 ${f.pop}</span>
     ${G.pending.filter(x=>x.pid===f.id||x.pid<0).length?`<h4>예정된 연쇄 사건</h4>${G.pending.filter(x=>x.pid===f.id||x.pid<0).map(x=>`· ${({strike:'파업 장기화 판정',probe:'특검 수사 판정',recover:'감염병 회복세',import:'식량 긴급 수입',school:'학교 통폐합',relief:'태풍 복구 지원금',tour:'국제 행사 관광 특수',rally:'후속 집회(혼란 60 이상이면)'})[x.k]} — ${x.r}라운드 결산`).join('<br>')}`:''}
     <h4>선거</h4>${6-((G.round-1)%6)}라운드 뒤 정기 선거 · 재신임 확률 ${Math.round(electionProb(f)*100)}%<br><span style="color:var(--muted)">사회 주사위 + 지지율/10(${(f.support/10).toFixed(1)}) + 교육/2(${f.edu/2}) ≥ 10</span>
     <h4>국가 재정 위기 경보</h4>평균 혼란 ${avg} / 60<div class="meter"><i style="width:${Math.min(100,avg/60*100)}%;background:${avg>50?'var(--bad)':'var(--warn)'}"></i></div><span style="color:var(--muted)">60을 넘으면 모두 현금 −10%, 혼란 1위는 −20%. 서로 경쟁하면서도 나라 전체의 안정을 함께 챙겨야 합니다.</span>
-    <h4>혼란 70 이상이면</h4>시위로 내 건물 1단계를 잃고 지지율 −5. 85 이상이면 인구 −1, 수도권 통행료 −30%.`;}
+    <h4>혼란 70 이상이면</h4>시위로 내 건물 1단계를 잃고 지지율 −5. 수도권 통행료 −30%. 85 이상이면 인구 −1.`;}
   if(VIEW.tab==='rank'){
     const arr=G.players.slice().sort((a,b)=>worth(b)-worth(a));const mx=Math.max(1,...arr.map(worth));
     return `<h4>순자산</h4>${arr.map(x=>`<div class="${hlOn('rank')&&x===f?'flash':''}" style="display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:4px;align-items:center;border-radius:4px"><div><span style="color:${x.col}">${x.sym}</span> ${x.name}${x.out?' (파산)':''}<div class="meter"><i style="width:${worth(x)/mx*100}%;background:${x.col}"></i></div></div><div style="text-align:right">${won(worth(x))}</div></div>`).join('')}
@@ -1060,7 +1061,7 @@ function tabBody(f,fc){
   <h4>턴 순서</h4><ol class="ol"><li>이동 주사위(12면) 굴리기</li><li>도착한 칸 처리(매입·건설·투자·카드)</li><li>4명이 모두 움직이면 라운드 결산: 경제 주사위(경기·금리), 사회 주사위(시위·문화 붐), 기업 이익, 이자, 민심 변화</li></ol>
   <h4>원인 → 결과 10가지</h4><ol class="ol"><li>금리 인상 → 대출 이자 증가 → 기업 이익 감소</li><li>원자재 상승 → 기업 원가 상승, 평야·해안·산업도시 통행료 상승</li><li>교육 투자 → 생산성 상승 → 이익 증가 → 재투자</li><li>경기 호황·불황 → 통행료 ±15%, 기업 매출 ±20%</li><li>인플레(원자재 평균 130 초과) → 금리 인상 → 1번</li><li>교육 → 혼란 감소 → 생산성 → 기업 이익</li><li>세금 정책 → 지지율 → 선거 → 정책 유지 또는 초기화</li><li>자동화 → 이익 +30% → 일자리 감소 → 혼란 증가</li><li>인구 유입 → 매출 +10%, 교육이 낮으면 혼란 증가</li><li>문화력 → 관광 통행료·국제 행사 → 지지율</li></ol>
   <h4>세금 정책</h4>감세: 세수 150, 지지 +2/R · 표준: 세수 250 · 증세: 세수 350, 지지 −3/R, 혼란 +2/R. 국회의사당을 지날 때 세수를 받고, 결산마다 그 5분의 1을 더 받습니다.
-  <h4>선거 (6라운드마다)</h4>사회 주사위 + 지지율/10 + 교육/2 ≥ 10이면 재신임. 실패하면 세율이 표준으로 돌아가고 가장 큰 기업이 1라운드 영업 정지.
+  <h4>선거 (6라운드마다)</h4>사회 주사위 + 지지율/10 + 교육/2 ≥ 10이면 재신임. 실패하면 세율이 표준으로 돌아가고 지지율이 40 이하로 떨어지며, 가장 큰 기업이 1라운드 영업 정지.
   <h4>협력</h4>상생 협약을 맺으면 서로 통행료 30% 할인, 대신 혼란이 결산마다 10%씩 닮아갑니다. 평균 혼란이 60을 넘으면 국가 재정 위기가 모두를 덮칩니다.
   <h4>건물</h4>마을 회관 → 복합 타운 → 지역 명소. 단계마다 땅값의 50%. 같은 지방 3곳을 모두 가지면 통행료 2배.
   <h4>국정 정책 (국회의사당)</h4>복지 확대(₵40/R, 혼란 −3, 지지 +1) · 산업 진흥(기업 이익 +15%, 혼란 +1) · 문화 육성(문화 투자 −25%, 지지 +1).
@@ -1285,7 +1286,7 @@ function cellPreview(p,i){const c=CELLS[i],s=G.cells[i];
     case'culture':return p.culture>=5?['문화력 최고',0]:[`문화 ${won((80+40*p.culture)*cultMul(p))}${VENUE[i]&&!p.venues.includes(i)?' ✦':''}`,1];
     case'edu':return p.edu>=4?['교육 최고',0]:[`교육 ${won((100+50*p.edu)*(th('edu')?0.7:1)*(has(p,37)?0.8:1))}${VENUE[i]&&!p.venues.includes(i)?' ✦':''}`,1];
     case'news':{let pg={easy:.6,normal:.5,hard:.4}[G.diff];if(c.k==='s'&&th('fake'))pg-=0.15;return [`${c.k==='s'?'사회':'경제'} 카드 · 호재 ${Math.round(pg*100)}%`,0];}
-    case'plaza':{const b=(th('fest')?3:0)+(has(p,38)?1:0);return [`시위 ${Math.round(Math.max(0,4-b)/12*100)}% · 축제 ${Math.round(Math.min(12,7+b)/12*100)}%`,0];}
+    case'plaza':{const b=(th('fest')?3:0)+(has(p,38)?1:0);return [`시위 ${Math.round(Math.max(0,4-b)/12*100)}% · 축제 ${Math.round(Math.min(12,4+b)/12*100)}%`,0];}
     case'company':return [p.comps.length<3?`기업 설립${FOUNDDISC[i]?' 할인':''}·성장`:'기업 성장',1];
     case'bank':return [`대출 · 금리 ${G.rate.toFixed(1)}%`,0];
     case'market':return [`식${G.food} 유${G.oil} 철${G.steel}`,0];
