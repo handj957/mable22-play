@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>BlueMarble Tactics · LV5</title>
+<style>
+:root{
+  --bg:#0b1020;--bg2:#121a31;--panel:#16203a;--line:#2a3a63;--txt:#e8eefc;--dim:#8ea0c9;
+  --acc:#4fd1ff;--acc2:#ffb648;--red:#ff5c7a;--grn:#5ef2a2;--vio:#b58cff;
+  --p0:#4fd1ff;--p1:#ff8a5c;--p2:#5ef2a2;--p3:#ffd93d;
+  --cell:36px;--top:120px;--gap:2px;
+  --zoneN:#1d2b4f;--zoneE:#3a1d2a;--zoneS:#1b3340;--zoneW:#1e3328;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;overflow:hidden;font-size:13px}
+button{font-family:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--txt);border-radius:8px;padding:7px 10px;font-size:12px}
+button.pri{background:linear-gradient(135deg,#1f6fb5,#4fd1ff);border:none;color:#06101f;font-weight:700}
+button.warn{background:linear-gradient(135deg,#a3283f,#ff5c7a);border:none;color:#fff;font-weight:700}
+button:disabled{opacity:.35;cursor:default}
+.hide{display:none!important}
+
+/* ---------- 시작 화면 ---------- */
+#setup{position:fixed;inset:0;background:radial-gradient(1200px 600px at 50% -10%,#1b2c5a 0%,var(--bg) 60%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;overflow:auto;z-index:50}
+#setup h1{font-size:22px;letter-spacing:3px;color:var(--acc);font-weight:800}
+#setup h1 small{display:block;font-size:11px;letter-spacing:6px;color:var(--dim);margin-top:4px}
+#setup .sub{color:var(--dim);font-size:12px;text-align:center;max-width:360px;line-height:1.5}
+.pcfg{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.prow{display:grid;grid-template-columns:28px 1fr 100px 52px;gap:6px;align-items:center}
+.prow input{background:#0d1428;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:6px;font-size:12px;width:100%}
+.prow select{background:#0d1428;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:6px;font-size:11px}
+.prow .dot{width:16px;height:16px;border-radius:50%}
+.cmdinfo{font-size:11px;color:var(--dim);line-height:1.5;background:#0d1428;border-radius:8px;padding:8px}
+.cmdinfo b{color:var(--txt)}
+
+/* ---------- 상단 ---------- */
+#app{height:100%;display:flex;flex-direction:column}
+#top{padding:6px 8px 4px;display:flex;flex-direction:column;gap:4px}
+#title{display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:2px;color:var(--dim)}
+#title b{color:var(--acc)}
+#status{display:flex;gap:6px;font-size:11px;align-items:center;flex-wrap:wrap}
+.tag{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.tag.w{border-color:var(--acc2);color:var(--acc2)}
+#chips{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 6px;font-size:10px;line-height:1.35;position:relative;overflow:hidden}
+.chip.cur{box-shadow:0 0 0 1.5px var(--pc),0 0 14px color-mix(in srgb,var(--pc) 40%,transparent)}
+.chip .nm{font-weight:700;color:var(--pc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .ln{display:flex;justify-content:space-between;color:var(--dim)}
+.chip .ln b{color:var(--txt)}
+.chip.dead{opacity:.4}
+.chip.res::after{content:"레지스탕스";position:absolute;right:-18px;top:6px;transform:rotate(35deg);background:var(--red);color:#fff;font-size:8px;padding:1px 22px}
+
+/* ---------- 보드 ---------- */
+#boardwrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2px 0 6px}
+#board{position:relative;display:grid;grid-template-columns:repeat(11,var(--cell));grid-template-rows:repeat(19,var(--cell));gap:var(--gap);background:#0a0f1d;border-radius:10px;padding:var(--gap)}
+.cell{position:relative;border-radius:5px;background:var(--panel);border:1px solid #223055;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8.5px;line-height:1.05;text-align:center;overflow:hidden;cursor:pointer;user-select:none}
+.cell .ic{font-size:11px;line-height:1}
+.cell .nm{color:#c5d2f2;padding:0 1px;letter-spacing:-.3px}
+.cell.zN{background:var(--zoneN)}.cell.zE{background:var(--zoneE)}.cell.zS{background:var(--zoneS)}.cell.zW{background:var(--zoneW)}
+.cell.corner{background:linear-gradient(135deg,#2a3a63,#15203c);border-color:var(--acc)}
+.cell.node{border-color:var(--acc2)}
+.cell.event{border-style:dashed;border-color:var(--vio)}
+.cell.owned{box-shadow:inset 0 0 0 2px var(--pc)}
+.cell .lv{position:absolute;left:2px;top:2px;display:flex;gap:1px}
+.cell .lv i{width:4px;height:4px;border-radius:1px;background:var(--pc)}
+.cell .df{position:absolute;right:1px;top:1px;font-size:7px;letter-spacing:-1px}
+.cell .emp{position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(255,92,122,.25) 3px 5px);pointer-events:none}
+.cell.inrange{outline:1.5px solid var(--acc);outline-offset:-1px;animation:holo 1.2s ease-in-out infinite}
+.cell.inrange::before{content:attr(data-d);position:absolute;right:2px;bottom:1px;font-size:7px;color:var(--acc)}
+.cell.target{outline:2px solid var(--red);animation:holo .6s ease-in-out infinite}
+.cell.mine-sel{outline:2px solid var(--grn)}
+.cell.hit{animation:hit .5s ease-out}
+.cell.guer{box-shadow:inset 0 0 0 2px var(--red)}
+@keyframes holo{0%,100%{box-shadow:0 0 0 0 rgba(79,209,255,.0)}50%{box-shadow:0 0 10px 2px rgba(79,209,255,.45)}}
+@keyframes hit{0%{background:#ff5c7a;transform:scale(1.15)}100%{transform:scale(1)}}
+.tok{position:absolute;bottom:1px;display:flex;gap:1px;left:50%;transform:translateX(-50%)}
+.tok i{width:7px;height:7px;border-radius:50%;background:var(--pc);border:1px solid #06101f;box-shadow:0 0 5px var(--pc)}
+.tok i.g{background:var(--red);border-radius:2px}
+
+/* ---------- 콘솔 ---------- */
+#console{grid-column:2/11;grid-row:2/19;margin:3px;background:#0e1529;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0}
+#tabs{display:flex;border-bottom:1px solid var(--line)}
+#tabs button{flex:1;border:none;border-radius:0;background:transparent;color:var(--dim);padding:6px 0;font-size:11px;position:relative}
+#tabs button.on{color:var(--acc)}
+#tabs button.on::after{content:"";position:absolute;left:20%;right:20%;bottom:0;height:2px;background:var(--acc)}
+#panes{flex:1;overflow:auto;padding:6px;font-size:11px;line-height:1.45;min-height:0}
+.pane{display:none}.pane.on{display:block}
+.btns{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
+.btns button{flex:1 1 45%}
+#dice{display:flex;gap:6px;align-items:center;margin:4px 0}
+.die{width:30px;height:30px;border-radius:7px;background:#fff;color:#06101f;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center}
+.die.roll{animation:spin .5s linear}
+@keyframes spin{to{transform:rotate(360deg)}}
+#log{font-size:10px;color:var(--dim);border-top:1px dashed var(--line);margin-top:6px;padding-top:4px;max-height:38%;overflow:auto}
+#log div{padding:1px 0}
+#log .c0{color:var(--p0)}#log .c1{color:var(--p1)}#log .c2{color:var(--p2)}#log .c3{color:var(--p3)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px;margin:4px 0}
+.card h4{font-size:11px;color:var(--acc);margin-bottom:2px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:1px 8px;font-size:10px}
+.kv span:nth-child(odd){color:var(--dim)}
+.cmp{width:100%;border-collapse:collapse;font-size:10px}
+.cmp th,.cmp td{border-bottom:1px solid var(--line);padding:2px 3px;text-align:right}
+.cmp th:first-child,.cmp td:first-child{text-align:left}
+.q{border-left:3px solid var(--acc2);padding-left:6px;margin:4px 0}
+.rule h5{color:var(--acc2);margin:6px 0 2px;font-size:11px}
+.rule p{color:#c5d2f2;margin-bottom:3px}
+.hint{color:var(--acc);font-size:10px}
+.chain{display:flex;flex-wrap:wrap;gap:3px;align-items:center;margin:3px 0}
+.chain span{background:#0d1428;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:10px}
+.chain em{color:var(--acc2);font-style:normal}
+
+/* ---------- 이펙트/모달 ---------- */
+#fx{position:absolute;inset:0;pointer-events:none;overflow:visible}
+#fx path{fill:none;stroke:var(--red);stroke-width:2;stroke-dasharray:5 4;animation:dash .6s linear infinite;filter:drop-shadow(0 0 4px var(--red))}
+#fx path.emp{stroke:var(--vio)}#fx path.ok{stroke:var(--grn)}
+@keyframes dash{to{stroke-dashoffset:-18}}
+.toast{position:absolute;z-index:5;background:#06101f;border:1px solid var(--acc);color:var(--txt);font-size:10px;padding:3px 6px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-120%);animation:pop 1.8s ease-out forwards;pointer-events:none}
+.toast.bad{border-color:var(--red)}.toast.good{border-color:var(--grn)}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-130%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-170%)}}
+#modal{position:fixed;inset:0;background:rgba(3,6,14,.75);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px}
+#modal .box{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:380px;width:100%;max-height:85vh;overflow:auto;font-size:12px;line-height:1.5}
+#modal h3{color:var(--acc);font-size:14px;margin-bottom:6px}
+#modal .btns button{flex:1 1 100%}
+#modal .btns.row button{flex:1 1 30%}
+
+@media (orientation:landscape){
+  #app{flex-direction:row}
+  #top{width:var(--sidew);flex-direction:column;justify-content:flex-start}
+  #chips{grid-template-columns:1fr 1fr}
+  #board{grid-template-columns:repeat(19,var(--cell));grid-template-rows:repeat(11,var(--cell))}
+  #console{grid-column:2/19;grid-row:2/11}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 시작 화면 ===== -->
+<div id="setup">
+  <h1>BLUEMARBLE TACTICS<small>LEVEL 5 · 전선의 지배자들</small></h1>
+  <p class="sub">11×19 전장 · 주사위 눈 = 미사일 사거리 · 골드와 전술 AP의 이중 재화.<br>사령관을 고르고 전선을 장악하세요.</p>
+  <div class="pcfg" id="pcfg"></div>
+  <div class="cmdinfo" id="cmdinfo"></div>
+  <div class="btns" style="width:100%;max-width:380px">
+    <button class="pri" onclick="startGame(false)">▶ 게임 시작</button>
+    <button onclick="startGame(true)">🎓 튜토리얼로 시작</button>
+  </div>
+</div>
+
+<!-- ===== 게임 ===== -->
+<div id="app" class="hide">
+  <div id="top">
+    <div id="title"><span>BLUEMARBLE TACTICS · <b>LV5</b></span><span id="sound" onclick="toggleSound()">🔇</span></div>
+    <div id="status"></div>
+    <div id="chips"></div>
+  </div>
+  <div id="boardwrap"><div id="board">
+    <div id="console">
+      <div id="tabs">
+        <button class="on" data-t="act" onclick="tab('act')">행동</button>
+        <button data-t="war" onclick="tab('war')">전황</button>
+        <button data-t="quest" onclick="tab('quest')">퀘스트</button>
+        <button data-t="rule" onclick="tab('rule')">규칙</button>
+      </div>
+      <div id="panes">
+        <div class="pane on" id="p-act"></div>
+        <div class="pane" id="p-war"></div>
+        <div class="pane" id="p-quest"></div>
+        <div class="pane rule" id="p-rule"></div>
+        <div id="log"></div>
+      </div>
+    </div>
+    <svg id="fx"></svg>
+  </div></div>
+</div>
+
+<div id="modal" class="hide"><div class="box" id="mbox"></div></div>
+
+<script>
+/* ============================================================
+   데이터
+============================================================ */
+const N=56, LONG=19, SHORT=11, ROUNDS=15;
+const PC=['#4fd1ff','#ff8a5c','#5ef2a2','#ffd93d'];
+const ZN={N:'북부 측면',E:'동쪽 전선',S:'남부 측면',W:'서쪽 백라인'};
+
+// [번호, 이름, 짧은이름, 종류, 구역, 아이콘, 가격, 통행료]
+// 종류: corner / city / node / event
+const RAW=[
+[0,'HQ 출발 기지','HQ','corner','N','🏁',0,0],
+[1,'레이캬비크','레이캬빅','city','N','🧊',160,30],
+[2,'퀘스트 사령부','퀘스트','event','N','📡',0,0],
+[3,'스발바르 종자은행','스발바르','city','N','🌱',170,32],
+[4,'북극 항로','북극항로','city','N','🚢',180,34],
+[5,'웜홀 게이트 α','웜홀α','event','N','🌀',0,0],
+[6,'케이프 커내버럴 우주항','우주항','node','N','🚀',360,70],
+[7,'바이코누르','바이코누르','city','N','🛰️',200,38],
+[8,'달 기지 아르테미스','달기지','city','N','🌙',240,46],
+[9,'궤도 관측소','궤도관측','node','N','🔭',340,66],
+[10,'전략 통신탑','통신탑','corner','E','📶',400,80],
+[11,'블라디보스토크','블라디보','city','E','⚓',220,44],
+[12,'한반도 DMZ','DMZ','node','E','🛡️',380,76],
+[13,'타이완 해협','타이완','city','E','🌊',300,62],
+[14,'남중국해','남중국해','city','E','🏝️',280,58],
+[15,'블랙마켓','블랙마켓','event','E','🕶️',0,0],
+[16,'말라카 해협','말라카','city','E','🛳️',260,54],
+[17,'카슈미르','카슈미르','city','E','🏔️',240,50],
+[18,'호르무즈 해협','호르무즈','node','E','🛢️',400,82],
+[19,'레반트 전선','레반트','city','E','🔥',250,52],
+[20,'수에즈 운하','수에즈','city','E','⛴️',270,56],
+[21,'테러 아지트','아지트','event','E','💀',0,0],
+[22,'흑해 회랑','흑해','city','E','🌑',230,48],
+[23,'도네츠크','도네츠크','city','E','🏭',260,54],
+[24,'발트 회랑','발트회랑','node','E','❄️',370,74],
+[25,'사헬 전선','사헬','city','E','🏜️',210,42],
+[26,'기니만','기니만','city','E','🛢️',230,48],
+[27,'소말리아 해역','소말리아','city','E','🏴‍☠️',200,40],
+[28,'무기 연구소','연구소','corner','S','🧪',0,0],
+[29,'심해 채굴장','심해채굴','city','S','⛏️',190,36],
+[30,'사이버 사령부','사이버','city','S','💻',220,44],
+[31,'웜홀 게이트 β','웜홀β','event','S','🌀',0,0],
+[32,'해저 케이블 허브','해저케이블','city','S','🔌',200,40],
+[33,'양자 해킹 센터','양자해킹','node','S','⚛️',360,70],
+[34,'드론 조선소','드론조선','city','S','🛩️',230,46],
+[35,'기상 관측소','기상관측','event','S','🌪️',0,0],
+[36,'핵융합 플랜트','핵융합','city','S','☢️',260,52],
+[37,'AI 데이터센터','AI센터','node','S','🧠',380,76],
+[38,'보급창','보급창','corner','W','📦',400,80],
+[39,'시드니','시드니','city','W','🦘',180,34],
+[40,'싱가포르','싱가포르','city','W','🏙️',230,46],
+[41,'뉴델리','뉴델리','node','W','🕌',320,64],
+[42,'도쿄','도쿄','city','W','🗼',260,52],
+[43,'보급 드롭','보급드롭','event','W','🪂',0,0],
+[44,'서울','서울','node','W','🇰🇷',340,68],
+[45,'베이징','베이징','city','W','🏯',270,54],
+[46,'모스크바','모스크바','city','W','🧅',240,48],
+[47,'베를린','베를린','city','W','🏛️',230,46],
+[48,'런던','런던','node','W','🎡',330,66],
+[49,'파리','파리','city','W','🗼',240,48],
+[50,'무기 상점','무기상점','event','W','🔫',0,0],
+[51,'워싱턴','워싱턴','node','W','🏛️',350,70],
+[52,'뉴욕','뉴욕','city','W','🗽',300,60],
+[53,'상파울루','상파울루','city','W','🌴',190,36],
+[54,'토론토','토론토','city','W','🍁',200,40],
+[55,'요하네스버그','요하네스','city','W','💎',170,32],
+];
+const CMDS={
+  V:{n:'포격 사령관 Vanguard',ic:'🎯',p:'사거리 +2',a:'전면 포격(AP5): 사거리 내 적 도시 전부 건물 −1',cd:0,ap:5},
+  A:{n:'철옹성 Aegis',ic:'🛡️',p:'방어 시설 50% 할인',a:'절대 방어(AP4): 1라운드 내 도시 무적',ap:4},
+  P:{n:'첩보 공작원 Phantom',ic:'🕵️',p:'EMP 소모 AP −1',a:'해킹(AP3): 상대 AP 절반 강탈',ap:3},
+  T:{n:'보급 머천트 Tycoon',ic:'💰',p:'출발 통과 골드 2배',a:'긴급 보급(AP3): 주사위 한 번 더',ap:3},
+};
+const WEATHERS=[
+  {k:'clear',n:'쾌청 · 보급선 확보',ic:'☀️',d:'AP 수급 2배'},
+  {k:'storm',n:'태풍 · 짙은 안개',ic:'🌪️',d:'사거리 −2, 방어 비용 2배'},
+  {k:'solar',n:'태양 폭풍',ic:'🌞',d:'EMP·요격 포탑 작동 불능'},
+];
+const DEF={shield:{n:'실드',ic:'🛡',c:100,d:'공격 1회 흡수'},ciws:{n:'요격 포탑',ic:'🎯',c:150,d:'미사일 50% 요격'},jammer:{n:'재머',ic:'📡',c:200,d:'3칸 밖 조준 불가'}};
+const QUESTS=[
+ {id:'front3',t:'영토 점령',txt:'동쪽 전선 도시 3개 보유',chk:p=>cities(p).filter(c=>c.zone==='E').length>=3,rw:'AP +3',do:p=>{p.ap+=3}},
+ {id:'rear3',t:'영토 점령',txt:'서쪽 백라인 도시 3개 보유',chk:p=>cities(p).filter(c=>c.zone==='W').length>=3,rw:'궤도 타격권 1',do:p=>{p.orbital++}},
+ {id:'node2',t:'거점 확보',txt:'전략 거점 2곳 보유',chk:p=>nodes(p).length>=2,rw:'사거리 +1 영구',do:p=>{p.rangeBonus++}},
+ {id:'hit1',t:'전투 타격',txt:'미사일 타격 1회 성공',chk:p=>p.st.hits>=1,rw:'₲300',do:p=>{p.gold+=300}},
+ {id:'emp1',t:'전투 타격',txt:'EMP로 방어막 1회 무력화',chk:p=>p.st.emps>=1,rw:'요격 포탑 무료 설치권',do:p=>{p.freeCiws++}},
+ {id:'abs1',t:'생존/방어',txt:'실드로 공격 1회 흡수',chk:p=>p.st.abs>=1,rw:'₲500',do:p=>{p.gold+=500}},
+ {id:'long',t:'특수 기습',txt:'사거리 9 이상에서 타격 성공',chk:p=>p.st.long>=1,rw:'1위 자금 20% 강탈',do:p=>{const t=leader(p);if(t){const g=Math.floor(t.gold*.2);t.gold-=g;p.gold+=g}}},
+ {id:'terror',t:'공동 작전',txt:'게릴라 소탕 1회',chk:p=>p.st.terror>=1,rw:'AP +4',do:p=>{p.ap+=4}},
+ {id:'build',t:'요새화',txt:'내 도시에 건물 3단계 완성',chk:p=>cities(p).some(c=>c.lvl>=3),rw:'₲400',do:p=>{p.gold+=400}},
+];
+const BM_CARDS=[
+ {k:'orbit',n:'궤도 위성 타격',d:'무작위 4칸 구간의 모든 구조물 중화'},
+ {k:'jam',n:'통신 교란',d:'지정한 상대의 다음 턴 이동을 역방향으로'},
+ {k:'freeze',n:'자산 동결',d:'1위 플레이어의 골드 수입을 1라운드 동결'},
+ {k:'decoy',n:'유인 장치',d:'게릴라를 지정한 상대 도시 옆으로 이동'},
+];
+
+/* ============================================================
+   상태
+============================================================ */
+let cells=[], P=[], cur=0, round=1, phase='roll', weather=WEATHERS[0], guer=-1, tutorial=false, tutStep=0;
+let dice=[0,0], range=0, attacked=false, extraRoll=false, sel=null, soundOn=false, orbitalMode=false, bombMode=false;
+let busy=false,pendingLand=false,_go=null;
+
+function makeCells(){cells=RAW.map(r=>({i:r[0],name:r[1],short:r[2],type:r[3],zone:r[4],ic:r[5],price:r[6],toll:r[7],owner:null,lvl:0,def:{shield:0,ciws:0,jammer:0},emp:0}));}
+const cell=i=>cells[i];
+const cities=p=>cells.filter(c=>c.owner===p.id);
+const nodes=p=>cells.filter(c=>c.owner===p.id&&(c.type==='node'||c.type==='corner'));
+const dist=(a,b)=>{const d=Math.abs(a-b);return Math.min(d,N-d)};
+const alive=()=>P.filter(p=>p.alive);
+const leader=exc=>alive().filter(p=>p!==exc).sort((a,b)=>score(b)-score(a))[0];
+function score(p){return p.gold+cities(p).reduce((s,c)=>s+Math.round(c.price*(1+c.lvl*.5)),0)+p.qpts*100}
+const rnd=n=>Math.floor(Math.random()*n);
+const fmt=n=>'₲'+n.toLocaleString();
+
+/* ============================================================
+   시작 화면
+============================================================ */
+const NAMES=['지휘관','이사벨','카이','노바'];
+function buildSetup(){
+  const el=document.getElementById('pcfg');
+  el.innerHTML='<div style="font-size:11px;color:var(--dim)">플레이어 (2~4명) · 이름 · 사령관 · 조작</div>'+[0,1,2,3].map(i=>`
+   <div class="prow"><div class="dot" style="background:${PC[i]}"></div>
+   <input id="nm${i}" value="${NAMES[i]}">
+   <select id="cm${i}" onchange="cmdInfo()">${Object.keys(CMDS).map(k=>`<option value="${k}" ${k===['V','A','P','T'][i]?'selected':''}>${CMDS[k].ic} ${CMDS[k].n.split(' ')[0]}</option>`).join('')}</select>
+   <select id="bt${i}"><option value="h" ${i===0?'selected':''}>사람</option><option value="b" ${i>0?'selected':''}>AI</option>${i>1?'<option value="x">없음</option>':''}</select></div>`).join('');
+  cmdInfo();
+}
+function cmdInfo(){
+  document.getElementById('cmdinfo').innerHTML=Object.values(CMDS).map(c=>`<b>${c.ic} ${c.n}</b> — 패시브: ${c.p} / 액티브: ${c.a}`).join('<br>');
+}
+function startGame(tut){
+  tutorial=tut; makeCells(); P=[];
+  for(let i=0;i<4;i++){
+    const b=document.getElementById('bt'+i).value; if(b==='x')continue;
+    P.push({id:P.length,name:document.getElementById('nm'+i).value||NAMES[i],cmd:document.getElementById('cm'+i).value,bot:b==='b',
+      gold:2000,ap:5,pos:0,alive:true,resist:false,bomb:0,orbital:0,freeCiws:0,rangeBonus:0,immune:0,reverse:false,frozen:0,cd:0,qpts:0,
+      quest:null,st:{hits:0,emps:0,abs:0,long:0,terror:0},color:PC[i]});
+  }
+  if(P.length<2){alert('플레이어는 2명 이상이어야 합니다');return}
+  P.forEach(p=>p.quest=drawQuest(p));
+  document.getElementById('setup').classList.add('hide');
+  document.getElementById('app').classList.remove('hide');
+  cur=0;round=1;phase='roll';guer=-1;weather=WEATHERS[0];
+  layout(); renderBoard(); renderRule();
+  log('⚔️ 전투 개시. 15라운드 후 최고 자산이 승리합니다.');
+  if(tutorial){tutStep=0;showTut();}
+  beginTurn();
+}
+
+/* ============================================================
+   레이아웃 (세로: 11×19 / 가로: 19×11)
+============================================================ */
+function isLand(){return innerWidth>innerHeight}
+function layout(){
+  const land=isLand();
+  const topEl=document.getElementById('top');
+  let c;
+  if(land){
+    const sidew=Math.max(200,Math.min(260,innerWidth*0.25));
+    document.documentElement.style.setProperty('--sidew',sidew+'px');
+    c=Math.floor(Math.min((innerWidth-sidew-16-(LONG+1)*2)/LONG,(innerHeight-14-(SHORT+1)*2)/SHORT));
+  }else{
+    const th=topEl.offsetHeight||120;
+    c=Math.floor(Math.min((innerWidth-8-(SHORT+1)*2)/SHORT,(innerHeight-th-14-(LONG+1)*2)/LONG));
+  }
+  c=Math.max(22,c);
+  document.documentElement.style.setProperty('--cell',c+'px');
+}
+addEventListener('resize',()=>{layout();drawFx(null)});
+function rc(i){ // 세로 기준 (row,col)
+  let r,c;
+  if(i<=10){r=0;c=i}else if(i<=28){c=10;r=i-10}else if(i<=38){r=18;c=38-i}else{c=0;r=56-i}
+  if(isLand()){return {r:c,c:18-r}}
+  return {r,c};
+}
+
+/* ============================================================
+   보드 렌더
+============================================================ */
+function renderBoard(){
+  const b=document.getElementById('board');
+  b.querySelectorAll('.cell').forEach(e=>e.remove());
+  cells.forEach(c=>{
+    const e=document.createElement('div');e.className='cell z'+c.zone+' '+c.type;e.id='c'+c.i;
+    e.onclick=()=>tapCell(c.i);
+    b.appendChild(e);
+  });
+  updateBoard();
+}
+function updateBoard(){
+  cells.forEach(c=>{
+    const e=document.getElementById('c'+c.i);const {r,c:col}=rc(c.i);
+    e.style.gridRow=r+1;e.style.gridColumn=col+1;
+    const o=c.owner!==null?P[c.owner]:null;
+    e.classList.toggle('owned',!!o); e.style.setProperty('--pc',o?o.color:'transparent');
+    e.classList.toggle('guer',guer===c.i);
+    let h=`<div class="ic">${guer===c.i?'💀':c.ic}</div><div class="nm">${c.short}</div>`;
+    if(c.lvl)h+=`<div class="lv">${'<i></i>'.repeat(c.lvl)}</div>`;
+    const d=(c.def.shield?'🛡':'')+(c.def.ciws?'🎯':'')+(c.def.jammer?'📡':'');
+    if(d)h+=`<div class="df">${d}</div>`;
+    if(c.emp>0)h+=`<div class="emp"></div>`;
+    const toks=P.filter(p=>p.alive&&p.pos===c.i);
+    if(toks.length)h+=`<div class="tok">${toks.map(p=>`<i style="--pc:${p.color}"></i>`).join('')}</div>`;
+    e.innerHTML=h;
+  });
+  renderTop();
+}
+function renderTop(){
+  const p=P[cur];
+  document.getElementById('status').innerHTML=
+   `<span class="tag">R <b>${round}</b>/${ROUNDS}</span><span class="tag w">${weather.ic} ${weather.n.split(' ')[0]}</span>`+
+   `<span class="tag" style="border-color:${p.color};color:${p.color}">${CMDS[p.cmd].ic} ${p.name} 차례</span>`+
+   (guer>=0?`<span class="tag" style="border-color:var(--red);color:var(--red)">💀 게릴라 ${cell(guer).short}</span>`:'');
+  document.getElementById('chips').innerHTML=P.map(p=>`<div class="chip ${p.id===cur?'cur':''} ${p.alive?'':'dead'} ${p.resist?'res':''}" style="--pc:${p.color}">
+    <div class="nm">${CMDS[p.cmd].ic} ${p.name}${p.bot?' <span style="color:var(--dim)">AI</span>':''}</div>
+    <div class="ln"><span>₲</span><b>${p.gold.toLocaleString()}</b></div>
+    <div class="ln"><span>AP</span><b>${p.ap}</b><span>도시</span><b>${cities(p).length}</b></div></div>`).join('');
+}
+function tab(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));}
+function log(m,cls){const l=document.getElementById('log');const d=document.createElement('div');if(cls!==undefined)d.className='c'+cls;d.textContent=m;l.prepend(d);while(l.children.length>40)l.lastChild.remove();}
+function toast(i,txt,cls=''){const e=document.getElementById('c'+i);if(!e)return;const b=document.getElementById('board');const r=e.getBoundingClientRect(),br=b.getBoundingClientRect();const t=document.createElement('div');t.className='toast '+cls;t.textContent=txt;t.style.left=(r.left-br.left+r.width/2)+'px';t.style.top=(r.top-br.top)+'px';b.appendChild(t);setTimeout(()=>t.remove(),1900)}
+function drawFx(from,to,cls=''){
+  const svg=document.getElementById('fx');svg.innerHTML='';if(from===null||from===undefined)return;
+  const b=document.getElementById('board').getBoundingClientRect();
+  const c=i=>{const r=document.getElementById('c'+i).getBoundingClientRect();return [r.left-b.left+r.width/2,r.top-b.top+r.height/2]};
+  const [x1,y1]=c(from),[x2,y2]=c(to);
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',`M${x1} ${y1} H${x2} V${y2}`);p.setAttribute('class',cls);svg.appendChild(p);
+  setTimeout(()=>{if(svg.contains(p))p.remove()},1600);
+}
+
+/* ============================================================
+   소리 (WebAudio 간단 신스)
+============================================================ */
+let AC=null,beatT=null;
+function toggleSound(){soundOn=!soundOn;document.getElementById('sound').textContent=soundOn?'🔊':'🔇';if(soundOn){AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume();beat()}else if(beatT){clearTimeout(beatT);beatT=null}}
+function bpm(){return round<=5?110:round<=12?130:145}
+function beat(){if(!soundOn)return;blip(round<=5?110:round<=12?82:65,.06,.05);beatT=setTimeout(beat,60000/bpm())}
+function blip(f,d,v=.08,type='square'){if(!soundOn||!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}
+const sfx={dice:()=>{blip(520,.08);setTimeout(()=>blip(780,.08),90)},hit:()=>blip(90,.3,.15,'sawtooth'),block:()=>blip(1200,.15,.06,'triangle'),emp:()=>{blip(300,.4,.08,'sine')},coin:()=>{blip(880,.07);setTimeout(()=>blip(1320,.1),70)}};
+
+/* ============================================================
+   턴 진행
+============================================================ */
+function beginTurn(){
+  const p=P[cur];
+  if(!p.alive){nextTurn();return}
+  phase='roll';attacked=false;extraRoll=false;sel=null;orbitalMode=false;bombMode=false;
+  clearRange();
+  if(p.cd>0)p.cd--;
+  // 보급창 점령 → AP +1
+  if(cell(38).owner===p.id){p.ap+=1;log(`${p.name} 보급창 효과 AP +1`,p.id)}
+  tab('act');renderAct();updateBoard();
+  if(p.bot)setTimeout(botTurn,600);
+}
+function renderAct(){
+  const p=P[cur],c=CMDS[p.cmd];
+  let h=`<div class="card"><h4>${c.ic} ${p.name} · ${c.n}</h4><div class="kv"><span>위치</span><span>${cell(p.pos).ic} ${cell(p.pos).name} (${ZN[cell(p.pos).zone]})</span><span>사거리 보정</span><span>+${rangeMod(p)} ${weather.k==='storm'?'(태풍 −2 포함)':''}</span><span>퀘스트</span><span>${p.quest?p.quest.txt:'-'}</span></div></div>`;
+  h+=`<div id="dice"><div class="die" id="d0">${dice[0]||'?'}</div><div class="die" id="d1">${dice[1]||'?'}</div><div style="font-size:11px">${range?`사거리 <b style="color:var(--acc)">${range}</b>칸`:'<span class="hint">주사위를 굴리면 이동 + 사거리가 정해집니다</span>'}</div></div>`;
+  if(p.bot){h+=`<p class="hint">AI가 진행 중…</p>`;document.getElementById('p-act').innerHTML=h;return}
+  h+='<div class="btns">';
+  if(phase==='roll')h+=`<button class="pri" onclick="roll()">🎲 주사위 굴리기</button>`;
+  if(phase==='attack'){
+    h+=`<button class="${attacked?'':'warn'}" ${attacked?'disabled':''} onclick="hintAttack()">🚀 공격 대상 선택 ${attacked?'(완료)':''}</button>`;
+    h+=`<button class="pri" onclick="endTurn()">⏭ 턴 종료</button>`;
+    if(p.ap>=c.ap&&p.cd===0)h+=`<button onclick="useSkill()">${c.ic} ${c.a.split('(')[0]} (AP${c.ap})</button>`;
+    if(p.orbital>0)h+=`<button class="warn" onclick="orbitalMode=true;sel=null;msg('🛰 궤도 타격: 초토화할 칸을 보드에서 누르세요');">🛰 궤도 타격 ×${p.orbital}</button>`;
+    if(p.resist&&p.bomb>0)h+=`<button class="warn" onclick="bombMode=true;msg('💣 거점 점령 폭탄: 빈 거점 또는 상대 최하위 도시를 누르세요')">💣 거점 점령 폭탄</button>`;
+  }
+  h+='</div><p class="hint">내 도시를 누르면 방어 시설 설치 / 증축, 적 도시를 누르면 정보·공격</p><div id="msg"></div>';
+  document.getElementById('p-act').innerHTML=h;
+}
+function msg(t){const m=document.getElementById('msg');if(m)m.innerHTML=`<div class="chain">${t}</div>`}
+function rangeMod(p){let m=p.rangeBonus+(p.cmd==='V'?2:0)+(cell(10).owner===p.id?1:0)+(cell(p.pos).type==='node'&&cell(p.pos).owner===p.id?1:0);if(weather.k==='storm')m-=2;return m}
+
+function roll(){
+  if(busy||phase!=='roll')return;busy=true;
+  const p=P[cur];
+  dice=[1+rnd(6),1+rnd(6)];sfx.dice();
+  document.querySelectorAll('.die').forEach(d=>d.classList.add('roll'));
+  renderAct();
+  setTimeout(()=>{busy=false;move(p,dice[0]+dice[1])},500);
+}
+function move(p,steps){
+  range=Math.max(1,steps+rangeMod(p));
+  const dir=p.reverse?-1:1;p.reverse=false;
+  let n=0;busy=true;
+  const step=()=>{
+    const prev=p.pos;p.pos=(p.pos+dir+N)%N;n++;
+    if(p.pos===0&&dir===1)passStart(p);
+    updateBoard();
+    if(n<steps)setTimeout(step,70);else{busy=false;landed(p)}
+  };
+  step();
+}
+function passStart(p){const g=200*(p.cmd==='T'?2:1),a=2*(weather.k==='clear'?2:1);if(p.frozen>0){log(`${p.name} 자산 동결로 월급 없음`,p.id);return}p.gold+=g;p.ap+=a;sfx.coin();log(`${p.name} 출발 통과 ${fmt(g)} + AP${a}`,p.id)}
+
+function landed(p){
+  const c=cell(p.pos);
+  // 게릴라 조우
+  if(guer===p.pos){ fightGuer(p); }
+  if(c.type==='event'){eventCell(p,c);return}
+  if(c.owner===null&&c.price>0){offerBuy(p,c);return}
+  if(c.owner!==null&&c.owner!==p.id){payToll(p,c);return}
+  afterLand(p);
+}
+function afterLand(p){
+  phase='attack';showRange(p);renderAct();updateBoard();
+  if(tutorial&&!p.bot){tutHint()}
+  if(p.bot)setTimeout(botAttack,500);
+}
+function offerBuy(p,c){
+  const price=c.price;
+  if(p.bot){ if(p.gold>price+400||(c.type!=='city'&&p.gold>price+100)){buy(p,c)} afterLand(p);return }
+  modal(`<h3>${c.ic} ${c.name}</h3><p>${ZN[c.zone]} · ${c.type==='node'?'전략 거점 (통행료 1.5배, 사거리 +1)':c.type==='corner'?'특수 거점':'일반 도시'}</p>
+   <div class="kv"><span>가격</span><span>${fmt(price)}</span><span>통행료</span><span>${fmt(tollOf(c))} (0단계)</span>${c.i===10?'<span>효과</span><span>전 미사일 사거리 +1</span>':''}${c.i===38?'<span>효과</span><span>매 턴 AP +1</span>':''}</div>
+   <div class="btns row"><button class="pri" ${p.gold<price?'disabled':''} onclick="buy(P[cur],cell(${c.i}));closeModal();afterLand(P[cur])">매수</button><button onclick="closeModal();afterLand(P[cur])">패스</button></div>`);
+}
+function buy(p,c){p.gold-=c.price;c.owner=p.id;c.lvl=0;sfx.coin();log(`${p.name} ${c.name} 매수 ${fmt(c.price)}`,p.id);toast(c.i,'점령',''+'good');checkQuest(p)}
+function tollOf(c){let t=c.toll*(1+c.lvl*0.6);if(c.type==='node'||c.type==='corner')t*=1.5;return Math.round(t)}
+function payToll(p,c){
+  const o=P[c.owner];
+  if(p.resist||c.emp>0||!o.alive){log(`${p.name} ${c.name} 통행료 면제 (${p.resist?'레지스탕스':'EMP 마비'})`,p.id);afterLand(p);return}
+  const t=tollOf(c);p.gold-=t;o.gold+=t;sfx.coin();
+  log(`${p.name} → ${o.name} 통행료 ${fmt(t)} (${c.name})`,p.id);toast(c.i,`−${fmt(t)}`,'bad');
+  chain(`${c.ic} ${c.short} 도착`,`통행료 ${fmt(t)}`,`${o.name} +`);
+  bankruptCheck(p,()=>afterLand(p));
+}
+function chain(...s){const m=document.getElementById('msg');if(m)m.innerHTML=`<div class="chain">${s.map((x,i)=>(i?'<em>→</em>':'')+`<span>${x}</span>`).join('')}</div>`}
+
+/* ---------- 이벤트 칸 ---------- */
+function eventCell(p,c){
+  switch(c.i){
+    case 2: p.quest=drawQuest(p);p.ap+=1;log(`${p.name} 새 퀘스트 수령 + AP1`,p.id);toast(c.i,'새 퀘스트');break;
+    case 5: case 31:{const t=c.i===5?31:5;log(`${p.name} 웜홀 통과 → ${cell(t).name}`,p.id);p.pos=t;toast(t,'워프!');updateBoard();break}
+    case 15: blackMarket(p);return;
+    case 21: if(guer<0){guer=21;log('💀 테러 아지트에서 게릴라 출현!');toast(21,'게릴라 출현','bad')}break;
+    case 35: setWeather();log(`${p.name} 기상 관측소: ${weather.n}`,p.id);break;
+    case 43: p.ap+=2;p.gold+=100;sfx.coin();log(`${p.name} 보급 드롭 AP+2 ₲100`,p.id);toast(c.i,'보급 +');break;
+    case 50: shop(p);return;
+  }
+  updateBoard();afterLand(p);
+}
+function blackMarket(p){
+  const card=BM_CARDS[rnd(BM_CARDS.length)];
+  log(`${p.name} 블랙마켓 카드: ${card.n}`,p.id);
+  const go=()=>{closeModal();applyCard(p,card);afterLand(p)};
+  if(p.bot){applyCard(p,card);afterLand(p);return}
+  _go=go;modal(`<h3>🕶️ 블랙마켓</h3><div class="card"><h4>${card.n}</h4>${card.d}</div><div class="btns"><button class="pri" onclick="_go()">사용</button></div>`);
+}
+function applyCard(p,card){
+  const others=alive().filter(x=>x!==p);
+  if(card.k==='orbit'){const s=rnd(N);for(let k=0;k<4;k++)neutralize((s+k)%N,'위성 타격');}
+  if(card.k==='jam'){const t=p.bot?others[rnd(others.length)]:leader(p);if(t){t.reverse=true;log(`${t.name} 다음 턴 역주행`,t.id)}}
+  if(card.k==='freeze'){const t=leader(p);if(t){t.frozen=1;log(`${t.name} 자산 1라운드 동결`,t.id)}}
+  if(card.k==='decoy'){const t=leader(p);const tc=t?cities(t)[0]:null;if(tc){guer=(tc.i+1)%N;log(`게릴라가 ${t.name} 영토 옆으로 유인됨`);updateBoard()}}
+}
+function neutralize(i,why){const c=cell(i);if(c.price===0)return;if(c.owner!==null||c.lvl||c.def.shield||c.def.ciws||c.def.jammer){const o=c.owner;c.owner=null;c.lvl=0;c.def={shield:0,ciws:0,jammer:0};toast(i,'중화','bad');document.getElementById('c'+i).classList.add('hit');setTimeout(()=>document.getElementById('c'+i).classList.remove('hit'),500);if(o!==null)log(`${c.name} ${why}로 중화 (${P[o].name} 소유권 상실)`)}}
+function shop(p){
+  const mine=cities(p);
+  if(p.bot||!mine.length){afterLand(p);return}
+  pendingLand=true;
+  modal(`<h3>🔫 무기 상점</h3><p>방어 시설 20% 할인. 설치할 내 도시를 고른 뒤 시설을 선택하세요.</p>
+   <div class="btns">${mine.map(c=>`<button onclick="closeModal();defenseMenu(${c.i},0.8)">${c.ic} ${c.name}</button>`).join('')}<button onclick="closeModal();pendingLand=false;afterLand(P[cur])">나가기</button></div>`);
+}
+
+/* ---------- 사거리/공격 ---------- */
+function showRange(p){
+  clearRange();
+  cells.forEach(c=>{const d=dist(p.pos,c.i);if(d>0&&d<=range){const e=document.getElementById('c'+c.i);e.classList.add('inrange');e.dataset.d=d}});
+}
+function clearRange(){document.querySelectorAll('.cell').forEach(e=>{e.classList.remove('inrange','target','mine-sel');delete e.dataset.d})}
+function hintAttack(){msg('보드에서 <em>하이라이트된 적 도시</em>(또는 💀 게릴라)를 누르세요')}
+function canTarget(p,c){
+  if(c.owner===null||c.owner===p.id)return c.i===guer&&dist(p.pos,c.i)<=range;
+  const d=dist(p.pos,c.i);if(d>range)return false;
+  if(c.def.jammer&&d>3)return false;
+  if(P[c.owner].immune>0)return false;
+  return true;
+}
+function tapCell(i){
+  const p=P[cur],c=cell(i);
+  if(p.bot||busy)return;
+  if(orbitalMode){orbitalMode=false;p.orbital--;drawFx(p.pos,i);neutralize(i,'궤도 타격');log(`${p.name} 궤도 타격 → ${c.name}`,p.id);updateBoard();renderAct();return}
+  if(bombMode){
+    const okN=c.owner===null&&c.price>0;const okE=c.owner!==null&&c.owner!==p.id&&c.lvl===Math.min(...cities(P[c.owner]).map(x=>x.lvl));
+    if(!(okN||okE)){msg('빈 거점 또는 상대의 최하위 단계 도시만 가능합니다');return}
+    bombMode=false;p.bomb--;const o=c.owner;c.owner=p.id;c.lvl=0;c.def={shield:0,ciws:0,jammer:0};drawFx(p.pos,i,'ok');toast(i,'기습 점령','good');
+    log(`💣 ${p.name} 레지스탕스 기습 점령 → ${c.name}${o!==null?' ('+P[o].name+'에서 탈취)':''}`,p.id);updateBoard();renderAct();return;
+  }
+  if(c.owner===p.id&&c.price>0){defenseMenu(i,1);return}
+  if(phase!=='attack'){info(c);return}
+  if(!attacked&&canTarget(p,c)){weaponMenu(p,c);return}
+  info(c);
+}
+function info(c){
+  const o=c.owner!==null?P[c.owner]:null;
+  modal(`<h3>${c.ic} ${c.name}</h3><div class="kv"><span>구역</span><span>${ZN[c.zone]}</span><span>종류</span><span>${{city:'일반 도시',node:'전략 거점',corner:'특수 거점',event:'이벤트 칸'}[c.type]}</span>
+   <span>소유</span><span>${o?o.name:'없음'}</span><span>건물</span><span>${c.lvl}단계</span><span>통행료</span><span>${c.price?fmt(tollOf(c)):'-'}</span><span>방어</span><span>${Object.keys(DEF).filter(k=>c.def[k]).map(k=>DEF[k].ic+DEF[k].n).join(' ')||'없음'}${c.emp?' · EMP 마비 '+c.emp+'R':''}</span>
+   <span>거리</span><span>${dist(P[cur].pos,c.i)}칸 ${range&&dist(P[cur].pos,c.i)<=range?'(사거리 안)':''}</span></div><div class="btns"><button onclick="closeModal()">닫기</button></div>`);
+}
+function defenseMenu(i,disc){
+  const p=P[cur],c=cell(i),m=(p.cmd==='A'?.5:1)*(weather.k==='storm'?2:1)*disc;
+  const up=Math.round(c.price*.5);
+  modal(`<h3>${c.ic} ${c.name} (내 도시)</h3><p>건물 ${c.lvl}/3단계 · 통행료 ${fmt(tollOf(c))}</p><div class="btns">
+   ${Object.keys(DEF).map(k=>`<button ${c.def[k]||p.gold<Math.round(DEF[k].c*m)?'disabled':''} onclick="build('${k}',${i},${m})">${DEF[k].ic} ${DEF[k].n} ${fmt(Math.round(DEF[k].c*m))} — ${DEF[k].d}${c.def[k]?' (설치됨)':''}</button>`).join('')}
+   ${p.freeCiws>0&&!c.def.ciws?`<button class="pri" onclick="P[cur].freeCiws--;build('ciws',${i},0)">🎯 요격 포탑 무료 설치권 사용</button>`:''}
+   <button ${c.lvl>=3||p.gold<up||c.type!=='city'?'disabled':''} onclick="upgrade(${i})">🏗 증축 ${fmt(up)} (통행료 +60%)</button>
+   <button onclick="closeModal();if(pendingLand){pendingLand=false;afterLand(P[cur])}">닫기</button></div>`);
+}
+function build(k,i,m){const p=P[cur],c=cell(i);const cost=Math.round(DEF[k].c*m);if(p.gold<cost)return;p.gold-=cost;c.def[k]=1;sfx.coin();log(`${p.name} ${c.name}에 ${DEF[k].n} 설치 ${fmt(cost)}`,p.id);toast(i,DEF[k].ic+' 설치','good');closeModal();updateBoard();renderAct();if(pendingLand){pendingLand=false;afterLand(p)}}
+function upgrade(i){const p=P[cur],c=cell(i);const up=Math.round(c.price*.5);p.gold-=up;c.lvl++;sfx.coin();log(`${p.name} ${c.name} ${c.lvl}단계 증축`,p.id);toast(i,'증축 '+c.lvl,'good');closeModal();updateBoard();renderAct();checkQuest(p)}
+
+function weaponMenu(p,c){
+  const d=dist(p.pos,c.i);
+  if(c.i===guer&&c.owner!==p.id&&(c.owner===null)){modal(`<h3>💀 게릴라 소탕</h3><p>거리 ${d}칸. 미사일(AP2)로 소탕하면 ₲300 + AP2 보상.</p><div class="btns row"><button class="warn" ${p.ap<2?'disabled':''} onclick="closeModal();killGuer(P[cur])">🚀 소탕 (AP2)</button><button onclick="closeModal()">취소</button></div>`);return}
+  const empC=3-(p.cmd==='P'?1:0);
+  modal(`<h3>🎯 ${c.name} 공격</h3><p>소유 ${P[c.owner].name} · 거리 ${d}칸 · 건물 ${c.lvl}단계 · 방어 ${Object.keys(DEF).filter(k=>c.def[k]).map(k=>DEF[k].ic).join('')||'없음'}</p><div class="btns">
+   <button class="warn" ${p.ap<2?'disabled':''} onclick="closeModal();attack(P[cur],${c.i},'missile')">🚀 미사일 (AP2) — 건물 −1 / 골드 피해</button>
+   <button class="warn" ${p.ap<empC||weather.k==='solar'?'disabled':''} onclick="closeModal();attack(P[cur],${c.i},'emp')">⚡ EMP (AP${empC}) — 2R 방어·통행료 마비${weather.k==='solar'?' (태양폭풍 불가)':''}</button>
+   <button class="warn" ${p.ap<4?'disabled':''} onclick="closeModal();attack(P[cur],${c.i},'strike')">💥 정밀 포격 (AP4) — 실드 무시, 도시 무주공산</button>
+   <button onclick="closeModal()">취소</button></div>`);
+}
+function killGuer(p){p.ap-=2;drawFx(p.pos,guer);sfx.hit();toast(guer,'게릴라 소탕','good');log(`${p.name} 게릴라 소탕! ₲300 + AP2`,p.id);guer=-1;p.gold+=300;p.ap+=2;p.st.terror++;attacked=true;checkQuest(p);updateBoard();renderAct()}
+function attack(p,i,w){
+  const c=cell(i),o=P[c.owner],d=dist(p.pos,i);
+  const cost=w==='missile'?2:w==='emp'?3-(p.cmd==='P'?1:0):4;
+  p.ap-=cost;attacked=true;
+  drawFx(p.pos,i,w==='emp'?'emp':'');
+  const steps=[`${w==='missile'?'🚀 미사일':w==='emp'?'⚡ EMP':'💥 정밀 포격'} ${d}칸`];
+  setTimeout(()=>{
+    let res='';
+    if(w==='emp'){
+      c.emp=2;sfx.emp();res='방어·통행료 2R 마비';if(c.def.shield||c.def.ciws)p.st.emps++;toast(i,'EMP 마비','bad');
+    }else if(w==='strike'){
+      c.owner=null;c.lvl=0;c.def={shield:0,ciws:0,jammer:0};sfx.hit();res='도시 무주공산';p.st.hits++;if(d>=9)p.st.long++;toast(i,'초토화','bad');
+    }else{
+      if(c.def.shield&&c.emp===0){c.def.shield=0;sfx.block();res='실드가 흡수 (실드 소멸)';o.st.abs++;toast(i,'실드 흡수','good');checkQuest(o)}
+      else if(c.def.ciws&&c.emp===0&&weather.k!=='solar'&&Math.random()<.5){sfx.block();res='요격 포탑이 요격';toast(i,'요격!','good')}
+      else{sfx.hit();if(c.lvl>0){c.lvl--;res=`건물 −1 (${c.lvl}단계)`}else{const g=Math.min(o.gold,Math.round(c.price*.4));o.gold-=g;res=`골드 피해 ${fmt(g)}`}p.st.hits++;if(d>=9)p.st.long++;toast(i,res,'bad');}
+    }
+    document.getElementById('c'+i).classList.add('hit');setTimeout(()=>document.getElementById('c'+i).classList.remove('hit'),500);
+    steps.push(res);chain(...steps);
+    log(`${p.name} → ${o.name} ${c.name}: ${steps.join(' → ')}`,p.id);
+    checkQuest(p);updateBoard();renderAct();
+    if(p.bot)setTimeout(endTurn,500);
+  },500);
+}
+function useSkill(){
+  const p=P[cur],k=p.cmd;if(p.ap<CMDS[k].ap||p.cd>0)return;
+  p.ap-=CMDS[k].ap;p.cd=4;
+  if(k==='V'){let n=0;cells.forEach(c=>{if(c.owner!==null&&c.owner!==p.id&&dist(p.pos,c.i)<=range&&c.lvl>0&&P[c.owner].immune===0){c.lvl--;n++;toast(c.i,'−1','bad')}});log(`${p.name} 전면 포격: 적 도시 ${n}곳 건물 −1`,p.id)}
+  if(k==='A'){p.immune=1;log(`${p.name} 절대 방어: 1라운드 무적`,p.id)}
+  if(k==='P'){const t=leader(p);if(t){const a=Math.floor(t.ap/2);t.ap-=a;p.ap+=a;log(`${p.name} 해킹: ${t.name} AP ${a} 강탈`,p.id)}}
+  if(k==='T'){log(`${p.name} 긴급 보급: 주사위 한 번 더`,p.id);phase='roll';dice=[0,0];clearRange();renderAct();return}
+  updateBoard();renderAct();
+}
+function endTurn(){
+  if(busy)return;closeModal();clearRange();drawFx(null);
+  const p=P[cur];p.immune=0;
+  checkQuest(p);
+  nextTurn();
+}
+function nextTurn(){
+  let n=0;do{cur=(cur+1)%P.length;n++}while(!P[cur].alive&&n<P.length);
+  if(cur===alive()[0].id)endRound();else beginTurn();
+}
+function endRound(){
+  // 게릴라 행동
+  if(guer>=0){
+    alive().forEach(p=>{if(dist(p.pos,guer)<=3&&!p.resist){const g=Math.min(150,Math.round(p.gold*.1));p.gold-=g;log(`💀 게릴라가 ${p.name} 갈취 ${fmt(g)}`);toast(p.pos,'갈취','bad')}});
+    cells.forEach(c=>{if(c.owner!==null&&dist(c.i,guer)<=3&&c.emp===0&&Math.random()<.4){c.emp=1;toast(c.i,'게릴라 교란','bad')}});
+  }
+  cells.forEach(c=>{if(c.emp>0)c.emp--});
+  P.forEach(p=>{if(p.frozen>0)p.frozen--});
+  // 레지스탕스 승리
+  const rw=alive().find(p=>p.resist&&nodes(p).length>=3);
+  if(rw){gameOver(rw,'레지스탕스가 전략 거점 3곳을 장악');return}
+  if(alive().length<=1){gameOver(alive()[0],'최후의 생존자');return}
+  round++;
+  if(round>ROUNDS){gameOver(null,'15라운드 종료');return}
+  if(round%3===0){setWeather();log(`🌦 기상 변화: ${weather.n} — ${weather.d}`)}
+  if(round%3===2&&guer<0){const empty=cells.filter(c=>c.owner===null&&c.price>0&&!alive().some(p=>p.pos===c.i));guer=empty.length?empty[rnd(empty.length)].i:21;log(`💀 게릴라 출현: ${cell(guer).name}`);toast(guer,'게릴라 출현','bad')}
+  if(round===6||round===13)log(round===6?'🎵 중반 교전 — BGM 템포 상승':'🎵 클라이맥스 — 경보 믹스');
+  updateBoard();beginTurn();
+}
+function setWeather(){let w;do{w=WEATHERS[rnd(WEATHERS.length)]}while(w===weather&&Math.random()<.7);weather=w;renderTop()}
+
+/* ---------- 파산 / 레지스탕스 ---------- */
+function bankruptCheck(p,next){
+  while(p.gold<0&&cities(p).length){const c=cities(p).sort((a,b)=>a.price-b.price)[0];p.gold+=Math.round(c.price*.5);log(`${p.name} ${c.name} 매각 (${fmt(Math.round(c.price*.5))})`,p.id);c.owner=null;c.lvl=0;c.def={shield:0,ciws:0,jammer:0}}
+  if(p.gold<0){
+    if(!p.resist){p.resist=true;p.gold=0;p.bomb=1;log(`🏴 ${p.name} 파산 직전 → 레지스탕스 모드! 통행료 면제 + 거점 점령 폭탄 1회. 전략 거점 3곳 보유 시 승리`,p.id);
+      if(!p.bot)modal(`<h3>🏴 레지스탕스 모드</h3><p>퇴장하지 않습니다. 이제부터 통행료를 내지 않고, <b>거점 점령 폭탄</b> 1회로 빈 거점이나 상대의 최하위 도시를 기습 점령할 수 있습니다.<br><br>새 승리 조건: <b>전략 거점 3곳 보유</b>.</p><div class="btns"><button class="pri" onclick="closeModal()">계속</button></div>`)}
+    else{p.gold=0}
+  }
+  updateBoard();next&&next();
+}
+function fightGuer(p){ p.ap=Math.max(0,p.ap-1);log(`💀 ${p.name} 게릴라 조우, AP −1`,p.id);toast(p.pos,'게릴라 조우','bad') }
+
+/* ---------- 퀘스트 ---------- */
+function drawQuest(p){const pool=QUESTS.filter(q=>!p.quest||q.id!==p.quest.id);return pool[rnd(pool.length)]}
+function checkQuest(p){
+  if(!p.quest)return;
+  if(p.quest.chk(p)){const q=p.quest;q.do(p);p.qpts++;log(`🏆 ${p.name} 퀘스트 완료 [${q.txt}] → ${q.rw}`,p.id);toast(p.pos,'퀘스트 완료!','good');p.st={hits:0,emps:0,abs:0,long:0,terror:0};p.quest=drawQuest(p);}
+  renderQuest();renderWar();
+}
+function renderQuest(){
+  document.getElementById('p-quest').innerHTML=P.map(p=>`<div class="q" style="border-color:${p.color}"><b style="color:${p.color}">${p.name}</b> · 완료 ${p.qpts}<br>${p.quest?`<span class="hint">[${p.quest.t}]</span> ${p.quest.txt} <span style="color:var(--acc2)">→ ${p.quest.rw}</span>`:''}</div>`).join('')+
+  `<div class="card"><h4>퀘스트 라이브러리</h4>${QUESTS.map(q=>`<div style="font-size:10px">· ${q.txt} → ${q.rw}</div>`).join('')}</div>`;
+}
+function renderWar(){
+  const rows=[['골드',p=>fmt(p.gold)],['AP',p=>p.ap],['도시',p=>cities(p).length],['거점',p=>nodes(p).length],['전선 도시',p=>cities(p).filter(c=>c.zone==='E').length],['방어 시설',p=>cities(p).reduce((s,c)=>s+c.def.shield+c.def.ciws+c.def.jammer,0)],['사거리 보정',p=>'+'+rangeMod(p)],['퀘스트',p=>p.qpts],['자산 점수',p=>score(p).toLocaleString()]];
+  document.getElementById('p-war').innerHTML=`<table class="cmp"><tr><th></th>${P.map(p=>`<th style="color:${p.color}">${p.name.slice(0,4)}</th>`).join('')}</tr>${rows.map(r=>`<tr><td>${r[0]}</td>${P.map(p=>`<td>${p.alive?r[1](p):'파산'}</td>`).join('')}</tr>`).join('')}</table>
+  <div class="card"><h4>${weather.ic} ${weather.n}</h4>${weather.d} · 3라운드마다 변경</div>
+  ${guer>=0?`<div class="card" style="border-color:var(--red)"><h4>💀 게릴라 — ${cell(guer).name}</h4>라운드 말에 3칸 내 플레이어 골드 10% 갈취, 도시 교란. 사거리 안에서 미사일(AP2)로 소탕 시 ₲300+AP2</div>`:''}`;
+}
+function renderRule(){
+  document.getElementById('p-rule').innerHTML=`
+  <h5>🎯 핵심 규칙</h5><p>주사위 두 개 합만큼 이동하고, 같은 숫자(+보정)가 이번 턴 <b>미사일 사거리</b>가 됩니다. 거리는 보드 둘레를 따라 짧은 쪽으로 잽니다.</p>
+  <h5>💰 이중 재화</h5><p><b>골드 ₲</b>: 도시·증축·방어 시설·통행료. <b>AP</b>: 미사일 2 · EMP 3 · 정밀 포격 4 · 스킬. 출발 통과 시 ₲200 + AP2, 보급창 점령 시 매 턴 AP+1, 퀘스트·게릴라 소탕으로 수급.</p>
+  <h5>⚔️ 공격 / 방어</h5><p>미사일: 건물 −1(0단계면 골드 피해). EMP: 2라운드 방어·통행료 마비. 정밀 포격: 실드 무시, 도시 무주공산.<br>실드 ₲100 1회 흡수 → 요격 포탑 ₲150 50% 요격 → 재머 ₲200 3칸 밖 조준 불가. EMP는 실드·요격을 마비, 재머는 근접하면 뚫립니다.</p>
+  <h5>🏴 레지스탕스</h5><p>골드 0 이하 + 도시 0이면 퇴장 대신 레지스탕스: 통행료 면제, 거점 점령 폭탄 1회. 라운드 말에 전략 거점 3곳 보유 시 즉시 승리.</p>
+  <h5>💀 게릴라 · 🌦 기상 · 🕶️ 블랙마켓</h5><p>3라운드마다 게릴라 출현(3칸 내 갈취·교란), 기상 카드 변경(태풍/태양폭풍/쾌청). 블랙마켓 칸에서 궤도 타격·통신 교란·자산 동결·유인 장치 카드.</p>
+  <h5>🏆 승리</h5><p>15라운드 종료 시 골드 + 도시 가치 + 퀘스트×100 최고. 상대 전원 파산 시 즉시 승리.</p>
+  <h5>🎓 튜토리얼</h5><p>1 이동·매수 → 2 사거리 공격 → 3 실드·포탑 설치 → 4 EMP·궤도 타격. <button style="padding:2px 8px" onclick="tutorial=true;tutStep=0;showTut()">튜토리얼 열기</button></p>`;
+  renderQuest();renderWar();
+}
+
+/* ---------- AI ---------- */
+function botTurn(){const p=P[cur];if(!p.alive||phase!=='roll')return;roll()}
+function botAttack(){
+  const p=P[cur];
+  // 방어: 가치 높은 도시에 실드
+  const m=(p.cmd==='A'?.5:1)*(weather.k==='storm'?2:1);
+  const need=cities(p).filter(c=>!c.def.shield).sort((a,b)=>b.price*(1+b.lvl)-a.price*(1+a.lvl))[0];
+  if(need&&p.gold>Math.round(100*m)+500){p.gold-=Math.round(100*m);need.def.shield=1;log(`${p.name} ${need.name}에 실드 설치`,p.id);toast(need.i,'🛡 설치','good')}
+  const upg=cities(p).filter(c=>c.type==='city'&&c.lvl<3&&c.zone==='E')[0];
+  if(upg&&p.gold>upg.price*.5+700){p.gold-=Math.round(upg.price*.5);upg.lvl++;log(`${p.name} ${upg.name} 증축`,p.id)}
+  // 레지스탕스 폭탄
+  if(p.resist&&p.bomb>0){const t=cells.find(c=>c.owner===null&&(c.type==='node'||c.type==='corner'))||cells.find(c=>c.owner===null&&c.price>0);if(t){p.bomb--;t.owner=p.id;log(`💣 ${p.name} 기습 점령 → ${t.name}`,p.id);toast(t.i,'기습 점령','bad')}}
+  // 공격
+  const tg=cells.filter(c=>canTarget(p,c)&&c.owner!==null).sort((a,b)=>(b.lvl*100+b.price)-(a.lvl*100+a.price))[0];
+  if(guer>=0&&dist(p.pos,guer)<=range&&p.ap>=2){killGuer(p);setTimeout(endTurn,600);return}
+  if(tg&&p.ap>=2){
+    let w='missile';if(p.ap>=4&&tg.def.shield&&tg.lvl>=2)w='strike';else if(p.ap>=3&&(tg.def.shield||tg.def.ciws)&&weather.k!=='solar')w='emp';
+    attack(p,tg.i,w);return;
+  }
+  if(p.cmd==='V'&&p.ap>=5&&p.cd===0&&cells.filter(c=>c.owner!==null&&c.owner!==p.id&&c.lvl>0&&dist(p.pos,c.i)<=range).length>=2){useSkill()}
+  updateBoard();setTimeout(endTurn,600);
+}
+
+/* ---------- 모달 / 튜토리얼 / 종료 ---------- */
+function modal(h){document.getElementById('mbox').innerHTML=h;document.getElementById('modal').classList.remove('hide')}
+function closeModal(){document.getElementById('modal').classList.add('hide')}
+const TUT=[
+ {t:'1단계 · 이동과 매수',b:'주사위를 굴려 이동합니다. 빈 도시에 서면 매수할 수 있습니다. 동쪽 전선(붉은 칸)은 비싸지만 통행료가 높고, 서쪽 백라인(녹색)은 안전합니다.'},
+ {t:'2단계 · 사거리 공격',b:'주사위 합이 이번 턴 사거리입니다. 이동 뒤 파란 홀로그램이 켜진 칸이 사거리 안입니다. 적 도시를 눌러 미사일(AP2)을 쏘세요.'},
+ {t:'3단계 · 방어 시설',b:'내 도시를 누르면 실드(1회 흡수)·요격 포탑(50% 요격)·재머(원거리 조준 불가)를 설치할 수 있습니다. 전선 도시에는 실드부터.'},
+ {t:'4단계 · EMP와 궤도 타격',b:'실드가 있는 도시는 EMP(AP3)로 2라운드 마비시킨 뒤 미사일로 타격합니다. 백라인 도시 3개 퀘스트를 완료하면 궤도 타격권으로 어디든 초토화할 수 있습니다.'},
+];
+function showTut(){const s=TUT[tutStep];if(!s){tutorial=false;closeModal();return}modal(`<h3>🎓 ${s.t}</h3><p>${s.b}</p><div class="btns row"><button class="pri" onclick="tutStep++;showTut()">${tutStep<TUT.length-1?'다음':'시작!'}</button><button onclick="tutorial=false;closeModal()">건너뛰기</button></div>`)}
+function tutHint(){const p=P[cur];const t=cells.find(c=>canTarget(p,c)&&c.owner!==null);msg(t?`🎓 <em>${t.short}</em>이(가) 사거리 안입니다. 눌러서 공격해 보세요`:'🎓 사거리 안에 적 도시가 없습니다. 내 도시에 방어 시설을 올리거나 턴을 종료하세요')}
+function gameOver(w,why){
+  const rank=P.slice().sort((a,b)=>score(b)-score(a));if(!w)w=rank[0];
+  modal(`<h3>🏆 ${w.name} 승리!</h3><p>${why}</p><table class="cmp">${rank.map((p,i)=>`<tr><td>${i+1}. <b style="color:${p.color}">${p.name}</b></td><td>${score(p).toLocaleString()}</td><td>도시 ${cities(p).length}</td><td>퀘스트 ${p.qpts}</td></tr>`).join('')}</table><div class="btns"><button class="pri" onclick="location.reload()">다시 하기</button></div>`);
+}
+buildSetup();
+</script>
+</body>
+</html>
