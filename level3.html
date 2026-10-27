@@ -1710,7 +1710,7 @@ function roundEnd(){
   const wars=Object.values(S.wars).filter(Boolean).length,blk=Object.values(S.cps).filter(c=>c.b).length;
   S.stab=clamp(S.stab+(60-S.stab)*.18-wars*1.5-blk*.8-Math.max(0,S.infl-6)*.3-(S.pandemic?1.5:0)-(S.depression?2:0)-(S.tradewar?1:0),0,100);
   Object.keys(REG).forEach(rg=>{if(S.wars[rg]&&Math.random()<.12){S.wars[rg]=false;S.stab=clamp(S.stab+5,0,100);log(`${REG[rg]} 자연 휴전`)}});
-  S.refugees=clamp(S.refugees*.85+wars*4+Object.keys(S.wx).length*3+(S.pandemic?2:0)+(S.depression?3:0),0,100);
+  S.refugees=clamp(S.refugees*.85+wars*4+Object.values(S.wx).filter(v=>v>0).length*3+(S.pandemic?2:0)+(S.depression?3:0),0,100);
   S.frontier=clamp(S.frontier+1.5+Object.keys(S.props).filter(i=>FR(CELLS[i].region)).reduce((a,i)=>a+S.props[i].level*.3,0),0,100);
   sum.push([`난민 ${Math.round(S.refugees)} · 개척 ${Math.round(S.frontier)}`,'dip']);
   // 타이머
@@ -1788,7 +1788,7 @@ function ensure(p,n){if(p.cash>=n)return true;borrow(p,Math.ceil((n-p.cash)/100)
 // 받는 쪽 생산성이 수입에 반영(초과분의 절반을 국가 재정에서 보전)
 function payTo(p,n,q,why){n=Math.round(n);if(n<=0)return;
   if(!ensure(p,n)){const left=p.cash;if(q)q.cash+=left;else S.fund+=left;led(p,q||null,left,(why||'지급')+' (부도)');p.cash=0;bankrupt(p);return}
-  p.cash-=n;if(q){q.cash+=n;led(p,q,n,why);const bonus=Math.round(n*(prod(q)-100)/200);q.cash+=bonus;if(bonus)led(null,q,bonus,'생산성 보정')}else{S.fund+=n;led(p,null,n,why)}}
+  p.cash-=n;if(q){q.cash+=n;led(p,q,n,why);const bonus=Math.max(0,Math.round(n*(prod(q)-100)/200));q.cash+=bonus;if(bonus)led(null,q,bonus,'생산성 보정')}else{S.fund+=n;led(p,null,n,why)}}
 function payFund(p,n,why){if(n<=0)return;payTo(p,n,null,why||'무역기금 납부');log(`${pn(p)} −${won(n)} (무역기금)`)}
 function payBank(p,n,why){n=Math.round(n);if(n<=0)return;if(!ensure(p,n)){led(p,null,p.cash,(why||'은행 납부')+' (부도)');p.cash=0;bankrupt(p);return}p.cash-=n;led(p,null,n,why||'은행 납부')}
 function bankrupt(p){if(p.bankrupt)return;p.bankrupt=true;p.debt=0;ownedIdx(p).forEach(i=>delete S.props[i]);S.treaties=S.treaties.filter(t=>t.a!==p.id&&t.b!==p.id);log(`${pn(p)} 국가 부도.`)}
@@ -3778,7 +3778,7 @@ const _nsH=newState;newState=function(name,bloc,nai,rounds,gov){
 /* 블록 관계: 처음엔 모두 중립, 동맹·협정은 가깝게, 국지전·세계대전·제재는 멀게 */
 const bkey=(a,b)=>[a,b].sort().join('');
 function relShift(a,b,d){if(!S||!a||!b||a===b||a==='N'||b==='N')return;S.relB=S.relB||{};const k=bkey(a,b);S.relB[k]=clamp((S.relB[k]||0)+d,-3,4)}
-rel=function(a,b){if(!b||b==='N'||!a||a==='N')return 1;if(a===b)return .7;const g=(S&&S.relB&&S.relB[bkey(a,b)])||0;return clamp(1+g*.1+(g>0&&S.sanction>0?.1:0),.7,1.45)};
+rel=function(a,b){if(!b||b==='N'||!a||a==='N')return 1;if(a===b)return .7;const g=(S&&S.relB&&S.relB[bkey(a,b)])||0;let r=1+g*.1;if(g>0&&S.sanction>0)r=Math.max(r,1.4);return clamp(r,.7,1.45)};
 const _mkR=makeAlly;makeAlly=function(p,q,why){_mkR(p,q,why);relShift(p.bloc,q.bloc,-1.2)};
 const _stR=strike;strike=async function(p,q){relShift(p.bloc,q.bloc,1.5);return _stR(p,q)};
 const _wrR=wwRound;wwRound=function(){const W=S.ww;if(W)W.X.ids.forEach(a=>W.Y.ids.forEach(b=>relShift(S.players[a].bloc,S.players[b].bloc,.5)));return _wrR()};
@@ -5582,8 +5582,8 @@ terrorAttack=function(p,why){v32Init();const iv=p.intel||0;
   if(iv&&Math.random()<.15*iv){apc(p,4);S.terror=clamp(S.terror-8,0,100);log(`🕵️ ${pn(p)} 첩보국이 테러 조직을 사전 검거`);
     if(p.human||Math.random()<.5)v32Banner('peace',['TERROR FOILED','🕵️','테러 실패 — 사전 검거'],`${esc(p.name)} · ${esc(why)}<br>첩보국 ${INTEL[iv].n}이(가) 잠입 조직을 먼저 찾아냈습니다`,'지지율 +4 · 테러 위협 −8');
     return[[`🛡️ 테러 실패: ${p.name} 첩보국 사전 검거`,'mil'],[`첩보국 ${iv}단계 → 검거 확률 ${15*iv}%`,'mil'],['지지율 +4 · 위협 −8','pol']]}
-  const v=d12();S.dv.mil=v;const def=v+p.sf*2+termB(p)+iv;
-  if(def>=8){apc(p,3);S.terror=clamp(S.terror-4,0,100);log(`${pn(p)} 테러 저지 (군사 ${v}+특수부대 ${p.sf*2}${iv?'+첩보 '+iv:''})`);
+  const v=d12();S.dv.mil=v;const def=v+p.sf*2+termB(p)+iv;const need=8+(S.terror>=60?2:S.terror>=30?1:0);
+  if(def>=need){apc(p,3);S.terror=clamp(S.terror-4,0,100);log(`${pn(p)} 테러 저지 (군사 ${v}+특수부대 ${p.sf*2}${iv?'+첩보 '+iv:''})`);
     if(p.human)v32Banner('peace',['TERROR FAILED','🛡️','테러 실패 — 현장 저지'],`${esc(p.name)} · ${esc(why)}<br>군사 ${v} + 특수부대 ${p.sf*2}${iv?` + 첩보국 ${iv}`:''} = ${def} ≥ 8`,'지지율 +3 · 위협 −4');
     return[[`🛡️ 테러 실패: ${p.name} 현장 저지`,'mil'],[`군사 ${v}+특수부대 ${p.sf*2}${iv?`+첩보 ${iv}`:''} = ${def} ≥ 8`,'mil'],['지지율 +3 · 위협 −4','pol']]}
   const own=ownedIdx(p).filter(i=>CELLS[i].t==='city');let lost='',li=null;
