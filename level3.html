@@ -1786,6 +1786,8 @@ function raise(p,need){
 }
 function ensure(p,n){if(p.cash>=n)return true;borrow(p,Math.ceil((n-p.cash)/100)*100);if(p.cash<n)raise(p,n);return p.cash>=n}
 // 받는 쪽 생산성이 수입에 반영(초과분의 절반을 국가 재정에서 보전)
+// [사용자 결정 대기] 아래 생산성 보정(bonus)은 존폐 미정. 규칙서 통행료 절의 "받는 쪽 수입 보정 = 통행료 × (생산성−100)/200"과 같은 식이며,
+//   주석의 "국가 재정 보전"과 달리 실제로는 재원 없이 led(null,…)로 새로 생성됨. 제거·문구 추가는 하지 않고 코드 유지.
 function payTo(p,n,q,why){n=Math.round(n);if(!(n>0))return;
   if(!ensure(p,n)){const left=p.cash;if(q)q.cash+=left;else S.fund+=left;led(p,q||null,left,(why||'지급')+' (부도)');p.cash=0;bankrupt(p);return}
   p.cash-=n;if(q){q.cash+=n;led(p,q,n,why);const bonus=Math.max(0,Math.round(n*(prod(q)-100)/200));q.cash+=bonus;if(bonus)led(null,q,bonus,'생산성 보정')}else{S.fund+=n;led(p,null,n,why)}}
@@ -3778,7 +3780,8 @@ const _nsH=newState;newState=function(name,bloc,nai,rounds,gov){
 /* 블록 관계: 처음엔 모두 중립, 동맹·협정은 가깝게, 국지전·세계대전·제재는 멀게 */
 const bkey=(a,b)=>[a,b].sort().join('');
 function relShift(a,b,d){if(!S||!a||!b||a===b||a==='N'||b==='N')return;S.relB=S.relB||{};const k=bkey(a,b);S.relB[k]=clamp((S.relB[k]||0)+d,-3,4)}
-rel=function(a,b){if(!b||b==='N'||!a||a==='N')return 1;if(a===b)return .7;const g=(S&&S.relB&&S.relB[bkey(a,b)])||0;let r=1+g*.1;if(g>0&&S.sanction>0)r=Math.max(r,1.4);return clamp(r,.7,1.45)};
+/* [문구 기준 정리] 블록 배율은 1350행 rel() 하나만 씀(규칙서 통행료 수식 0.7/0.85/1.2/1.4, 툴팁 relLabel과 일치).
+   예전 동적 override(relB 기반 0.7~1.45 연속값)는 문구와 맞지 않아 제거. relShift는 relB만 기록하고 배율에는 쓰이지 않음(기록만). */
 const _mkR=makeAlly;makeAlly=function(p,q,why){_mkR(p,q,why);relShift(p.bloc,q.bloc,-1.2)};
 const _stR=strike;strike=async function(p,q){if(p&&q)relShift(p.bloc,q.bloc,1.5);return _stR(p,q)};
 const _wrR=wwRound;wwRound=function(){const W=S.ww;if(W)W.X.ids.forEach(a=>W.Y.ids.forEach(b=>relShift(S.players[a].bloc,S.players[b].bloc,.5)));return _wrR()};
@@ -3814,7 +3817,7 @@ function syncB(i){const pr=S.props[i];if(!pr)return null;if(!pr.b)pr.b=[];const 
 const cityHas=(i,k)=>{const b=syncB(i);return!!b&&b.includes(k)};
 function countA(p,k){return ownedIdx(p).filter(i=>CELLS[i].t==='city'&&cityHas(i,k)).length}
 const hasA=(p,k)=>countA(p,k)>0;
-function aFactor(i,k){const a=ASSET[k],c=CELLS[i];let f=a.tf;if(k==='hotel'&&c.tag==='tour')f=1.4;if(k==='tech')f=1+.1*S.mkt.ai/100;if(k==='dc')f=1+.15*S.mkt.ai/100*(S.stk&&bubble()>1.1?1.2:1);if(k==='moon')f=1+.35*Math.max(.4,S.stab/60);return f}
+function aFactor(i,k){const a=ASSET[k],c=CELLS[i];let f=a.tf;if(k==='hotel'&&c.tag==='tour')f=1.4;if(k==='tech')f=1+.1*S.mkt.ai/100;if(k==='dc')f=1+.15*S.mkt.ai/100*(S.stk&&bubble()>1.1?1.2:1);if(k==='moon')f=c.tag==='tour'?1+.35*Math.max(.4,S.stab/60):1;return f}
 function aReq(p,i,k){const q=ASSET[k].q||0;return FR(CELLS[i].region)||(p.space||0)>=q}
 const _ctA=cityToll;cityToll=function(i,payer,lvl,owner){let t=_ctA(i,payer,lvl,owner);const b=S.props[i]&&lvl==null?syncB(i):null;if(b&&b.length)b.forEach(k=>t*=aFactor(i,k));return Math.max(1,Math.round(t))};
 function tollWith(i,k){const pr=S.props[i],base=_ctA(i,null,pr.level+1);let t=base;[...syncB(i),k].forEach(x=>t*=aFactor(i,x));return Math.round(t)}
@@ -3855,7 +3858,7 @@ function spaceB(p){return(hasA(p,'spaceport')?1:0)+(hasA(p,'tech')?1:0)}
 const _reA=roundEnd;roundEnd=function(){_reA();if(!S||S.over)return;const blk=Object.values(CP).some(i=>S.cps[i].b);
   alive().forEach(p=>{let inc=0;ownedIdx(p).forEach(i=>{if(CELLS[i].t!=='city')return;const b=syncB(i),c=CELLS[i];
     if(b.includes('strat')&&COM.includes(c.tag)&&S.mkt[c.tag]>115)inc+=pl(40);if(b.includes('sea')&&blk)inc+=pl(40);
-    if(b.includes('spaceport'))inc+=pl(20*Math.max(1,p.space||0));if(b.includes('station'))inc+=pl(25*S.mkt.ai/100);if(b.includes('mars'))inc+=pl(40)});
+    if(b.includes('spaceport'))inc+=pl(20*(p.space||0));if(b.includes('station'))inc+=pl(25*S.mkt.ai/100);if(b.includes('mars'))inc+=pl(40)});
     if(inc)gain(p,inc,'도시 자산 수익')})};
 /* 세계대전 폭격·국지전: 군사기지 도시 보호 */
 const _stB=strike;strike=async function(p,q){const i=cityOfTarget(q),arm=i!=null&&cityHas(i,'army');if(arm){q.M+=2;log(`🪖 ${pn(q)} ${CELLS[i].name} 군사기지 방어 +2`)}try{await _stB(p,q)}finally{if(arm)q.M-=2}};
