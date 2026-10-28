@@ -73,6 +73,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .tokens{position:absolute;bottom:1px;left:0;right:0;display:flex;justify-content:center;gap:1px;flex-wrap:wrap}
 .tok{display:inline-grid;place-items:center;width:clamp(14px,3.6vw,20px);height:clamp(14px,3.6vw,20px);border-radius:50%;background:var(--pc);border:1.5px solid var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.35);font-size:clamp(9px,2.3vw,13px);line-height:1}
 .center{grid-area:2/2/22/11;background:var(--panel);border-radius:10px;display:flex;flex-direction:column;align-items:stretch;gap:clamp(4px,1vw,7px);padding:clamp(6px,1.4vw,10px);text-align:center;min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;font-size:clamp(10px,1.9vw,12.5px);scrollbar-width:thin}
+.cpanel{display:contents}
 .ctop{display:flex;flex-direction:column;gap:4px}
 .cbar{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;min-width:0}
 .cbar .rnd{font-family:var(--f-display);font-size:1.5em;color:var(--accent);line-height:1;white-space:nowrap}
@@ -225,6 +226,40 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 @media (prefers-reduced-motion:reduce){#fx path,#fx .lab,#fx .pop{animation:none;opacity:1}.d12.tumble,.cell.pulse,.tile.pulse,.chip.pulse,.who span.pulse{animation:none}}
 @media (min-width:520px){body{display:flex;justify-content:center;align-items:flex-start}}
 .nojs{padding:30px;text-align:center}
+
+/* ═════════ 가로 화면(폰 눕힘) — 보드를 90° 돌려 가로로 긴 판, 정보 띠는 왼쪽, 콘솔은 보드 가운데 2단 ═════════ */
+html.land,html.land body{height:100%;overflow:hidden}
+html.land body{display:block;padding:max(4px,env(safe-area-inset-top,0px)) max(6px,env(safe-area-inset-right,0px)) max(4px,env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
+html.land body:not(.playing){overflow-y:auto;-webkit-overflow-scrolling:touch}
+html.land body:not(.playing) .wrap{max-width:640px}
+html.land body.playing .wrap{max-width:none;height:100%;display:grid;grid-template-columns:clamp(150px,19vw,210px) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);column-gap:6px;align-content:start}
+html.land body.playing header{grid-column:1;grid-row:1;margin:0 0 4px;gap:3px 5px}
+html.land body.playing #who{grid-column:1;grid-row:2;margin-bottom:4px}
+html.land body.playing #stage{display:contents}
+html.land body.playing .tiles{grid-column:1;grid-row:3;grid-template-columns:1fr 1fr;align-content:start;margin:0;max-width:none;gap:3px}
+html.land body.playing .tiles .tile:last-child{grid-column:1/-1}
+html.land body.playing .board{grid-column:2;grid-row:1/-1;width:100%;height:100%!important;min-height:0;
+  grid-template-columns:1.3fr repeat(20,minmax(0,1fr)) 1.3fr;grid-template-rows:1.3fr repeat(9,minmax(0,1fr)) 1.3fr}
+html.land h1{font-size:11px;letter-spacing:.06em}
+html.land #hdr .cbar{flex-wrap:wrap;gap:3px}
+html.land .cbar .rnd{font-size:1.25em}
+html.land .cbar .chip{font-size:.78em}
+html.land #who .who{grid-template-columns:1fr;gap:2px}
+html.land #who .who span{padding:1px 6px;font-size:.84em;justify-content:space-between}
+html.land .tile b{font-size:13px}
+html.land .cell{font-size:clamp(7px,1.75vh,10px)}
+html.land .tok{width:clamp(13px,3.6vh,18px);height:clamp(13px,3.6vh,18px);font-size:clamp(8px,2.3vh,12px)}
+html.land .board .center{grid-area:2/2/11/22!important;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:auto auto auto minmax(0,1fr);grid-auto-rows:auto;gap:5px 8px;font-size:11px;padding:6px;overflow-y:auto;overflow-x:hidden;align-content:stretch}
+html.land .board .center:has(>.result){display:flex;overflow-y:auto}
+/* 원래 코드에서 .crow 안에 탭·내용까지 들어 있어 .crow를 풀어 각 조각을 2단에 배치 */
+html.land .center>.crow{display:contents}
+html.land .center>.crow>*{grid-column:1;min-width:0}
+html.land .center>.crow>.cpanel{grid-column:2;grid-row:1/-1;display:flex;flex-direction:column;gap:5px;min-height:0;align-self:stretch}
+html.land .cpanel>.ctabs{position:static;box-shadow:none;flex:none}
+html.land .cpanel>.cbody{flex:1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+html.land .center>.crow>.news{align-self:start}
+html.land .d12{width:36px;height:36px;font-size:19px;border-radius:10px}
+html.land .acts .btn.main{min-height:36px;font-size:1.1em}
 </style></head><body>
 <div class="wrap">
 <header><h1>NEO ATLAS <b>MEGACITY</b></h1><div id="hdr"></div></header><div id="who"></div>
@@ -290,8 +325,13 @@ const BLD=['땅','상가','빌딩','랜드마크'];const BLDE=['','🏪','🏬',
 const BLDMUL=[1,2.5,5,9];const BLDCOST=[0,.6,1,1.6];
 const EDUN=['없음','기초','전문','석사'];const EDUCOST=[100,200,300];
 const COMPN=['없음','스타트업','중견기업','대기업'];const COMPCOST=[150,300,500];const COMPREV=[0,40,80,160];
-function rc(i){if(i<=10)return[21,10-i];if(i<=31)return[21-(i-10),0];if(i<=41)return[0,i-31];return[i-41,10]}
-function side(i){return i<10?'b':i<31?'l':i<41?'t':'r'}
+let LAND=false;
+function isLand(){try{return innerWidth>innerHeight&&innerHeight<=600}catch(e){return false}}
+function rc(i){const a=rcP(i);return LAND?[a[1],21-a[0]]:a}
+function side(i){const t=sideP(i);return LAND?({b:'l',l:'t',t:'r',r:'b'})[t]:t}
+function applyOrient(){const L=isLand();document.documentElement.classList.toggle('land',L);if(L!==LAND){LAND=L;if(S&&document.body.classList.contains('playing'))render()}}
+function rcP(i){if(i<=10)return[21,10-i];if(i<=31)return[21-(i-10),0];if(i<=41)return[0,i-31];return[i-41,10]}
+function sideP(i){return i<10?'b':i<31?'l':i<41?'t':'r'}
 const QUIZ=[
  ['금리가 오르면 대출 이자는?',['늘어난다','줄어든다','변화 없다'],0,'금리는 돈을 빌린 값입니다. 금리가 오르면 갚아야 할 이자도 늘어납니다.'],
  ['물가가 계속 오르는 현상을 무엇이라 하나요?',['인플레이션','디플레이션','스태그네이션'],0,'인플레이션이 심해지면 중앙은행은 금리를 올려 돈의 흐름을 줄입니다.'],
@@ -743,7 +783,7 @@ function checkWin(){if(S.over)return;const al=alive();if(al.length===1){S.winner
 function finish(k){const al=alive().sort((a,b)=>netWorth(b)-netWorth(a));S.winner=al[0]||S.players[0];S.why=k==='me'?'플레이어 파산 — 순자산 1위가 승리':`${S.maxRounds}라운드 종료 · 순자산 1위`;S.over=true}
 
 /* ═════════ 화면 ═════════ */
-function render(){if(!S)return;const rn=Math.min(S.round,S.maxRounds);
+function render(){if(!S)return;document.body.classList.add('playing');const rn=Math.min(S.round,S.maxRounds);
  $('#hdr').innerHTML=`<div class="cbar"><span class="rnd">R${rn}<small>/${S.maxRounds}</small></span><span class="prog"><i style="width:${Math.round((rn-1)/S.maxRounds*100)}%"></i></span><span class="chip ${S.boom>0?'boom':S.boom<0?'bust':''}" id="c-boom">${phaseN()}</span><span class="chip ${S.infl>=3.5?'bust':S.infl<=1?'boom':''}" id="c-rate">🏦 ${S.rate.toFixed(2)}% · ${inflN()}</span><span class="chip" id="c-fund">🏛️ ${won(S.fund)}</span></div><button class="btn ghost" id="btnFrame" style="font-size:11px;min-height:26px;padding:3px 7px">📐</button><button class="btn ghost" id="btnNew" style="font-size:11px;min-height:26px;padding:3px 8px">새 게임</button>`;
  $('#who').innerHTML=`<div class="who">${S.players.map((q,k)=>`<span class="${k===S.turn?'on':''}" style="--pc:${q.color}" data-pid="${q.id}"><b>${q.bankrupt?'💀':q.emoji} ${esc(q.name)}</b><i>${q.bankrupt?'파산':won(netWorth(q))}</i></span>`).join('')}</div>`;
  const bf=$('#btnFrame');if(bf)bf.onclick=()=>{const ids=FRAMES.map(x=>x[0]);const cur=getFrame();const nx=ids[(ids.indexOf(cur)+1)%ids.length];applyFrame(nx);toast('프레임: '+FRAMES.find(x=>x[0]===nx)[1]);render()};
@@ -775,8 +815,8 @@ function conAction(){const a=S.ask,p=cur();const mains=a?a.opts.filter(o=>!o.g):
    <div class="pa">${a?`<div class="prompt">${a.prompt}</div>`:`<div class="think">${p.human?'잠시만요…':esc(p.name)+' ('+STRATN[p.strat]+') 생각 중…'}</div>`}</div></div>
    ${a?`<div class="acts">${mains.length?`<div class="mains${mains.length>=4?' g2':''}">${mains.map(bt).join('')}</div>`:''}${subs.length?`<div class="subs">${subs.map(bt).join('')}</div>`:''}</div>`:''}`}
 function conPanel(){return`<div class="news" id="newsbox" title="누르면 자세히"><span class="k">${esc(S.news.k)}</span> <h3>${esc(S.news.t)}</h3>${newsOpen?`<p>${esc(S.news.d)}</p>`:''}<div class="chain">${(S.news.chain||[]).map(x=>`<span>${esc(x)}</span>`).join('<span style="background:none;padding:0">→</span>')}</div></div>
-  <div class="ctabs" role="tablist">${[['act','🎯 행동'],['co','🏢 내 회사'],['rank','🏅 순위'],['rule','📖 규칙']].map(([k,l])=>`<button role="tab" aria-selected="${tab===k}" data-tab="${k}" id="tabbtn-${k}">${l}</button>`).join('')}</div>
-  <div class="cbody" id="tabbody"></div>`}
+  <div class="cpanel"><div class="ctabs" role="tablist">${[['act','🎯 행동'],['co','🏢 내 회사'],['rank','🏅 순위'],['rule','📖 규칙']].map(([k,l])=>`<button role="tab" aria-selected="${tab===k}" data-tab="${k}" id="tabbtn-${k}">${l}</button>`).join('')}</div>
+  <div class="cbody" id="tabbody"></div></div>`}
 function renderBoard(){let h='';const tp=cur();
  CELLS.forEach((c,i)=>{const[r,col]=rc(i),corner=CORNER.includes(i),pr=S.props[i],o=pr?S.players[pr.owner]:null;
   const cls=['cell','side-'+side(i)];if(corner)cls.push('corner');else if(c.t!=='land')cls.push('fn');if(o)cls.push('owned');if(i===selected)cls.push('sel');if(tp.pos===i)cls.push('cur');
@@ -846,7 +886,7 @@ function showResult(){const w=S.winner;const ps=S.players.slice().sort((a,b)=>(a
  $('#btnAgain').onclick=()=>{gen++;S=null;try{localStorage.removeItem(SAVE)}catch(e){}renderSetup()}}
 
 /* ═════════ 시작 화면 ═════════ */
-function renderSetup(){const saved=load();$('#hdr').innerHTML='';$('#who').innerHTML='';
+function renderSetup(){document.body.classList.remove('playing');const saved=load();$('#hdr').innerHTML='';$('#who').innerHTML='';
  $('#stage').innerHTML=`<div class="panel setup"><h2>🏙️ 새 게임<span>Level 1 · 부자 되기 · 40~50분</span></h2>
  ${saved?`<div class="hint"><b>이어하기</b> 저장된 판(R${saved.round}/${saved.maxRounds})이 있습니다. <button class="btn sec" id="btnResume" style="margin-left:6px">이어서 하기</button></div>`:''}
  <form id="setupForm"><div class="field"><label for="nm">① 내 이름</label><input type="text" id="nm" name="nm" value="동진" maxlength="8"></div>
@@ -860,7 +900,8 @@ function renderSetup(){const saved=load();$('#hdr').innerHTML='';$('#who').inner
  if(saved)$('#btnResume').onclick=()=>{S=saved;S.ask=null;gen++;render();gameLoop()};
  document.querySelectorAll('#setupForm input[name=frame]').forEach(r=>r.onchange=()=>applyFrame(r.value));
  $('#setupForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);applyFrame(f.get('frame'));S=newState(f.get('nm').trim()||'나',+f.get('nai'),f.get('diff'),+f.get('len'),f.get('speed'));S.v=4;syncCycle();gen++;selected=S.players[0].pos;render();gameLoop()}}
-(function(){const nj=$('#nojs');if(nj)nj.remove();applyFrame(getFrame());renderSetup()})();
-let _rzT;window.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{if(getFrame()==='auto')applyFrame('auto');fitBoard()},150)});
+(function(){const nj=$('#nojs');if(nj)nj.remove();applyOrient();applyFrame(getFrame());renderSetup()})();
+let _rzT;window.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{applyOrient();if(getFrame()==='auto')applyFrame('auto');fitBoard()},150)});
+window.addEventListener('orientationchange',()=>setTimeout(()=>{applyOrient();fitBoard()},250));
 window.addEventListener('error',e=>{const el=document.createElement('div');el.className='sub';el.style.color='var(--danger)';el.textContent='오류: '+e.message;document.body.appendChild(el)});
 </script></body></html>

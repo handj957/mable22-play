@@ -1152,5 +1152,20 @@ function gameOver(w,why){
 }
 buildSetup();
 </script>
+
+<script id="land36js">
+/* 폰을 돌렸을 때(세로↔가로) 보드 칸·바다·함선 배치를 다시 계산 — 전에는 처음 연 방향으로만 맞았음 */
+(function(){
+  var last=isLand();
+  function chk(){var L=isLand();if(L===last)return;last=L;
+    try{updateBoard()}catch(e){console.error(e)}
+    try{seaShips()}catch(e){}
+    try{layout()}catch(e){}
+    try{drawFx(null)}catch(e){}}
+  var t;addEventListener('resize',function(){clearTimeout(t);t=setTimeout(chk,80)});
+  addEventListener('orientationchange',function(){setTimeout(chk,250)});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(chk,80)});
+})();
+</script>
 </body>
 </html>

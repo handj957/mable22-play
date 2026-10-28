@@ -246,6 +246,28 @@ tr.flash td,tr.flash th{animation:flash 1.6s ease}
 .cell.peek{outline:2px solid var(--orange);outline-offset:-2px}
 @media (prefers-reduced-motion:reduce){.cell.hit,.ring,.fxpop,.tile.bump .v,.pulse,.tab.ping,.flash{animation:none}}
 @media (min-width:560px){.cell .nm{font-size:9px}.cell .ic{font-size:16px}.tile .v{font-size:15px}}
+
+/* ═════════ 가로 화면(폰 눕힘) — 보드를 90° 돌려 가로판, 가운데는 3단(현황 | 행동 | 탭) ═════════ */
+html.land body{padding:max(4px,env(safe-area-inset-top,0px)) max(6px,env(safe-area-inset-right,0px)) max(4px,env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
+html.land #app{width:100%}
+html.land #board{grid-template-columns:1.2fr repeat(20,minmax(0,1fr)) 1.2fr;grid-template-rows:1.25fr repeat(9,minmax(0,1fr)) 1.25fr}
+html.land .cell{padding-top:3px}
+html.land .cell .band{height:3px}
+html.land .cell .ic{font-size:12px}
+html.land .cell .nm{font-size:7px}
+html.land .center{grid-column:2/22;grid-row:2/11;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr);grid-template-rows:auto auto minmax(0,1fr);gap:4px 6px;overflow:hidden;padding:4px}
+html.land .center>*{min-width:0}
+html.land .center>.hud{grid-column:1;grid-row:1}
+html.land .center>.strip{grid-column:1;grid-row:2}
+html.land .center>.dash{grid-column:1;grid-row:3;align-self:start;overflow-y:auto;max-height:100%}
+html.land .center>.act{grid-column:2;grid-row:1/-1;overflow-y:auto;min-height:0;max-height:100%;-webkit-overflow-scrolling:touch;align-self:start}
+html.land .act .who{white-space:normal;flex-wrap:wrap;row-gap:3px}
+html.land .act .who .lbl{flex:1 1 110px;white-space:normal;line-height:1.2}
+html.land .tile .v{font-size:12px}
+html.land .center>.tabs{grid-column:3;grid-row:1}
+html.land .center>.tbody{grid-column:3;grid-row:2/-1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch}
+html.land .center>.info,html.land .center>.over{grid-column:2}
+html.land #setup .su{max-width:640px;margin:0 auto;width:100%}
 </style>
 
 <div id="app">
@@ -909,7 +931,12 @@ function endRound(){
 }
 
 /* ========= 화면 ========= */
-function pos2grid(i){
+let LAND=false;
+function isLand(){try{return innerWidth>innerHeight&&innerHeight<=600}catch(e){return false}}
+function pos2grid(i){const a=pos2gridP(i);return LAND?[a[1],23-a[0]]:a}
+function applyOrient(){const L=isLand();document.documentElement.classList.toggle('land',L);if(L===LAND)return false;LAND=L;
+  if(document.getElementById('board')){buildBoard();if(G){render();try{placePawns()}catch(e){}}}return true}
+function pos2gridP(i){
   if(i<=10)return[1,i+1];
   if(i<=31)return[i-9,11];
   if(i<=41)return[22,11-(i-31)];
@@ -1356,13 +1383,13 @@ function wireSettings(root,after){if(!root)return;
   root.querySelectorAll('[data-frame]').forEach(b=>b.onclick=()=>{OPT.frame=b.dataset.frame;saveOpt();applyFrame();after();});}
 function applySpeed(){SPD=OPT.speed==='fast'?{step:15,ai:120,end:300}:{step:55,ai:450,end:900};}
 function applyFrame(){const f=FRAMES.find(x=>x[0]===OPT.frame)||FRAMES[0];const w=f[2]||Math.min(600,window.innerWidth);
-  document.documentElement.style.setProperty('--frameW',w+'px');const app=$('#app');if(app)app.classList.toggle('wide',app.getBoundingClientRect().width>=640);}
+  document.documentElement.style.setProperty('--frameW',w+'px');const app=$('#app');if(app)app.classList.toggle('wide',!LAND&&app.getBoundingClientRect().width>=640);}
 
 /* ========= 시작 화면 ========= */
 let SETUP={seats:[{name:'나',human:true},{name:'한솔',human:false},{name:'다온',human:false},{name:'미르',human:false}],diff:'normal'};
 let SU_TIMER=null;
 function miniBoard(){
-  const cells=CELLS.map(c=>{const [r,col]=pos2grid(c.i);return `<i id="mb${c.i}" class="${c.t==='corner'?'c':''}" style="grid-column:${r};grid-row:${col};--mc:${c.t==='prop'?PROV[c.pv].c:'color-mix(in srgb,var(--hero-ink) 22%,var(--hero))'}"></i>`;}).join('');
+  const cells=CELLS.map(c=>{const [r,col]=pos2gridP(c.i);return `<i id="mb${c.i}" class="${c.t==='corner'?'c':''}" style="grid-column:${r};grid-row:${col};--mc:${c.t==='prop'?PROV[c.pv].c:'color-mix(in srgb,var(--hero-ink) 22%,var(--hero))'}"></i>`;}).join('');
   return `<div class="mini" aria-hidden="true">${cells}<div class="core"><div class="eyebrow">22세기 브르마블 · LEVEL 2</div><h1>누리 공화국</h1><div class="tag"><b>나라 살리기</b> — 땅과 기업을 키우되, 민심을 잃으면 끝입니다.</div></div></div>`;
 }
 function showSetup(){
@@ -1405,7 +1432,7 @@ function resume(){clearPawns();G.choices=null;G.hits=[];const p=cur();if(G.phase
 
 /* ========= 부팅 ========= */
 function boot(data){
-  applySpeed();buildBoard();applyFrame();window.addEventListener('resize',()=>{applyFrame();if(G)placePawns();});
+  applySpeed();LAND=isLand();document.documentElement.classList.toggle('land',LAND);buildBoard();applyFrame();window.addEventListener('resize',()=>{applyOrient();applyFrame();if(G)placePawns();});window.addEventListener('orientationchange',()=>setTimeout(()=>{applyOrient();applyFrame();if(G)placePawns();},250));
   if(data&&data.G&&data.G.v===4&&!data.G.winner){G=data.G;$('#setup').hidden=true;resume();}
   else showSetup();
 }

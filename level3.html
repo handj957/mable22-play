@@ -5854,6 +5854,68 @@ const _rulesDip=rulesHTML;rulesHTML=function(){return _rulesDip()+`<h2 id="diplo
 </script>
 
 
+
+<style id="land36">
+/* ═════════ 가로 화면(폰 눕힘) — 보드를 90° 돌려 가로판, 가운데 콘솔 3단(주사위·상황 | 나·세계·기회·장부 | 비교판) ═════════ */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body{padding-left:max(4px,env(safe-area-inset-left,0px))!important;padding-right:max(4px,env(safe-area-inset-right,0px))!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body{overflow:hidden!important}
+:root.land{overflow:hidden!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .app{height:100dvh!important;max-width:none!important;width:100%!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .stage{flex:1 1 auto!important;min-height:0!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board{aspect-ratio:auto!important;width:100%!important;max-width:none!important;height:100%!important;max-height:none!important;margin:0!important;
+  grid-template-columns:1.42fr repeat(20,minmax(0,1fr)) 1.42fr!important;grid-template-rows:1.42fr repeat(9,minmax(0,1fr)) 1.42fr!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center{grid-area:2/2/11/22!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.02fr) minmax(0,1fr)!important;
+  grid-template-rows:auto auto auto minmax(0,1fr)!important;align-items:start!important;align-content:stretch!important;justify-items:stretch!important;
+  gap:5px 7px!important;overflow:hidden!important;padding:5px!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>*{min-width:0!important;width:auto!important;max-width:none!important;margin:0!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28bd{display:contents!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini{grid-column:1!important;grid-row:1!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.wstrip{grid-column:1!important;grid-row:2!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.ticker{grid-column:1!important;grid-row:3!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.v28nw{grid-column:1!important;grid-row:4!important;align-self:end!important}
+/* 왼쪽 단은 내용 높이만큼(겹침 방지), 넘치면 가운데 판 전체가 스크롤 */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini,:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.wstrip,:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.ticker,:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.v28nw{min-height:auto!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center{overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .amini .btn{overflow:hidden!important;min-width:0!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .amini .btn>*{min-width:0;overflow:hidden;text-overflow:ellipsis}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28fc{grid-column:2!important;grid-row:1/-1!important;align-self:stretch!important;overflow-y:auto!important;min-height:0!important;max-height:100%!important;margin:0!important;-webkit-overflow-scrolling:touch}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28mx{grid-column:3!important;grid-row:1/-1!important;align-self:start!important;margin:0!important;width:100%!important;font-size:.94em!important}
+/* 이름 상자를 눌러 펼치는 메뉴(현금·순자산 줄 + 메뉴 줄): 가로에서는 보드를 밀지 않고 위에 겹쳐 펼침 */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .hdr .v28acc{position:absolute!important;left:6px!important;right:6px!important;top:calc(100% - 4px)!important;z-index:80!important;
+  background:var(--panel,#fff)!important;border-radius:0 0 12px 12px!important;box-shadow:0 10px 24px rgba(0,0,0,.28)!important;padding:4px 6px 6px!important;max-height:70vh;overflow-y:auto}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .hdr{overflow:visible!important;z-index:70!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .hdr.v28o{height:auto!important}
+/* 짧은 쪽(왼·오른쪽 끝 줄) 칸: 가로로 낮아지므로 아이콘·이름을 옆으로 나란히 */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .cell.side-l:not(.corner),:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .cell.side-r:not(.corner){flex-direction:row!important;justify-content:center!important;align-items:center!important;gap:2px!important;padding:0 4px!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .cell.side-l:not(.corner) .ic,:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .cell.side-r:not(.corner) .ic{font-size:14px!important;line-height:1!important;flex:none!important;margin:0!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .cell.side-l:not(.corner) .nm,:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .cell.side-r:not(.corner) .nm{font-size:8.5px!important;line-height:1.05!important;height:auto!important;max-height:none!important;text-align:left!important;margin:0!important;min-width:0}
+</style>
+
+<script id="land36js">
+/* 가로 화면: 보드 칸 좌표를 90° 시계 방향으로 돌림 (세로 화면은 그대로) */
+var LAND=false;
+(function(){
+  function isLand(){try{return innerWidth>innerHeight&&innerHeight<=600}catch(e){return false}}
+  var rcP=rc, sideP=side, SIDE={b:'l',l:'t',t:'r',r:'b'};
+  rc=function(i){var a=rcP(i);return LAND?[a[1],21-a[0]]:a};
+  side=function(i){var t=sideP(i);return LAND?SIDE[t]:t};
+  function fixVars(){var b=document.getElementById('board');if(!b||!LAND)return;
+    b.style.setProperty('--cw',(b.clientWidth/22).toFixed(1)+'px');b.style.setProperty('--ch',(b.clientHeight/11).toFixed(1)+'px');
+    b.classList.add('c1');b.classList.remove('c2')}
+  function apply(){var L=isLand();document.documentElement.classList.toggle('land',L);
+    if(L!==LAND){LAND=L;/* 잠시 머무는 화살·꽂힘 표시는 이전 방향 좌표라 지움 */document.querySelectorAll('#stage>.afx,#fx35').forEach(function(l){l.innerHTML=''});try{if(typeof S!=='undefined'&&S)render()}catch(e){console.error(e)}}
+    try{cellVars()}catch(e){}try{fitCells()}catch(e){}try{setHdr()}catch(e){}fixVars()}
+  var b=document.getElementById('board');
+  if(b&&window.ResizeObserver)new ResizeObserver(fixVars).observe(b);
+  var t;addEventListener('resize',function(){clearTimeout(t);t=setTimeout(apply,120)});
+  addEventListener('orientationchange',function(){setTimeout(apply,250)});
+  /* 알림 팝업: 가로판은 줄이 11개 */
+  if(typeof showToast==='function'){var st=showToast;showToast=function(){st.apply(this,arguments);if(!LAND)return;
+    try{var el=document.getElementById('toast'),r=document.getElementById('board').getBoundingClientRect();
+      if(el&&!el.hidden)el.style.top=Math.round(r.top+Math.max(30,r.height/11)+4)+'px'}catch(e){}}}
+  apply();
+})();
+</script>
 </body></html>
 <style id="v35theme">
 /* ═════ v35 · 밝고 세련된 라이트 테마 (중성 회색 + 인디고 포인트) ═════ */:root{
