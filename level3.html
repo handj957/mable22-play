@@ -3370,7 +3370,7 @@ const THEMES=[
  {e:'🎰',n:'행운의 라운드',d:'모두 행운 주사위를 굴려 10 이상이면 ₵150.',fx(){const w=[];alive().forEach(p=>{if(d12()>=10){gain(p,pl(150),'행운의 라운드');w.push(p.name)}});return w.length?w.join('·')+' 당첨':'당첨자 없음'}}
 ];
 function drawTheme(){if(!S._tDeck||!S._tDeck.length)S._tDeck=shuffle(THEMES.map((_,i)=>i));return THEMES[S._tDeck.pop()]}
-function themeBanner(t,res){const o=document.createElement('div');o.className='tcard';o.innerHTML=`<div class="tc"><div class="tb"><small>R${S.round} 세계 정세 카드</small><b><i>${t.e}</i>${esc(t.n)}</b><p>${esc(t.d)}</p>${res?`<em>${esc(res)}</em>`:''}</div></div>`;document.body.appendChild(o);setTimeout(()=>o.classList.add('out'),S.speed==='fast'?1400:2800);setTimeout(()=>o.remove(),S.speed==='fast'?1800:3300)}
+function themeBanner(t,res){const o=document.createElement('div');o.className='tcard';o.innerHTML=`<div class="tc"><div class="tb"><small>R${S.round} 세계 정세 카드</small><b><i>${t.e}</i>${esc(t.n)}</b><p>${esc(t.d)}</p>${res?`<em>${esc(res)}</em>`:''}</div></div>`;tcShow(o,S.speed==='fast'?1400:2800,S.speed==='fast'?1800:3300)}
 const _roundEndTh=roundEnd;
 roundEnd=function(){_roundEndTh();if(!S||S.round>S.maxRounds)return;const t=drawTheme();let res='';try{res=t.fx()||''}catch(e){}
   S.theme={e:t.e,n:t.n,d:t.d,r:S.round};log(`🃏 세계 정세 카드: <b>${t.e} ${t.n}</b> — ${t.d}${res?' ('+res+')':''}`);setTimeout(()=>themeBanner(t,res),350)};
@@ -3528,7 +3528,7 @@ function formCamps(){cleanAllies();const al=alive(),cam=[];
   while(cam.length<2&&free.length){const lead=free.shift();const mates=free.filter(q=>q.bloc===lead.bloc&&rel(lead.bloc,q.bloc)<1);mates.forEach(q=>free.splice(free.indexOf(q),1));
     cam.push({n:`${lead.name} 진영`,e:['🔱','🗡️'][cam.length],c:lead.color,ids:[lead.id,...mates.map(q=>q.id)]})}
   return cam.length>=2?[cam[0],cam[1]]:null}
-function wwBanner(t,d,extra,cls){const o=document.createElement('div');o.className='tcard '+(cls||'war');o.innerHTML=`<div class="tc"><div class="tb"><small>${t[0]}</small><b><i>${t[1]}</i>${esc(t[2])}</b><p>${d}</p>${extra?`<em>${extra}</em>`:''}</div></div>`;document.body.appendChild(o);const f=S.speed==='fast';setTimeout(()=>o.classList.add('out'),f?1600:3400);setTimeout(()=>o.remove(),f?2000:3900)}
+function wwBanner(t,d,extra,cls){const o=document.createElement('div');o.className='tcard '+(cls||'war');o.innerHTML=`<div class="tc"><div class="tb"><small>${t[0]}</small><b><i>${t[1]}</i>${esc(t[2])}</b><p>${d}</p>${extra?`<em>${extra}</em>`:''}</div></div>`;const f=S.speed==='fast';tcShow(o,f?1600:3400,f?2000:3900)}
 function startWW(){const c=formCamps();if(!c){S.wwT=80;return}
   S._newWar=S._newWar||[];S.ww={r:0,max:4,lead:0,X:c[0],Y:c[1],start:S.round};['eu','me','ea'].forEach(r=>war(r,true));block(CP.horm,3);block(CP.mal,3);
   const r=applyShock({oil:12,gas:9,food:8,steel:10,chip:8,gold:10},-20);pushHist();
@@ -3653,10 +3653,10 @@ const _nwS=netWorth;netWorth=function(p){return _nwS(p)+(S&&S.stk!=null?stkVal(p
 const _ensS=ensure;ensure=function(p,n){if(p.cash<n&&p.stk>0&&S.stk){const need=Math.ceil((n-p.cash)/S.stk),k=Math.min(p.stk,need);if(k>0){p.stk-=k;const v=Math.round(k*S.stk);p.cash+=v;led(null,p,v,'주식 매도(강제)')}}return _ensS(p,n)};
 function stkTrade(p,k){const px=Math.round(S.stk);if(k>0){const c=px*k;if(p.cash<c)return false;p.cash-=c;p.stk+=k;led(p,null,c,`주식 매수 ${k}주`);S.herd=(S.herd||0)+k}else{const n=Math.min(p.stk,-k);if(!n)return false;p.stk-=n;const v=px*n;p.cash+=v;led(null,p,v,`주식 매도 ${n}주`);S.herd=(S.herd||0)-n}return true}
 async function stockMenu(p){stkInit();const b=bubble(),px=Math.round(S.stk),h=S.stkH,ch=h.length>1?Math.round((h[h.length-1]/h[h.length-2]-1)*100):0;
-  const r=await ask(`📈 세계 주식시장 · 지수 ${px} (${ch>=0?'+':''}${ch}%)<small style="text-align:left">보유 ${p.stk}주 = ${won(stkVal(p))} · 버블 지수 ${b.toFixed(2)} ${b>1.3?'🫧 과열 — 폭락 위험':b<.85?'📉 저평가':'· 안정'}<br>지수는 AI·반도체 가격, 금리, 세계 안정, 전쟁, 그리고 모두의 매수 쏠림(군중 심리)으로 움직입니다. 버블 지수가 높을 때 금리 인상·전쟁·나쁜 주사위가 오면 폭락하고, 폭락은 대공황을 부를 수 있습니다. (거래는 명령 횟수를 쓰지 않습니다)</small>`,
+  const r=await ask(`📈 세계 주식시장 · 지수 ${px} (${ch>=0?'+':''}${ch}%) <small style="text-align:left">· 보유 ${p.stk}주 = ${won(stkVal(p))} · 버블 ${Math.round(b*100)}점 ${b>1.3?'🫧 과열 — 폭락 위험':b<.85?'📉 저평가':'· 안정'} <br>지수는 AI·반도체 가격, 금리, 세계 안정, 전쟁, 그리고 모두의 매수 쏠림(군중 심리)으로 움직입니다. 버블 지수가 높을 때 금리 인상·전쟁·나쁜 주사위가 오면 폭락하고, 폭락은 대공황을 부를 수 있습니다. (거래는 명령 횟수를 쓰지 않습니다)</small>`,
    [{id:'b1',l:`매수 1주 ${won(px)}`,dis:p.cash<px},{id:'b3',l:`매수 3주 ${won(px*3)}`,dis:p.cash<px*3},{id:'s1',l:'매도 1주',dis:!p.stk,g:1},{id:'sa',l:'전량 매도',dis:!p.stk,g:1},{id:'x',l:'닫기',g:1}]);
   if(r==='b1')stkTrade(p,1);if(r==='b3')stkTrade(p,3);if(r==='s1')stkTrade(p,-1);if(r==='sa')stkTrade(p,-p.stk);if(r!=='x'){setAct(p,r[0]==='b'?'📈 주식 매수':'💵 주식 매도');render()}}
-function blackBanner(t,d,extra){const o=document.createElement('div');o.className='tcard crash';o.innerHTML=`<div class="tc"><div class="tb"><small>${t[0]}</small><b><i>${t[1]}</i>${esc(t[2])}</b><p>${d}</p>${extra?`<em>${extra}</em>`:''}</div></div>`;document.body.appendChild(o);const f=S.speed==='fast';setTimeout(()=>o.classList.add('out'),f?1600:3400);setTimeout(()=>o.remove(),f?2000:3900)}
+function blackBanner(t,d,extra){const o=document.createElement('div');o.className='tcard crash';o.innerHTML=`<div class="tc"><div class="tb"><small>${t[0]}</small><b><i>${t[1]}</i>${esc(t[2])}</b><p>${d}</p>${extra?`<em>${extra}</em>`:''}</div></div>`;const f=S.speed==='fast';tcShow(o,f?1600:3400,f?2000:3900)}
 function stockCrash(why){const drop=.55+Math.random()*.15,px0=Math.round(S.stk);S.stk=Math.max(30,S.stk*drop);S.cx=Math.max(20,S.cx*.75);S.RE=clamp(S.RE-10,40,220);S.stkCrash=S.round+2;
   const r=applyShock({chip:-10,ai:-12,gold:10},-8);setRate(S.rate-.5);pushHist();
   alive().forEach(p=>{unc(p,4+Math.min(6,p.stk||0));apc(p,-3)});
@@ -3789,7 +3789,7 @@ const _reR=roundEnd;roundEnd=function(){_reR();if(!S||!S.relB)return;Object.keys
   (S.treaties||[]).forEach(t=>{const a=S.players[t.a],b=S.players[t.b];if(a&&b)relShift(a.bloc,b.bloc,-.2)})};
 /* 여러 사람: 사람이 모두 부도나야 패배, 차례 알림 */
 checkOver=function(){if(alive().length<=1||S.players.every(p=>!p.human||p.bankrupt)||S.round>S.maxRounds)S.over=true};
-const _ttH=takeTurn;takeTurn=async function(p){if(p.human&&S.players.filter(q=>q.human&&!q.bankrupt).length>1){const o=document.createElement('div');o.className='tcard peace';o.innerHTML=`<div class="tc"><div class="tb"><small>PASS THE DEVICE</small><b><i>📱</i>${esc(p.name)}님 차례</b><p>기기를 ${esc(p.name)}님에게 넘겨 주세요.</p></div></div>`;document.body.appendChild(o);setTimeout(()=>o.classList.add('out'),1500);setTimeout(()=>o.remove(),1950);await sleep(1200)}return _ttH(p)};
+const _ttH=takeTurn;takeTurn=async function(p){if(p.human&&S.players.filter(q=>q.human&&!q.bankrupt).length>1){const o=document.createElement('div');o.className='tcard peace';o.innerHTML=`<div class="tc"><div class="tb"><small>PASS THE DEVICE</small><b><i>📱</i>${esc(p.name)}님 차례</b><p>기기를 ${esc(p.name)}님에게 넘겨 주세요.</p></div></div>`;tcShow(o,1500,1950);await sleep(1200)}return _ttH(p)};
 
 /* ═════════ v19: 도시 자산(호텔·전략자산·군사기지 + 도시별 특화 2종) · 군사 압박 판정 통일 · 영역 표시 ═════════ */
 const ASSET={
@@ -3912,7 +3912,7 @@ function naturalDisaster(src){v20Init();const ks=Object.keys(DIS),k=ks[Math.rand
   ch.push([Object.keys(r.d).filter(x=>Math.abs(r.d[x])>=1).slice(0,3).map(x=>TAG[x]+' '+sg(r.d[x])+'%').join(' · ')||'원자재 영향 미미','res'],['난민 +3 · 세계 안정 −3','dip']);
   S.news={k:`${D.e} 자연재해`,t:`${c0.name} ${D.n}`,d:`${D.d}. ${src||''}`,chain:ch};log(`${D.e} <b>${D.n}</b>: ${hit.map(i=>CELLS[i].name).join('·')}`);
   setTimeout(()=>shootArrows(arrows),200);
-  const o=document.createElement('div');o.className='tcard disaster';o.innerHTML=`<div class="tc"><div class="tb"><small>NATURAL DISASTER</small><b><i>${D.e}</i>${esc(D.n)}</b><p>${esc(hit.map(i=>CELLS[i].name).join(' · '))}<br>${D.d}</p><em>통행료 −40% 2라운드</em></div></div>`;document.body.appendChild(o);const f=S.speed==='fast';setTimeout(()=>o.classList.add('out'),f?1500:3000);setTimeout(()=>o.remove(),f?1900:3500)}
+  const o=document.createElement('div');o.className='tcard disaster';o.innerHTML=`<div class="tc"><div class="tb"><small>NATURAL DISASTER</small><b><i>${D.e}</i>${esc(D.n)}</b><p>${esc(hit.map(i=>CELLS[i].name).join(' · '))}<br>${D.d}</p><em>통행료 −40% 2라운드</em></div></div>`;const f=S.speed==='fast';tcShow(o,f?1500:3000,f?1900:3500)}
 const _landE=land;land=async function(p,mv){v20Init();const c=CELLS[p.pos];
   if(c.t==='event'&&Math.random()<.4){selected=p.pos;render();naturalDisaster('글로벌 이벤트 칸');render();if(p.human)await ok(`${S.news.t}<small>${S.news.d}</small>`);else await sleep(delay()*1.5);return}
   if(c.t==='policy')return policyCell(p);return _landE(p,mv)};
@@ -5571,7 +5571,7 @@ function naturalBoon(src){v32Init();const B=BOON[Math.random()*BOON.length|0],ca
   if(r&&r.d)ch.push([Object.keys(r.d).filter(x=>Math.abs(r.d[x])>=1).slice(0,3).map(x=>TAG[x]+' '+sg(r.d[x])+'%').join(' · ')||'원자재 영향 미미','res']);ch.push(['난민 −2 · 세계 안정 ↑','dip']);
   S.news={k:`${B.e} 자연의 선물`,t:`${c0.name} ${B.n}`,d:`${B.d}. ${src||''}`,chain:ch};log(`${B.e} <b>${B.n}</b>: ${hit.map(i=>CELLS[i].name).join('·')}`);
   setTimeout(()=>shootArrows(arrows),200);
-  const o=document.createElement('div');o.className='tcard peace';o.innerHTML=`<div class="tc"><div class="tb"><small>NATURE'S GIFT</small><b><i>${B.e}</i>${esc(B.n)}</b><p>${esc(hit.map(i=>CELLS[i].name).join(' · '))}<br>${B.d}</p><em>통행료 +20% 2라운드</em></div></div>`;document.body.appendChild(o);const f=S.speed==='fast';setTimeout(()=>o.classList.add('out'),f?1500:3000);setTimeout(()=>o.remove(),f?1900:3500)}
+  const o=document.createElement('div');o.className='tcard peace';o.innerHTML=`<div class="tc"><div class="tb"><small>NATURE'S GIFT</small><b><i>${B.e}</i>${esc(B.n)}</b><p>${esc(hit.map(i=>CELLS[i].name).join(' · '))}<br>${B.d}</p><em>통행료 +20% 2라운드</em></div></div>`;const f=S.speed==='fast';tcShow(o,f?1500:3000,f?1900:3500)}
 const _ctV32=cityToll;cityToll=function(i,payer,lvl,owner){let t=_ctV32(i,payer,lvl,owner);if(S&&S.bz&&S.bz[i]&&S.bz[i].r>0)t=Math.round(t*1.2);return t};
 const _landV32=land;land=async function(p,mv){v32Init();const c=CELLS[p.pos];
   if(c.t==='event'&&Math.random()<.2){selected=p.pos;render();naturalBoon('글로벌 이벤트 칸');render();if(p.human)await ok(`${S.news.t}<small>${S.news.d}</small>`);else await sleep(delay()*1.5);return}
@@ -5580,7 +5580,7 @@ const _landV32=land;land=async function(p,mv){v32Init();const c=CELLS[p.pos];
 /* ── ③ 테러: 경보 이후 성공 / 실패 판정을 분명하게 + 첩보국 ── */
 const INTEL=[{n:'없음',c:0},{n:'첩보국 창설',c:150},{n:'해외 정보망',c:250},{n:'전략 정보원',c:350}];
 const intelCost=p=>pl(INTEL[(p.intel||0)+1]?INTEL[(p.intel||0)+1].c:0);
-function v32Banner(cls,t,d,em){const o=document.createElement('div');o.className='tcard '+cls;o.innerHTML=`<div class="tc"><div class="tb"><small>${t[0]}</small><b><i>${t[1]}</i>${esc(t[2])}</b><p>${d}</p>${em?`<em>${em}</em>`:''}</div></div>`;document.body.appendChild(o);const f=S.speed==='fast';setTimeout(()=>o.classList.add('out'),f?1500:3000);setTimeout(()=>o.remove(),f?1900:3500)}
+function v32Banner(cls,t,d,em){const o=document.createElement('div');o.className='tcard '+cls;o.innerHTML=`<div class="tc"><div class="tb"><small>${t[0]}</small><b><i>${t[1]}</i>${esc(t[2])}</b><p>${d}</p>${em?`<em>${em}</em>`:''}</div></div>`;const f=S.speed==='fast';tcShow(o,f?1500:3000,f?1900:3500)}
 terrorAttack=function(p,why){v32Init();const iv=p.intel||0;
   if(iv&&Math.random()<.15*iv){apc(p,4);S.terror=clamp(S.terror-8,0,100);log(`🕵️ ${pn(p)} 첩보국이 테러 조직을 사전 검거`);
     if(p.human||Math.random()<.5)v32Banner('peace',['TERROR FOILED','🕵️','테러 실패 — 사전 검거'],`${esc(p.name)} · ${esc(why)}<br>첩보국 ${INTEL[iv].n}이(가) 잠입 조직을 먼저 찾아냈습니다`,'지지율 +4 · 테러 위협 −8');
@@ -6220,3 +6220,62 @@ ${AG.slice(1).map((t,k)=>`<li><b>${t.e} ${k+1}단계 ${t.n}</b> (₵${t.c}·물�
 <li><b>실패</b>: 개발비 절반 회수, 혼란 +3, 25% 확률로 내 최고 건물 1동 손상. 개발하지 않고 지나가면 연구 견학 수입(₵15+₵10×단계).</li></ul>`};
 })();
 </script>
+<style id="v38fix">
+/* ═════════ v38: 팝업 겹침 정리 · 프로젝트/주식 버튼 확대 · 프레임 어긋남 수정 ═════════ */
+/* ① 토스트: left:50% 때문에 폭이 절반으로 줄어 세로로 길어지던 문제 → 내용 폭 + 최대폭 */
+#toast{left:50%!important;right:auto!important;width:max-content!important;max-width:min(90vw,480px)!important;box-sizing:border-box;font-size:12.5px!important;line-height:1.35!important;padding:7px 12px!important;text-wrap:pretty}
+/* ② 프로젝트·주식 등 보조 버튼 확대 */
+.v28side{gap:6px!important}
+.v28side .btn.v28ic{width:64px!important;height:50px!important;border-radius:12px!important;gap:1px!important}
+.v28side .btn.v28ic i{font-size:23px!important;line-height:1.05!important}
+.v28side .btn.v28ic small{font-size:12px!important;letter-spacing:-.02em}
+/* ③ 프로젝트·주식 메뉴(목록 선택) 글자·버튼 확대 */
+.board .center .amini.v38menu .btn{min-height:40px!important;font-size:14px!important}
+.board .center .amini.v38menu .btn .bl{font-size:14px!important}
+.board .center .amini.v38menu .btn.sub small{font-size:12px!important}
+.board .center .amini.v38menu .btn.ghost{min-height:36px!important}
+/* ④ 아코디언 한 줄 요약: 두 줄로 꺾여 아래가 잘리던 문제 → 한 줄 말줄임 */
+.v30 .hd .vd{flex-wrap:nowrap!important;gap:4px!important;align-items:center!important}
+.v30 .hd .vd>*{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* ⑦ 프로젝트·주식 메뉴 안내 문구: 한 줄 말줄임 → 최대 3줄 */
+.board .center .amini.v38menu .ap{white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden!important;text-overflow:clip!important;font-size:12.5px!important;line-height:1.38!important}
+/* ⑧ 선택지 버튼 글이 길어 오른쪽이 잘리던 문제 → 줄바꿈 허용 */
+.board .center .amini.list .btn:not(.sub):not(.ghost) .bl{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;text-align:left;line-height:1.25!important;overflow-wrap:anywhere}
+.board .center .amini.list .btn:not(.sub):not(.ghost){height:auto!important;padding-top:6px!important;padding-bottom:6px!important}
+.v30 .hd .vd{height:19px!important;line-height:19px!important}
+.v38strong{}
+:root:not(#_a):not(#_b):not(#_c) body .board .center .amini.asking.v38menu:not(.v28roll) .ap{max-height:none!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden!important;text-overflow:clip!important;font-size:12.5px!important;line-height:1.38!important}
+/* ⑤ 말 이름표가 화면 밖으로 잘리지 않게(스크립트가 --tx 보정) */
+.v34pawn .tag,.afx .tag{margin-left:var(--tx,0px)}
+/* ⑥ 팝업 대기 중 연출이 전면 카드 뒤로 숨지 않도록 */
+.tcard{z-index:90}
+</style>
+<script id="v38js">
+(function(){
+  var tcSleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+  /* 조건이 풀릴 때까지(최대 max ms) 기다림 */
+  var TCQ=[],busy=false;
+  var tcFree=function(sel){return sel==='__tc'?!(busy||TCQ.length||document.querySelector('.tcard')):!document.querySelector(sel)};
+  window.popGate=function(sel,max){return new Promise(function(res){var t0=Date.now();(function w(){if(tcFree(sel)||Date.now()-t0>max)res();else setTimeout(w,140)})()})};
+  /* 전면 카드: 한 번에 하나씩 순서대로(밀리면 조금 빨리 넘김, 최대 5장 대기) */
+  window.tcShow=function(o,outMs,rmMs){TCQ.push({o:o,outMs:outMs,rmMs:rmMs});if(TCQ.length>5)TCQ.splice(0,TCQ.length-5);if(!busy)run()};
+  async function run(){busy=true;try{while(TCQ.length){var q=TCQ.shift();await popGate('.v34rib',3500);var k=TCQ.length?.7:1,o=q.o;document.body.appendChild(o);
+    (function(o,a,b){setTimeout(function(){o.classList.add('out')},a);setTimeout(function(){o.remove()},b)})(o,q.outMs*k,q.rmMs*k);await tcSleep(q.rmMs*k+160)}}catch(e){}busy=false}
+  /* 새 게임 시작 시 대기열 비움 */
+  document.querySelector('#setupForm')&&document.querySelector('#setupForm').addEventListener('submit',function(){TCQ.length=0;document.querySelectorAll('.tcard').forEach(function(x){x.remove()})});
+  /* 토스트·결과 리본·코인 표시는 전면 카드가 떠 있는 동안 기다렸다가 이어서 표시 */
+  try{var _st=showToast;showToast=function(){if(!tcFree('__tc')){setTimeout(showToast,300);return}_st()}}catch(e){}
+  try{var _pc=playCoin;playCoin=function(q){return popGate('__tc',8000).then(function(){return _pc(q)})}}catch(e){}
+  /* 프로젝트·주식 메뉴 표시용 클래스 */
+  var mo=new MutationObserver(function(){var am=document.querySelector('#board .center .amini');if(!am)return;var t=(am.textContent||'').slice(0,60);am.classList.toggle('v38menu',/국가 프로젝트|세계 주식시장|군사 자산/.test(t))});
+  mo.observe(document.body,{childList:true,subtree:true});
+  /* 말·화살 이름표가 화면 가장자리에서 잘리지 않게 보정 */
+  var busy2=false;function clamp(){if(busy2)return;busy2=true;requestAnimationFrame(function(){busy2=false;var W=document.documentElement.clientWidth||innerWidth;document.querySelectorAll('.v34pawn .tag,.afx .tag').forEach(function(t){t.style.setProperty('--tx','0px');var r=t.getBoundingClientRect(),d=0;if(r.width<1)return;if(r.left<4)d=4-r.left;else if(r.right>W-4)d=W-4-r.right;if(d)t.style.setProperty('--tx',Math.round(d)+'px')})})}
+  setInterval(clamp,600);
+  new MutationObserver(clamp).observe(document.body,{childList:true,subtree:true});
+  /* 칸·칩 이름이 좁은 칸보다 길면 글자를 줄여 맞춤 */
+  var busy3=false;function fit(){if(busy3)return;busy3=true;requestAnimationFrame(function(){busy3=false;var SHORT={'증권거래소':'증권가'};document.querySelectorAll('.nm,.hc .t,.cell .t').forEach(function(e){if(e.dataset.fit)return;var cw=e.clientWidth,sw=e.scrollWidth;if(cw>8&&sw>cw+1){e.dataset.fit=1;e.style.letterSpacing='-.06em';if(e.scrollWidth>e.clientWidth+1){var k=Math.max(.75,e.clientWidth/e.scrollWidth),fs=parseFloat(getComputedStyle(e).fontSize)||10;e.style.fontSize=(fs*k).toFixed(1)+'px'}var tx=e.textContent.trim();if(e.scrollWidth>e.clientWidth+1&&SHORT[tx]){e.title=tx;e.textContent=SHORT[tx]}}})})}
+  new MutationObserver(fit).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
