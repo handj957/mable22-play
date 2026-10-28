@@ -15,7 +15,18 @@ h1{font-size:22px;margin:0 0 4px;letter-spacing:-.02em}
 a.card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;text-decoration:none;color:inherit;box-shadow:var(--sh);transition:transform .12s}
 a.card:active{transform:scale(.985)}
 .no{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:17px;color:#fff;flex:none}
-.l1 .no{background:#e0a23a}.l2 .no{background:#3aa876}.l3 .no{background:#4f5bd5}.l4 .no{background:#2c3357}.l5 .no{background:#c0392b}
+/* 카드 색 = 각 게임의 배경·보드·포인트 색 */
+.l1{--c1:#fffaf1;--c2:#f3e8d3;--bd:#e3d3b2;--ac:#e0702e;--ink:#2b2a33;--sub:#6e5427;--go:#c25a1c}
+.l2{--c1:#f8fbf7;--c2:#e4eee1;--bd:#cfdfcb;--ac:#2f7a50;--ink:#1d2b22;--sub:#4b6253;--go:#1f6a43}
+.l3{--c1:#fafbfd;--c2:#e5eaf6;--bd:#cfd8ee;--ac:#3653c9;--ink:#1b2430;--sub:#4a5670;--go:#3653c9}
+.l4{--c1:#fcf9ff;--c2:#ece2fa;--bd:#d6c8ee;--ac:linear-gradient(135deg,#5b34c8,#c8286f);--ink:#211838;--sub:#5a4f7c;--go:#5b34c8}
+.l5{--c1:#1a2a55;--c2:#070b17;--bd:#2a3a63;--ac:#4fd1ff;--ink:#e8eefc;--sub:#8ea0c9;--go:#4fd1ff}
+a.card{background:linear-gradient(135deg,var(--c1),var(--c2));border-color:var(--bd);color:var(--ink)}
+a.card .no{background:var(--ac)}
+.l5 .no{color:#07101f}
+a.card .d{color:var(--sub)}
+a.card .go{color:var(--go)}
+.l5{box-shadow:0 4px 14px rgba(7,11,23,.35)}
 .t{font-weight:700;font-size:16px}
 .d{font-size:13px;color:var(--sub);margin-top:2px}
 .go{margin-left:auto;color:var(--pt);font-weight:700;flex:none}
@@ -32,7 +43,7 @@ a.card:active{transform:scale(.985)}
   <a class="card l1" href="level1.html"><div class="no">1</div><div><div class="t">네오 아틀라스 메가시티</div><div class="d">부자 되기 — 부동산·기업·원자재·교육 (입문)</div></div><div class="go">플레이 ›</div></a>
   <a class="card l2" href="level2.html"><div class="no">2</div><div><div class="t">누리 공화국</div><div class="d">Level 1 + 사회·문화 — 민심과 연쇄 효과</div></div><div class="go">플레이 ›</div></a>
   <a class="card l3" href="level3.html"><div class="no">3</div><div><div class="t">세계를 움직이기</div><div class="d">정치·경제·군사·외교·자원·부동산 6대 분야 (본편)</div></div><div class="go">플레이 ›</div></a>
-  <a class="card l4" href="level4.html"><div class="no">4</div><div><div class="t">세계를 제패하기</div><div class="d">지도자 드래프트 · 다중 승리 4종 · 우주풍 디자인</div></div><div class="go">플레이 ›</div></a>
+  <a class="card l4" href="level4.html"><div class="no">4</div><div><div class="t">세계를 제패하기</div><div class="d">지도자 드래프트 · 다중 승리 4종 · 펄 바이올렛 디자인</div></div><div class="go">플레이 ›</div></a>
   <a class="card l5" href="level5.html"><div class="no">5</div><div><div class="t">블루마블 택틱스</div><div class="d">11×19 전장 · 주사위 사거리 전투 · 골드+AP 이중 재화 (전쟁편)</div></div><div class="go">플레이 ›</div></a>
 
   <div class="note">
