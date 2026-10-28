@@ -6856,7 +6856,7 @@ var LAND=false;
 .why summary{cursor:pointer;color:#7a5c17;font-weight:700;list-style:none;display:inline-block;padding:1px 8px;border:1px solid #caa85a;border-radius:10px;background:#fff6dc}
 .why summary::-webkit-details-marker{display:none}
 .why p{margin:4px 0 0;padding:5px 8px;background:#fff9e6;border-left:3px solid #caa85a;border-radius:4px;color:#3b2a10;line-height:1.45}
-.edu-hint{flex:1 1 100%;width:100%;min-width:0;max-width:100%;box-sizing:border-box;margin-top:4px;text-align:center}.edu-hint button{display:block;width:100%;min-width:0;font-size:clamp(10.5px,2.1vw,12.5px);padding:5px 8px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;line-height:1.25;writing-mode:horizontal-tb}
+.edu-hint{flex:1 1 100%;width:100%;min-width:0;max-width:100%;box-sizing:border-box;margin-top:4px;text-align:center}.edu-hint button{display:block;width:100%;min-width:0;font-size:clamp(10.5px,2.1vw,12.5px);padding:5px 8px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;line-height:1.25;writing-mode:horizontal-tb}.edu-hint-chip{flex:0 0 auto!important;width:auto!important;min-width:0;margin:0 0 0 4px!important;order:99}.edu-hint-chip button{display:inline-flex!important;align-items:center;gap:2px;width:auto!important;padding:2px 8px!important;font-size:11px!important;white-space:nowrap!important;line-height:1.2;border-radius:999px}.edu-hint-chip b{font-weight:800}
 .dexgrid{display:grid;grid-template-columns:1fr;gap:6px}
 .dexc{border:1px solid var(--line,#ccc);border-radius:10px;padding:7px 9px;background:var(--panel2,#f7f7f7);text-align:left}
 .dexc.off{opacity:.55}.dexc b{font-size:13px}.dexc small{display:block;color:var(--muted,#777);margin-top:2px;line-height:1.4}
@@ -6977,6 +6977,9 @@ function hintBtn3(){
   const e=edu3();document.querySelectorAll('.edu-hint').forEach(x=>x.remove());
   if(!e||!e.hint||!S.ask||!cur().human)return;
   const host=document.querySelector('#board .amini .ab')||document.querySelector('#board .center .acts');if(!host)return;
+  const turn=document.querySelector('#board .amini .v28turn');
+  if(turn){/* 제목 줄 오른쪽 끝에 작은 칩으로 — 선택 버튼·미리보기 표의 높이를 뺏지 않음 */
+    turn.insertAdjacentHTML('beforeend',`<span class="edu-hint edu-hint-chip"><button class="btn ghost" id="hint3" title="AI 참모에게 묻기 (남은 ${e.hints}번)" aria-label="AI 참모에게 묻기 (남은 ${e.hints}번)" ${e.hints>0?'':'disabled'}>🧑‍🏫 <b>${e.hints}</b></button></span>`);return}
   host.insertAdjacentHTML('beforeend',`<div class="edu-hint"><button class="btn ghost" id="hint3" ${e.hints>0?'':'disabled'}>🧑‍🏫 AI 참모에게 묻기 (남은 ${e.hints}번)</button></div>`);
 }
 document.addEventListener('click',ev=>{
