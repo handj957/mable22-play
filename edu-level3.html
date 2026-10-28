@@ -5881,6 +5881,9 @@ const _rulesDip=rulesHTML;rulesHTML=function(){return _rulesDip()+`<h2 id="diplo
 :root.land .board .center .amini.v28a:not(.v31):not(.v28roll) .d12{width:30px!important;height:30px!important;font-size:14px!important}
 :root.land .board .center .amini.v28a:not(.v31):not(.v28roll) .v28turn{flex-wrap:nowrap!important;white-space:nowrap}
 :root.land .board .center .amini:not(.v31):not(.v28roll){overflow-y:auto;overscroll-behavior:contain;max-height:100%;scrollbar-width:thin}
+/* v-land3: 가로 화면에서 선택지가 많을 때 아래 정세 줄 자리까지 써서 한 화면에 보이게 */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini.asking:not(.v31):not(.v28roll){grid-row:1 / span 3!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini.asking:not(.v31):not(.v28roll) ~ .wstrip{visibility:hidden}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .app{height:100dvh!important;max-width:none!important;width:100%!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .stage{flex:1 1 auto!important;min-height:0!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .board{aspect-ratio:auto!important;width:100%!important;max-width:none!important;height:100%!important;max-height:none!important;margin:0!important;
