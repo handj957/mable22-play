@@ -268,6 +268,12 @@ html.land .center>.tabs{grid-column:3;grid-row:1}
 html.land .center>.tbody{grid-column:3;grid-row:2/-1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch}
 html.land .center>.info,html.land .center>.over{grid-column:2}
 html.land #setup .su{max-width:640px;margin:0 auto;width:100%}
+/* 가로 화면 잘림 보정: 제목 줄은 줄바꿈, 현황 타일은 2열, 플레이어 줄은 이름 칸 확대 */
+html.land .hud{flex-wrap:wrap;overflow:visible;row-gap:2px}
+html.land .hud .ttl{flex:1 1 100%;margin-right:0}
+html.land .dash{grid-template-columns:repeat(2,minmax(0,1fr))}
+html.land .prow{grid-template-columns:12px minmax(0,1fr) auto auto auto auto;gap:2px 5px;font-size:9.5px}
+html.land .prow .nm{overflow:visible;text-overflow:clip}
 </style>
 
 <div id="app">

@@ -5484,7 +5484,7 @@ const _rpV30=renderPlayers;renderPlayers=function(){_rpV30();if(!S)return;docume
 .board .center .amini.v31 .asc{display:none!important}
 `;document.head.appendChild(st)})();
 const _rbV31=renderBoard;renderBoard=function(){_rbV31();if(!S)return;try{const am=document.querySelector('#board .center .amini.v28a');if(!am)return;const a=S.ask;
-  if(!a||am.classList.contains('v28roll')||am.classList.contains('list')||a.opts.length>3){am.classList.remove('v31');return}
+  if(!a||am.classList.contains('v28roll')||am.classList.contains('list')||a.opts.length>3||[...am.querySelectorAll('.ab .acts .btn:not(#hint3)')].some(b=>b.textContent.trim().length>11)){am.classList.remove('v31');return}
   am.classList.add('v31');const tr=am.querySelector('.v28turn'),ap=am.querySelector('.ap'),acts=am.querySelector('.ab .acts'),pv=am.querySelector('.pv');
   if(tr&&ap){const q=ap.textContent.trim();if(q){const rep=tr.querySelector('.v29rep');const s=document.createElement('span');s.className='v31q';s.textContent='· '+q;s.title=q;if(rep)rep.before(s);else tr.append(s)}}
   if(acts&&!acts.classList.contains('v31acts')){acts.classList.add('v31acts');const d=am.querySelector('.d12');const l=document.createElement('div');l.className='v31l';am.prepend(l);if(d)l.append(d);l.append(acts)}
@@ -5871,6 +5871,16 @@ const _rulesDip=rulesHTML;rulesHTML=function(){return _rulesDip()+`<h2 id="diplo
 :root.land:not(#_l1):not(#_l2):not(#_l3) body{padding-left:max(4px,env(safe-area-inset-left,0px))!important;padding-right:max(4px,env(safe-area-inset-right,0px))!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body{overflow:hidden!important}
 :root.land{overflow:hidden!important}
+/* 가로 화면 잘림 보정(v-land2): 비교표 숫자·지도자 선택 버튼이 잘리지 않게 */
+:root.land .v28mx{font-size:10.5px}
+:root.land .v28mx td{padding-left:1px!important;padding-right:1px!important;letter-spacing:-.03em;font-size:10.5px}
+:root.land .board .center .amini:not(.v31) .acts .btn{white-space:normal!important;height:auto!important;min-height:22px;line-height:1.15!important;padding:3px 7px!important;overflow:visible!important;text-overflow:clip!important;text-align:left}
+:root.land .board .center .amini:not(.v31) .acts .btn .bl{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;display:block;line-height:1.15}
+:root.land .board .center .amini:not(.v31) .acts .btn{font-size:10.5px!important;min-height:20px;padding:2px 6px!important}
+:root.land .board .center .amini.v28a:not(.v31):not(.v28roll){grid-template-columns:34px minmax(0,1fr)!important;gap:4px!important;align-items:start!important}
+:root.land .board .center .amini.v28a:not(.v31):not(.v28roll) .d12{width:30px!important;height:30px!important;font-size:14px!important}
+:root.land .board .center .amini.v28a:not(.v31):not(.v28roll) .v28turn{flex-wrap:nowrap!important;white-space:nowrap}
+:root.land .board .center .amini:not(.v31):not(.v28roll){overflow-y:auto;overscroll-behavior:contain;max-height:100%;scrollbar-width:thin}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .app{height:100dvh!important;max-width:none!important;width:100%!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .stage{flex:1 1 auto!important;min-height:0!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .board{aspect-ratio:auto!important;width:100%!important;max-width:none!important;height:100%!important;max-height:none!important;margin:0!important;
