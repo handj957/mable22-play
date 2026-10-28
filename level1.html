@@ -904,4 +904,21 @@ function renderSetup(){document.body.classList.remove('playing');const saved=loa
 let _rzT;window.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{applyOrient();if(getFrame()==='auto')applyFrame('auto');fitBoard()},150)});
 window.addEventListener('orientationchange',()=>setTimeout(()=>{applyOrient();fitBoard()},250));
 window.addEventListener('error',e=>{const el=document.createElement('div');el.className='sub';el.style.color='var(--danger)';el.textContent='오류: '+e.message;document.body.appendChild(el)});
-</script></body></html>
+</script>
+<style id="v37board">
+/* v37 보드칸: 크림·주황 계열(Level 1) — 또렷한 글자, 굵은 그룹띠, 종류별 따뜻한 틴트 */
+.board{background:#e6d9bf!important;border-color:#d9c9a6!important}
+.cell{background:#fffdf8!important;font-size:clamp(7.6px,1.85vw,11px)!important;box-shadow:inset 0 0 0 1px #eadfc6}
+.cell .nm{color:#2b2a33!important;font-weight:800!important;letter-spacing:-.03em}
+.cell .pr{color:#6e5427!important;font-weight:600}
+.side-b .stripe,.side-t .stripe{height:22%!important}.side-l .stripe,.side-r .stripe{width:22%!important}
+.cell .stripe{filter:saturate(1.35) brightness(.96)}
+.cell.owned{background:color-mix(in srgb,var(--own) 30%,#fffdf8)!important}
+.cell.corner{background:linear-gradient(160deg,#fff4e3,#fbd8ae)!important;box-shadow:inset 0 0 0 1.5px #e0702e}
+.cell.corner .nm{color:#b4491a!important}
+.cell.fn{background:linear-gradient(180deg,#f2fbf9,#d9f0ec)!important}.cell.fn .nm{color:#17635f!important}
+.cell.cur{box-shadow:inset 0 0 0 3px var(--accent),0 0 0 1px #fff!important}
+/* 가로 화면: 글자 크기를 화면 폭(vw) 대신 높이 기준으로 (세로와 같은 크기) */
+html.land .cell{font-size:clamp(7px,1.75vh,10px)!important}
+</style>
+</body></html>

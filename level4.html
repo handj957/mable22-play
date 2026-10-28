@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html data-skin="pearl" data-light><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>22세기 브르마블 · Level 4</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1186,6 +1186,334 @@ html[data-skin] .afx .ar svg{filter:drop-shadow(0 0 4px var(--ac))!important}
 html[data-skin] .afx .ring{width:10px;height:10px;margin:-5px 0 0 -5px;border-width:1.5px!important}
 html[data-skin] .afx .tag{background:color-mix(in srgb,var(--sk-center) 90%,transparent)!important;color:var(--ac)!important;border:1px solid var(--ac)!important;font:700 9.5px/1.2 var(--sk-num,monospace)!important;padding:2px 6px!important;border-radius:999px!important;box-shadow:0 0 8px color-mix(in srgb,var(--ac) 35%,transparent)}
 html[data-skin] .board .cell.struck{box-shadow:inset 0 0 0 1.5px var(--ac),0 0 10px var(--ac)!important}
+</style>
+<style id="v35light">
+/* ═════════ v35: 밝은 화면(루나 → 기본값) · 가독성 · 글꼴 ═════════
+   루나 스킨을 '완전한 밝은 테마'로 재정의. 오비트·네뷸라·이클립스는 어두운 옵션으로 그대로 둠. */
+html[data-light]{color-scheme:light;--danger:#c62a2f;--ok:#0d7a47;--violet:#6b45d6}
+html[data-light] body{font-size:15px;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  background-image:linear-gradient(rgba(var(--tone-rgb),.045) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--tone-rgb),.045) 1px,transparent 1px),radial-gradient(80% 60% at 50% 0%,#ffffff,transparent 72%)!important;background-size:28px 28px,28px 28px,100% 100%!important}
+/* 헤더·진행바 */
+html[data-light] .hdr{background:linear-gradient(180deg,#ffffff,var(--tone-tint))!important;box-shadow:0 1px 0 #fff inset,0 6px 18px rgba(var(--tone-shadow),.08)!important}
+html[data-light] .hrail{background:rgba(var(--tone-rgb),.14)!important}
+html[data-light] .hrail i{box-shadow:none!important}
+html[data-light] .hrail b{box-shadow:0 1px 4px rgba(var(--tone-rgb),.35)}
+html[data-light] .hwho{background:#fff!important;border:1px solid var(--sk-line)!important}
+html[data-light] .hdr .topbar .st{background:#fff!important;border:1px solid var(--sk-line)!important;box-shadow:inset 3px 0 0 var(--sk-acc)!important}
+html[data-light] .hdr .topbar .st small{font-size:11.5px}
+html[data-light] .hdr .topbar .st b{font-weight:700}
+html[data-light] .hdr .tabs2 button{background:#fff!important;border:1px solid var(--sk-line)!important;font-weight:600}
+html[data-light] .hdr .tabs2 button span{color:var(--sk-fg)!important;font-weight:600}
+html[data-light] .hdr .tabs2 button[aria-selected="true"]{background:var(--sk-acc)!important;border-color:var(--sk-acc)!important}
+html[data-light] .hdr .tabs2 button[aria-selected="true"] span{color:#fff!important}
+/* 보드 */
+html[data-light] .board{box-shadow:0 0 0 1px rgba(var(--tone-rgb),.12),0 14px 34px rgba(var(--tone-shadow),.16)!important}
+html[data-light] .board .cell{box-shadow:inset 0 0 0 1px var(--sk-line)!important}
+html[data-light] .board .cell .nm{font-weight:700!important;letter-spacing:-.05em!important;color:var(--sk-fg)!important}
+html[data-light] .board .cell .pr{color:var(--sk-muted)}
+html[data-light] .board .cell .lv{color:#b45f06!important}
+html[data-light] .board .cell .stripe{box-shadow:none}
+html[data-light] .board .cell.special .nm{color:var(--tone-deep)!important}
+html[data-light] .board .cell.mil .nm{color:#b3201a!important}
+html[data-light] .board .cell.eco .nm{color:#8a4b00!important}
+html[data-light] .board .cell.corner{background:linear-gradient(160deg,#ffffff,var(--tone-tint2))!important}
+html[data-light] .board .cell.corner .nm{color:var(--tone-deep)!important}
+html[data-light] .board .cell.owned{background:linear-gradient(160deg,color-mix(in srgb,var(--own) 26%,#fff),color-mix(in srgb,var(--own) 12%,#fff))!important}
+html[data-light] .board .cell.owned::after{box-shadow:none}
+html[data-light] .board .cell.cur{box-shadow:inset 0 0 0 2.5px var(--sk-acc),0 0 12px rgba(var(--tone-rgb),.45)!important}
+html[data-light] .board .center{background:radial-gradient(110% 55% at 50% 0%,rgba(var(--tone-rgb),.07),transparent 62%),var(--sk-center)!important;border:1px solid var(--sk-line)!important}
+html[data-light] .board .center::before{border-color:rgba(var(--tone-rgb),.10);box-shadow:none}
+html[data-light] .board .center .amini{background:#fff!important;border:1.5px solid var(--sk-acc)!important;box-shadow:0 6px 18px rgba(var(--tone-rgb),.14)!important}
+html[data-light] .board .center .order span,html[data-light] .board .center .wstrip span,html[data-light] .wg>span{background:#fff!important;color:var(--sk-fg)!important;border-color:var(--sk-line)!important}
+html[data-light] .board .center .wstrip span.on,html[data-light] .wg>span.on{background:#ffe9eb!important;color:#a3111f!important;border-color:#d92d3f!important}
+html[data-light] .v28mx,html[data-light] .v28fc,html[data-light] .ticker,html[data-light] .board .center .mi,html[data-light] .vseg,html[data-light] .board .center .cdash{background:#fff!important;border-color:var(--sk-line)!important}
+html[data-light] .v28mx th,html[data-light] .v28mx td{border-bottom-color:var(--sk-line)!important}
+html[data-light] .v28mx td{font-weight:600}
+/* 말(플레이어) */
+html[data-light] .v34pawn{box-shadow:0 0 0 2.5px var(--pc),0 0 0 4px #fff,0 4px 10px rgba(var(--tone-shadow),.35)}
+html[data-light] .v34pawn .tag{color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35);box-shadow:0 2px 6px rgba(var(--tone-shadow),.3)}
+/* 팝업·토스트·서랍 */
+html[data-light] #toast{background:#fff!important;color:var(--sk-fg)!important;box-shadow:0 10px 28px rgba(var(--tone-shadow),.22)!important}
+html[data-light] .drawer{background:rgba(255,255,255,.97)!important}
+html[data-light] .modal,html[data-light] #setup .modal,html[data-light] #setup .sx{background:#fff!important;box-shadow:0 18px 50px rgba(var(--tone-shadow),.25)!important}
+html[data-light] .overlay{background:color-mix(in srgb,var(--sk-bg2) 80%,transparent)!important;backdrop-filter:blur(3px)}
+html[data-light] .clabel{background:rgba(255,255,255,.96)!important;color:var(--sk-fg)!important;box-shadow:0 4px 12px rgba(var(--tone-shadow),.18)}
+html[data-light] .v34rib,html[data-light] .v34fx .ell,html[data-light] .afx .tag{background:rgba(255,255,255,.97)!important;box-shadow:0 8px 22px rgba(var(--tone-shadow),.2)!important}
+html[data-light] .v34rib .c{background:rgba(var(--tone-rgb),.07);border-color:rgba(var(--tone-rgb),.2)}
+html[data-light] .v34rib .c.g{background:#e4f6ec;border-color:#1c9a5f;color:#0b5c35}
+html[data-light] .v34rib .c.b{background:#fdeaea;border-color:#d33a3a;color:#9c1c1c}
+html[data-light] .v34rib .c.g b{color:#0a7a45}
+html[data-light] .v34rib .c.b b{color:#b3201a}
+html[data-light] .v34rib .ar{color:var(--sk-muted)}
+/* 버튼 */
+html[data-light] .btn{box-shadow:0 2px 0 rgba(var(--tone-shadow),.25);font-weight:700}
+html[data-light] .btn.ghost{background:#fff!important;color:var(--sk-acc)!important;box-shadow:inset 0 0 0 1.5px var(--sk-acc)!important}
+html[data-light] .btn:disabled{opacity:.45}
+/* 설정 화면 */
+html[data-light] #setup .sxwin{background:var(--tone-tint)!important;border-color:var(--tone-line)!important}
+html[data-light] #setup .opts label,html[data-light] #setup .seg label{background:#fff!important;border-color:var(--sk-line)!important}
+html[data-light] #setup .opts label small{color:var(--sk-muted)}
+html[data-light] #setup .opts label:has(input:checked),html[data-light] #setup .seg label:has(input:checked){background:var(--tone-tint)!important;box-shadow:0 0 0 1.5px var(--sk-acc)!important}
+html[data-light] #setup .field input[type=text]{background:#fff;border-color:var(--sk-line);color:var(--sk-fg)}
+html[data-light] .skopts .tx{background:var(--tone-tint);color:var(--sk-muted)}
+/* 보정: 헤더 칸 카드·말 이름표·단계 표시 */
+html[data-light]{--ink:var(--sk-fg)}
+html[data-light] .hc{background:#fff;color:var(--sk-fg)}
+html[data-light] .hc .t{color:var(--sk-fg)}
+html[data-light] .hc.dim{filter:none;opacity:.6}
+html[data-light] .v34pawn .tag{color:var(--sk-fg);text-shadow:none}
+html[data-light] #act .steps i{color:#8a97b2}
+html[data-light] #act .steps span.on{color:#fff!important}
+/* 가독성: 작은 글자 키우기(보드 칸 제외) · 본문 크기·줄 간격 */
+html[data-light] .hc .t{font-size:9.5px}
+html[data-light] .hc .k{font-size:9px}
+html[data-light] .hrail b{font-size:10px}
+html[data-light] .hn small,html[data-light] .hwho .hn small{font-size:11px}
+html[data-light] .minidice span,html[data-light] .v30sub small{font-size:11.5px}
+html[data-light] .hstrip .sc .d,html[data-light] .hstrip .sc .sub,html[data-light] .hstrip .sc .nm{font-size:11px}
+html[data-light] .pl>div,html[data-light] .pl .m{font-size:12px}
+html[data-light] .chain .s em,html[data-light] b>span.tag{font-size:11px}
+html[data-light] .bl,html[data-light] td>span.bl{font-size:11.5px;font-weight:700}
+html[data-light] .taxb>button{font-size:11.5px}
+html[data-light] .card{line-height:1.6}
+html[data-light] .detail dl,html[data-light] .detail .note{font-size:14px}
+html[data-light] .log{font-size:13.5px}
+html[data-light] .al,html[data-light] .st,html[data-light] .bar{font-size:13.5px}
+html[data-light] .kpi .l,html[data-light] .tile .l{font-size:12px}
+html[data-light] .rules p,html[data-light] .rules li{font-size:15px;line-height:1.75;max-width:70ch}
+html[data-light] .rules h2{font-size:21px;letter-spacing:-.02em}
+html[data-light] .rules h3{font-size:16px}
+html[data-light] .card h2{font-size:16px;font-weight:700}
+html[data-light] .muted,html[data-light] .sub{color:var(--sk-muted)}
+html[data-light] .asc b{color:#0a5f38!important}
+html[data-light] #act .steps i{color:#6b7a99}
+/* 어두운 스킨(오비트·네뷸라·이클립스)에서 상단 칸 카드 글자가 안 보이던 문제 보정 */
+html[data-skin]:not([data-light]) .hc,html[data-skin]:not([data-light]) .hc .t{color:var(--sk-cellfg)}
+html[data-skin]:not([data-light]) .hc.dim{filter:none;opacity:.7}
+html[data-light] .drawer{background:#fff!important}
+
+/* auto: 밝은 화면용 글자·배경색 자동 변환 */
+html[data-light] .lifebar .lc{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .lifebar .lc.bad{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .lifebar .lc.warn b{color:#835b0c!important}
+html[data-light] .qd{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .qd h6{color:color-mix(in srgb,var(--dc) 50%,#0b1220)!important}
+html[data-light] .qcom .x.con{color:#851100!important}
+html[data-light] .qchips span{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .qwf .t{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .qop{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .qbar{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .vpsel button{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .gtabs button{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .gtabs .gs{color:color-mix(in srgb,var(--qc) 50%,#0b1220)!important}
+html[data-light] .wflow .wc em{color:color-mix(in srgb,var(--nc) 50%,#0b1220)!important}
+html[data-light] .wa{color:#7e6220!important}
+html[data-light] .wmk .wm{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .quad .ql{color:color-mix(in srgb,var(--qc) 50%,#0b1220)!important}
+html[data-light] .quad .qs{color:#1f2637!important}
+html[data-light] .quad .qctr{background-color:#eaf5ef!important}
+html[data-light] .quad .qctr small{color:#7e6220!important}
+html[data-light] .fpan{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .fpan .fh em{color:color-mix(in srgb,var(--qc) 50%,#0b1220)!important}
+html[data-light] .fl-node small{color:color-mix(in srgb,var(--nc) 50%,#0b1220)!important}
+html[data-light] .fl-arr{color:#7e6220!important}
+html[data-light] .fl-pill b{color:color-mix(in srgb,var(--nc) 50%,#0b1220)!important}
+html[data-light] .fl-jar{background-color:#eaf5ef!important}
+html[data-light] .fpan summary{color:#7e6220!important}
+html[data-light] .clabelF{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .clabelF small{color:#2c364e!important}
+html[data-light] .v28nat .sit{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .v28lad span{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .log .v28hot{color:#851100!important}
+html[data-light] .log .v28hot b{color:#1f2637!important}
+html[data-light] .log .v28good{color:#186d3f!important}
+html[data-light] .v28tape{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .v28own .p{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .board .center .amini.v28a{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .v28turn{color:#1f2637!important}
+html[data-light] .v28side .btn.v28ic{color:#161b27!important}
+html[data-light] .v28g .wg > b{color:color-mix(in srgb,var(--gc) 50%,#0b1220)!important}
+html[data-light] .v28g .wg > span{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .v28g .wg > span.on{color:#161b27!important}
+html[data-light] .v28mx thead th .nm{color:#161b27!important}
+html[data-light] .v28mx td.bad{color:#850d00!important}
+html[data-light] .v28mx td.good{color:#10753a!important}
+html[data-light] .v28mx thead th.cur .nm::before{color:color-mix(in srgb,var(--pc) 50%,#0b1220)!important}
+html[data-light] .v28fc .t{color:#1f2637!important}
+html[data-light] .v28fc .t b{color:#161b27!important}
+html[data-light] .v28q button{color:#161b27!important}
+html[data-light] .v28q button em{color:color-mix(in srgb,var(--qc) 50%,#0b1220)!important}
+html[data-light] .v28fc .ln{color:#161b27!important}
+html[data-light] .v28fc .ln.w{color:#851100!important}
+html[data-light] .v28nw{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .v28nw b{color:#850d00!important}
+html[data-light] .v28turn .v29rep{color:#855e00!important}
+html[data-light] .v28turn .v29rep.up{color:#11743c!important}
+html[data-light] .v28turn .v29rep.dn{color:#851100!important}
+html[data-light] .v28turn .v29r{color:#394565!important}
+html[data-light] .v29fr{color:#855e00!important}
+html[data-light] .amini .v29ae > div{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .amini .v29ae .p b{color:#10753a!important}
+html[data-light] .amini .v29ae .m b{color:#850d00!important}
+html[data-light] .amini .v29ae .net{color:#855e00!important}
+html[data-light] .v29ae > div{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .v30 .rail button{color:#161b27!important}
+html[data-light] .v30 .rail button em{color:color-mix(in srgb,var(--qc) 50%,#0b1220)!important}
+html[data-light] .v30 .body .h em{color:color-mix(in srgb,var(--qc) 50%,#0b1220)!important}
+html[data-light] .v30 .body .r{color:#161b27!important}
+html[data-light] .v30 .body .r small{color:#394565!important}
+html[data-light] .v30 .body .r b.g{color:#10753a!important}
+html[data-light] .v30 .body .r b.b{color:#850d00!important}
+html[data-light] .v30 .body .r b.y{color:#855e00!important}
+html[data-light] .v30 .body .who{color:#394565!important}
+html[data-light] .v28mx thead th .sb2{color:#1f2637!important}
+html[data-light] .v30 .hd{color:#161b27!important}
+html[data-light] .v30 .hd em{color:color-mix(in srgb,var(--qc) 50%,#0b1220)!important}
+html[data-light] .v30 .hd .vd{color:#1f2637!important}
+html[data-light] .board .center .amini.v31 .pv{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .cell.mil .nm{color:#851200!important}
+html[data-light] .chain .s.c0{color:#851100!important}
+html[data-light] .bl{color:color-mix(in srgb,var(--bc) 50%,#0b1220)!important}
+html[data-light] .rules p,html[data-light] .rules li{color:#1f2637!important}
+html[data-light] .dom h4{color:color-mix(in srgb,var(--dc) 50%,#0b1220)!important}
+html[data-light] .chain .s em{color:color-mix(in srgb,var(--dc) 50%,#0b1220)!important}
+html[data-light] .center .news{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .natcard{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .vd b{color:color-mix(in srgb,var(--vc) 50%,#0b1220)!important}
+html[data-light] .wstrip span.on{color:#851100!important}
+html[data-light] .pv .risk{color:#851100!important}
+html[data-light] .cdash{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .cell .arw{color:color-mix(in srgb,var(--ac) 50%,#0b1220)!important}
+html[data-light] .mi{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .rb .rt{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .board .center .round{color:#2c364e!important}
+html[data-light] .board .center .who{color:#161b27!important}
+html[data-light] .board .center .cdash,html[data-light] .board .center .ticker,html[data-light] .board .center .mi{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .board .center .rb .rt{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .board .center .rb,html[data-light] .board .center .race b{color:#161b27!important}
+html[data-light] .board .gh{color:#161b27!important;background-color:#f3f1ec!important}
+html[data-light] .brand{color:#161b27!important}
+html[data-light] .brand b{color:#835b0c!important}
+html[data-light] .topbar{color:#2c364e!important}
+html[data-light] .topbar b{color:#161b27!important}
+html[data-light] .topbar .turn{color:#835b0c!important}
+html[data-light] .cfold{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .board .center .ticker{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .board .fly{color:color-mix(in srgb,var(--fc) 50%,#0b1220)!important}
+html[data-light] .board .fly .fv{color:color-mix(in srgb,var(--fc) 50%,#0b1220)!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .dthrow{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .dthrow .dshadow{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .dthrow .dlabel{color:#161b27!important}
+html[data-light] .charbox{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .cname{color:#161b27!important}
+html[data-light] .cneed{color:#2c364e!important}
+html[data-light] .cbadges span small{color:#2c364e!important}
+html[data-light] .cothers .ot{color:#2c364e!important}
+html[data-light] .oc em{color:#161b27!important}
+html[data-light] .oc b{color:#161b27!important}
+html[data-light] .oc small{color:#2c364e!important}
+html[data-light] .flowbox{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .fh{color:#161b27!important}
+html[data-light] .fh small{color:#2c364e!important}
+html[data-light] .fr .fn{color:#161b27!important}
+html[data-light] .fr small{color:#2c364e!important}
+html[data-light] .fh2{color:#2c364e!important}
+html[data-light] .fx .fw{color:#2c364e!important}
+html[data-light] .fx .ar{color:#2c364e!important}
+html[data-light] .fx b{color:#161b27!important}
+html[data-light] .fx small{color:#2c364e!important}
+html[data-light] .brand .bt{color:#161b27!important}
+html[data-light] .hturn .rnd{color:#2c364e!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .hturn .rnd b{color:#161b27!important}
+html[data-light] .hturn .tp{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .topbar .st{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .topbar .st small{color:#2c364e!important}
+html[data-light] .topbar .st b{color:#161b27!important}
+html[data-light] .topbar .st b em{color:#2c364e!important}
+html[data-light] .topbar .st b.vd{color:color-mix(in srgb,var(--sc) 50%,#0b1220)!important}
+html[data-light] .board .center .order span.on{color:#161b27!important}
+html[data-light] .vseg .ind .pg{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .vseg button{color:#2c364e!important}
+html[data-light] .vseg button.vauto{color:#2c364e!important}
+html[data-light] .vhint{color:#2c364e!important}
+html[data-light] .vpanel .cdash,html[data-light] .vpanel .charbox,html[data-light] .vpanel .flowbox,html[data-light] .vpanel .vbox{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .vpanel .tile2 .v{color:#161b27!important}
+html[data-light] .vpanel .tile2 .lb{color:#2c364e!important}
+html[data-light] .vpanel .tile2.bad .v{color:#851200!important}
+html[data-light] .tlegend{color:#2c364e!important}
+html[data-light] .tcard{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .tcard em{color:#161b27!important}
+html[data-light] .board .center .wstrip span.thm{color:#161b27!important}
+html[data-light] .hwho .hn small{color:color-mix(in srgb,var(--tc) 50%,#0b1220)!important}
+html[data-light] .tcard.war .tb{color:#161b27!important}
+html[data-light] .tcard.war small{color:#851200!important}
+html[data-light] .tcard.war b{color:#1f2637!important}
+html[data-light] .tcard.war p{color:#161b27!important}
+html[data-light] .board .center .wstrip span.wwc{color:#161b27!important}
+html[data-light] .board .center .wstrip span.wwc.on{color:#161b27!important}
+html[data-light] .board .center .wstrip span.alc{color:#161b27!important}
+html[data-light] .board .center .amini .asc{color:#1f2637!important}
+html[data-light] .board .center .wstrip span.dep{color:#161b27!important;background-color:#edeaf5!important}
+html[data-light] .board .center .wstrip span.bub{color:#1f2637!important}
+html[data-light] .tcard.crash .tb{color:#161b27!important}
+html[data-light] .tcard.crash small{color:#1a0085!important}
+html[data-light] .tcard.crash b{color:#161b27!important}
+html[data-light] .tcard.crash p{color:#1f2637!important}
+html[data-light] #setup .modal.sx{color:#1f2637!important}
+html[data-light] #setup .sxwin p{color:#2c364e!important}
+html[data-light] #setup .field label.t{color:#161b27!important}
+html[data-light] #setup .sxtot{color:#394565!important}
+html[data-light] #setup .opts label span{color:#1f2637!important}
+html[data-light] #setup .gov small.gs{color:#1d723e!important}
+html[data-light] #setup .gov small.gw{color:#851200!important}
+html[data-light] #setup .sxlab{color:#2c364e!important}
+html[data-light] #setup .seg{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] #setup .sxnames input{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] #setup .sxhint{color:#394565!important}
+html[data-light] #setup .sxgo .btn.ghost{color:#1f2637!important}
+html[data-light] .tcard.disaster .tb{color:#161b27!important}
+html[data-light] .tcard.disaster small{color:#004485!important}
+html[data-light] .tcard.disaster b{color:#161b27!important}
+html[data-light] .tcard.disaster p{color:#1f2637!important}
+html[data-light] .board .cell .dzb{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .board .center .amini .risk{color:#851100!important}
+html[data-light] .vmod{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .vmod .vseg{background-color:rgba(var(--tone-rgb),.07)!important}
+html[data-light] .v28mx td .v34d{color:color-mix(in srgb,var(--cc) 50%,#0b1220)!important}
+
+/* ═════ v37: Level 4 확정 — '펄 바이올렛' (Lv1 크림·주황 / Lv2 세이지 녹색 / Lv3 회청·인디고 / Lv5 네이비·시안 과 겹치지 않는 라일락·오키드) ═════ */
+html[data-skin="pearl"]{
+  --sk-bg:#f4effb;--sk-bg2:#e8dff6;--sk-board:#d6c8ee;--sk-cell:#ffffff;--sk-cell2:#f7f2fd;--sk-cellfg:#211838;
+  --sk-fg:#211838;--sk-muted:#5a4f7c;--sk-line:#cfc0ea;--sk-acc:#5b34c8;--sk-acc2:#c8286f;--sk-ink:#ffffff;
+  --sk-center:#faf7ff;--sk-glass:rgba(91,52,200,.07);--sk-glass2:rgba(255,255,255,.94);--sk-star:rgba(200,40,111,.10);
+  --sk-disp:'Sora','Noto Sans KR',sans-serif;--sk-body:'Noto Sans KR','Gothic A1',system-ui,sans-serif;--sk-num:'Sora','Noto Sans KR',sans-serif;
+  --tone-rgb:91,52,200;--tone-deep:#44239f;--tone-tint:#efe8fc;--tone-tint2:#e3d8f8;--tone-line:#c9b8ee;--tone-shadow:50,25,110}
+html[data-skin="pearl"] .btn{border-radius:10px!important}
+html[data-skin="pearl"] .board{border-radius:14px!important;background:linear-gradient(135deg,#d9cbf1,#ecd3e8)!important;border:1px solid #b9a3e4!important}
+html[data-skin="pearl"] .hdr{background:linear-gradient(180deg,#ffffff,#ece3fa)!important;border-top:3px solid var(--sk-acc)!important;border-radius:14px 14px 0 0!important}
+html[data-skin="pearl"] .board .center{background:linear-gradient(rgba(91,52,200,.06) 1px,transparent 1px) 0 0/18px 18px,linear-gradient(90deg,rgba(91,52,200,.06) 1px,transparent 1px) 0 0/18px 18px,radial-gradient(circle at 12% 6%,rgba(255,170,215,.35),transparent 55%),#fbf8ff!important;border:1px solid #bfa9ea!important;border-radius:10px!important}
+
+/* 선택 카드 견본 (남아 있는 어두운 스킨용 폴백) */
+.sw-pearl{background:linear-gradient(135deg,#ffffff,#d6c8ee);color:#211838}.sw-pearl i{background:#5b34c8;border-radius:5px}
+
+/* ── 보드칸: 밝고 또렷하게 (v37) ── */
+html[data-light] .board .cell{opacity:1!important}
+html[data-light] .v30 .body .act{color:var(--tone-deep)!important;opacity:1!important}
+html[data-light] .fl-road span i{color:var(--sk-fg)!important;font-size:9px}
+html[data-light] .v28is b span.tag{color:#a3111f!important}
+/* 질문 팝업·스포트라이트 때 칸을 어둡게 깔던 필터 제거 → 살짝 흐리게만 */
+html[data-light] .board.asking .cell:not(.focus):not(.pvc):not(.lnk){filter:none!important;opacity:.9!important}
+html[data-light] .board.spot .cell:not(.lnk):not(.pvc):not(.focus){filter:none!important;opacity:.5!important}
+html[data-light] .board .cell.focus{box-shadow:inset 0 0 0 3px var(--sk-acc),0 0 0 2px #fff,0 4px 12px rgba(var(--tone-rgb),.45)!important;background:#fff!important;position:relative;z-index:3}
+/* 칸 색 계열: 기본 흰색 + 종류별 연한 틴트 */
+html[data-skin="pearl"] .board .cell{background:#ffffff!important;box-shadow:inset 0 0 0 1px #d4c6ee!important;border-radius:4px!important}
+html[data-skin="pearl"] .board .cell.special{background:linear-gradient(180deg,#f6f0ff,#ece1fc)!important}
+html[data-skin="pearl"] .board .cell.mil{background:linear-gradient(180deg,#fff3f6,#fde0e8)!important}
+html[data-skin="pearl"] .board .cell.eco{background:linear-gradient(180deg,#fffaf0,#fdebc9)!important}
+html[data-skin="pearl"] .board .cell.corner{background:linear-gradient(160deg,#ffffff,#e3d6fa)!important;box-shadow:inset 0 0 0 1.5px #9a7fe0!important}
+html[data-skin="pearl"] .board .cell .stripe{filter:saturate(1.25)}
+html[data-skin="pearl"] .board .cell .pr{color:#4c4170!important;font-weight:600}
+
 </style>
 <div class="app">
   <header class="hdr">
@@ -6187,14 +6515,14 @@ const _rulesDip=rulesHTML;rulesHTML=function(){return _rulesDip()+`<h2 id="diplo
  <li>외교력 50 이상: 매 라운드 외교 배당(교역·원조) ₵(외교력 − 50) × 0.8.</li><li>외교력 15 미만: 국제적 고립으로 매 라운드 지지율 −1.</li></ul>`};
 
 /* ═════════ v34: Level 4 우주 디자인 4종 · 말 강조 · 선택→결과 효과 ═════════ */
-const SKINS=[{id:'orbit',n:'오비트',d:'심우주 네이비 · 시안 궤도광'},{id:'nebula',n:'네뷸라',d:'보랏빛 성운 · 마젠타'},{id:'eclipse',n:'이클립스',d:'블랙 · 금빛 코로나'},{id:'lunar',n:'루나',d:'달빛 실버 · 블루'}];
+const SKINS=[{id:'pearl',n:'펄 바이올렛',d:'밝음 · 라일락 + 로즈 · 레벨 1~3과 다른 색'},{id:'orbit',n:'오비트 (어두움)',d:'심우주 네이비 · 시안 궤도광'},{id:'nebula',n:'네뷸라 (어두움)',d:'보랏빛 성운 · 마젠타'},{id:'eclipse',n:'이클립스 (어두움)',d:'블랙 · 금빛 코로나'}];const V36LIGHT=['pearl'];
 const V34={pend:null,timer:0,prev:null,prevPos:{},rq:[],ribBusy:false,lastSig:''};
-function v34Skin(id){if(!SKINS.some(s=>s.id===id))id='orbit';document.documentElement.dataset.skin=id;try{localStorage.setItem('bm22skin',id)}catch(e){}
+function v34Skin(id){if(!SKINS.some(s=>s.id===id))id='pearl';document.documentElement.dataset.skin=id;document.documentElement.toggleAttribute('data-light',V36LIGHT.includes(id));try{localStorage.setItem('bm22skin36',id)}catch(e){}
   const b=document.getElementById('v34skinBtn');if(b)b.textContent='🎨 디자인: '+SKINS.find(s=>s.id===id).n;
   const r=document.querySelector(`#setupForm input[name=skin][value="${id}"]`);if(r)r.checked=true;
   requestAnimationFrame(()=>{try{v34After()}catch(e){}})}
-(function(){let id='orbit';try{id=localStorage.getItem('bm22skin')||'orbit'}catch(e){}v34Skin(id);
-  const lk=document.createElement('link');lk.rel='stylesheet';lk.href='https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700&family=Michroma&family=Chakra+Petch:wght@400;600;700&family=Sora:wght@400;600;700&family=Gothic+A1:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700&display=swap';document.head.appendChild(lk);
+(function(){let id='pearl';try{id=localStorage.getItem('bm22skin36')||'pearl'}catch(e){}v34Skin(id);
+  const lk=document.createElement('link');lk.rel='stylesheet';lk.href='https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700&family=Michroma&family=Chakra+Petch:wght@400;600;700&family=Sora:wght@400;600;700&family=Gothic+A1:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&family=Gowun+Batang:wght@400;700&family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap';document.head.appendChild(lk);
   const go=document.querySelector('#setupForm .field');
   if(go)go.insertAdjacentHTML('beforebegin',`<div class="field"><label class="t"><em>🎨</em>디자인 <span class="sxtot">게임 중에도 행동 탭에서 바꿀 수 있습니다</span></label><div class="skopts">${SKINS.map(s=>`<label><input type="radio" name="skin" value="${s.id}"${s.id===document.documentElement.dataset.skin?' checked':''}><span class="sw sw-${s.id}"><b>${s.n}</b><i></i></span><span class="tx">${s.d}</span></label>`).join('')}</div></div>`);
   document.querySelectorAll('#setupForm input[name=skin]').forEach(r=>r.addEventListener('change',()=>v34Skin(r.value)));
@@ -6434,6 +6762,32 @@ var LAND=false;
     try{var el=document.getElementById('toast'),r=document.getElementById('board').getBoundingClientRect();
       if(el&&!el.hidden)el.style.top=Math.round(r.top+Math.max(30,r.height/11)+4)+'px'}catch(e){}}}
   apply();
+})();
+
+/* ═════════ v35: 밝은 화면에서 인라인 글자색(플레이어 색·분야 색)을 읽기 좋게 어둡게 ═════════ */
+(function(){
+  const H=document.documentElement;
+  function dark(a){let r=a[0]/255,g=a[1]/255,b=a[2]/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;const d=mx-mn;
+    if(d){s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4);h/=6}
+    if(l<.42)return null;
+    const sv=mx?(mx-mn)/mx:0,hd=h*360;let nl;
+    if(sv<.12||(sv<.30&&((hd>=30&&hd<=60)||sv<.22))){nl=l>.9?.12:l>.8?.17:l>.7?.24:.31;h=.62;s=.28}
+    else{nl=l>.9?.2:l>.75?.26:l>.6?.28:.31;s=Math.max(s,.6)}
+    const f=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p};
+    const q=nl<.5?nl*(1+s):nl+s-nl*s,p=2*nl-q;
+    return 'rgb('+Math.round(f(p,q,h+1/3)*255)+','+Math.round(f(p,q,h)*255)+','+Math.round(f(p,q,h-1/3)*255)+')'}
+  let busy=false;
+  function fix(){busy=false;const on=H.hasAttribute('data-light');
+    document.querySelectorAll('[style*="color"]').forEach(el=>{const st=el.style;
+      if(!on){if(el.dataset.v35c!==undefined){st.color=el.dataset.v35c;delete el.dataset.v35c;delete el.dataset.v35d}return}
+      const c=st.color;if(!c||el.dataset.v35d===c)return;
+      const m=c.match(/rgba?\(([^)]+)\)/);if(!m)return;
+      const n=dark(m[1].split(',').slice(0,3).map(Number));if(!n)return;
+      el.dataset.v35c=c;st.color=n;el.dataset.v35d=st.color})}
+  const kick=()=>{if(!busy){busy=true;requestAnimationFrame(fix)}};
+  new MutationObserver(kick).observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(kick).observe(H,{attributes:true,attributeFilter:['data-skin','data-light']});
+  kick();
 })();
 </script>
 </body></html>

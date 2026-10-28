@@ -5855,6 +5855,25 @@ const _rulesDip=rulesHTML;rulesHTML=function(){return _rulesDip()+`<h2 id="diplo
 
 
 
+
+<style id="v37board">
+/* v37 보드칸: 회청·인디고 계열(Level 3) — 질문 팝업 때 칸을 어둡게 하던 필터 제거, 칸 색 정리 */
+:root:not(#_a):not(#_b):not(#_c) body .board.asking .cell:not(.focus):not(.pvc):not(.lnk){filter:none!important;opacity:.9!important}
+:root:not(#_a):not(#_b):not(#_c) body .board.spot .cell:not(.lnk):not(.pvc):not(.focus){filter:none!important;opacity:.55!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell{opacity:1;background:#ffffff!important;box-shadow:inset 0 0 0 1px #d9e0ee!important}
+:root:not(#_a):not(#_b):not(#_c) body .board{background:#d3dbee!important;border-color:#b5c1e0!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell .nm{font-weight:800!important;color:#18202e!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell .pr{color:#4a5670!important;font-weight:600}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.special{background:linear-gradient(180deg,#f3f6ff,#e3eaff)!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.mil{background:linear-gradient(180deg,#fff5f4,#fde3e0)!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.mil .nm{color:#a3261c!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.eco{background:linear-gradient(180deg,#fffaf0,#fdebc9)!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.eco .nm{color:#7a4b00!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.corner{background:linear-gradient(160deg,#ffffff,#d9e1fb)!important;box-shadow:inset 0 0 0 1.5px #7a8fe0!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.owned{background:color-mix(in srgb,var(--own) 22%,#fff)!important}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell .stripe{filter:saturate(1.2)}
+:root:not(#_a):not(#_b):not(#_c) body .board .cell.focus{box-shadow:inset 0 0 0 3px var(--ac),0 0 0 2px #fff,0 4px 12px rgba(54,83,201,.45)!important;background:#fff!important;opacity:1!important}
+</style>
 <style id="land36">
 /* ═════════ 가로 화면(폰 눕힘) — 보드를 90° 돌려 가로판, 가운데 콘솔 3단(주사위·상황 | 나·세계·기회·장부 | 비교판) ═════════ */
 :root.land:not(#_l1):not(#_l2):not(#_l3) body{padding-left:max(4px,env(safe-area-inset-left,0px))!important;padding-right:max(4px,env(safe-area-inset-right,0px))!important}
