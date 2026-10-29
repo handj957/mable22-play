@@ -1033,9 +1033,11 @@ function compute(c){
  var ks=[.9,.8,.72,.65];
  for(var i=0;i<ks.length;i++){st.k=ks[i];apply(c,st);if(!neutralOver(c))return st}
  st.b=1;apply(c,st);if(!neutralOver(c))return st;
- st.h=1;var k2=[.65,.58,.5];for(var m=0;m<k2.length;m++){st.k=k2[m];apply(c,st);if(!neutralOver(c))return st}
+ var k2=[.65,.58,.5];for(var m=0;m<k2.length;m++){st.k=k2[m];apply(c,st);if(!neutralOver(c))return st}
  return st}
+function skipFit(){return (navigator.maxTouchPoints>0)&&Math.min(innerWidth,innerHeight)>=600}
 function fitOne(c){
+ if(skipFit()){if(c.classList.contains('fxb')||c.querySelector('[style*=zoom]'))apply(c,{k:1,b:0,h:0});return}
  var id=c.getAttribute('data-cell')||c.id||'';var sg=sigOf(c);var o=CACHE[id];
  if(o&&o.sg===sg){apply(c,o.st);return}
  var anim=false;try{anim=c.getAnimations({subtree:true}).length>0}catch(e){}
