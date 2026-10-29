@@ -269,7 +269,7 @@ html.land .acts .btn.main{min-height:36px;font-size:1.1em}
 /* ═════════ 공통 ═════════ */
 /* 기기별 프레임 폭(px) — 큰 화면일수록 보드가 비례해 커짐. 자동=화면에 맞춤 */
 const FRAMES=[['auto','📱 자동(화면에 맞춤)',0],['iphone','아이폰',440],['iphone_max','아이폰 Pro Max',440],['galaxy','갤럭시',412],['fold','갤럭시 폴드·펼침',680],['ipad','아이패드',834],['ipad_pro','아이패드 Pro',1024]];
-function autoFrameW(){try{return Math.min((window.innerWidth||480)-4, 560)}catch(e){return 480}}
+function autoFrameW(){try{const w=window.innerWidth||480,h=window.innerHeight||800;/* 태블릿 세로: 화면 너비를 꽉 채움 */return (w>=700&&h>=w*.95)?w-4:Math.min(w-4,560)}catch(e){return 480}}
 function applyFrame(id){let w;if(!id||id==='auto')w=autoFrameW();else{const f=FRAMES.find(x=>x[0]===id);w=f?f[2]:autoFrameW()}
  document.documentElement.style.setProperty('--frameW', w+'px');
  try{localStorage.setItem('neo-frame',id||'auto')}catch(e){}
@@ -326,7 +326,7 @@ const BLDMUL=[1,2.5,5,9];const BLDCOST=[0,.6,1,1.6];
 const EDUN=['없음','기초','전문','석사'];const EDUCOST=[100,200,300];
 const COMPN=['없음','스타트업','중견기업','대기업'];const COMPCOST=[150,300,500];const COMPREV=[0,40,80,160];
 let LAND=false;
-function isLand(){try{return innerWidth>innerHeight&&innerHeight<=600}catch(e){return false}}
+function isLand(){try{return innerWidth>innerHeight&&(innerHeight<=600||(navigator.maxTouchPoints>0&&innerHeight<=1100))}catch(e){return false}}
 function rc(i){const a=rcP(i);return LAND?[a[1],21-a[0]]:a}
 function side(i){const t=sideP(i);return LAND?({b:'l',l:'t',t:'r',r:'b'})[t]:t}
 function applyOrient(){const L=isLand();document.documentElement.classList.toggle('land',L);if(L!==LAND){LAND=L;if(S&&document.body.classList.contains('playing'))render()}}
@@ -806,8 +806,8 @@ function render(){if(!S)return;document.body.classList.add('playing');const rn=M
 function rankOf(p){return alive().slice().sort((a,b)=>netWorth(b)-netWorth(a)).indexOf(p)+1}
 /* 보드 높이 실측 맞춤 */
 function fitBoard(){const b=document.getElementById('board');if(!b)return;
- const top=b.getBoundingClientRect().top;const vh=window.innerHeight||document.documentElement.clientHeight||700;
- const h=Math.max(360, vh - top - 6);b.style.height=h+'px';}
+ const top=b.getBoundingClientRect().top;const vv=window.visualViewport;const vh=Math.min(window.innerHeight||9999,(vv&&vv.height)||9999,document.documentElement.clientHeight||9999);
+ const h=Math.max(360, vh - top - 10);b.style.height=h+'px';}
 function isWide(){try{return matchMedia('(min-width:820px) and (orientation:landscape)').matches}catch(e){return false}}
 function conAction(){const a=S.ask,p=cur();const mains=a?a.opts.filter(o=>!o.g):[],subs=a?a.opts.filter(o=>o.g):[];
  const bt=o=>`<button class="btn${o.g?' ghost':' main'}" data-ask="${o.id}" ${o.dis?'disabled':''}>${o.l}</button>`;
@@ -902,7 +902,8 @@ function renderSetup(){document.body.classList.remove('playing');const saved=loa
  $('#setupForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);applyFrame(f.get('frame'));S=newState(f.get('nm').trim()||'나',+f.get('nai'),f.get('diff'),+f.get('len'),f.get('speed'));S.v=4;syncCycle();gen++;selected=S.players[0].pos;render();gameLoop()}}
 (function(){const nj=$('#nojs');if(nj)nj.remove();applyOrient();applyFrame(getFrame());renderSetup()})();
 let _rzT;window.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{applyOrient();if(getFrame()==='auto')applyFrame('auto');fitBoard()},150)});
-window.addEventListener('orientationchange',()=>setTimeout(()=>{applyOrient();fitBoard()},250));
+window.addEventListener('orientationchange',()=>setTimeout(()=>{applyOrient();if(getFrame()==='auto')applyFrame('auto');fitBoard()},250));
+try{if(window.visualViewport)visualViewport.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{applyOrient();if(getFrame()==='auto')applyFrame('auto');fitBoard()},120)})}catch(e){}
 window.addEventListener('error',e=>{const el=document.createElement('div');el.className='sub';el.style.color='var(--danger)';el.textContent='오류: '+e.message;document.body.appendChild(el)});
 </script>
 <style id="v37board">
