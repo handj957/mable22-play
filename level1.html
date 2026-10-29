@@ -949,6 +949,12 @@ html:not(.land) body #board .cell.corner .nm{font-size:clamp(9px,min(16cqw,24cqh
 html:not(.land) body #board .cell.corner .em{font-size:clamp(14px,min(24cqw,40cqh),30px)!important}
 html:not(.land) body #board .cell .lv{font-size:clamp(7px,min(11cqw,22cqh),12px)!important}
 </style>
+<style id="introscale">
+/* 패드(터치 큰 화면): 시작·설정 화면을 화면 크기에 맞게 확대 */
+@media (pointer:coarse) and (min-width:700px) and (min-height:600px){.panel.setup{zoom:1.25}}
+@media (pointer:coarse) and (min-width:800px) and (min-height:600px) and (orientation:portrait){.panel.setup{zoom:1.4}}
+@media (pointer:coarse) and (min-width:1000px) and (min-height:600px) and (orientation:portrait){.panel.setup{zoom:1.7}}
+</style>
 <style id="fitcellscss">.cell.fxh .em,.cell.fxh .ic,.cell.fxh .lv{display:none!important}.cell.fxb .nm{word-break:break-all!important;overflow-wrap:anywhere!important}</style>
 <script id="fitcellsjs">(function(){
 var T=null,busy=false,CACHE={},retry=false;

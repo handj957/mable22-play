@@ -6011,6 +6011,15 @@ var LAND=false;
 
 <style id="pvfix">:root:not(#_a):not(#_b) body .board .center .amini.asking:not(.v28roll) .pv{grid-column:1/-1!important;grid-row:3!important;width:auto!important;min-width:0!important;margin:0!important}:root:not(#_a):not(#_b) body .board .center .amini.asking:not(.v28roll):has(.pv) .acts{grid-row:4!important}:root:not(#_a):not(#_b) body .board .center .amini.asking:not(.v28roll) .pv dd{white-space:normal!important;overflow:visible!important}</style>
 <style id="apwrap">.board .center .amini .ap{white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:clip!important;line-height:1.25}.board .center .amini .ap small{display:inline}</style>
+<style id="introscale">
+/* 패드(터치 큰 화면): 시작·설정 화면을 화면 크기에 맞게 확대 */
+@media (pointer:coarse) and (min-width:700px) and (min-height:600px){#setupForm.modal{zoom:1.25;max-height:calc((100dvh - 12px) / 1.25)}}
+@media (pointer:coarse) and (min-width:800px) and (min-height:600px) and (orientation:portrait){#setupForm.modal{zoom:1.4;max-height:calc((100dvh - 12px) / 1.4)}}
+@media (pointer:coarse) and (min-width:1000px) and (min-height:600px) and (orientation:portrait){#setupForm.modal{zoom:1.7;max-height:calc((100dvh - 12px) / 1.7)}}
+@media (pointer:coarse) and (orientation:landscape){#setup.overlay{padding:54px 8px 6px!important;box-sizing:border-box}}
+@media (pointer:coarse) and (min-width:700px) and (min-height:600px) and (orientation:landscape){#setupForm.modal{max-height:calc((100dvh - 64px) / 1.25)}}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:599px){#setup.overlay{padding-top:72px!important}#setupForm.modal{max-height:calc(100dvh - 80px)}}
+</style>
 <style id="fitcellscss">.cell.fxh .em,.cell.fxh .ic,.cell.fxh .lv{display:none!important}.cell.fxb .nm{word-break:break-all!important;overflow-wrap:anywhere!important}</style>
 <script id="fitcellsjs">(function(){
 var T=null,busy=false,CACHE={},retry=false;
