@@ -1470,37 +1470,45 @@ html:not(.land) body #app .cell .vn{font-size:clamp(7px,min(10cqw,13cqh),12px)!i
 </style>
 <style id="fitcellscss">.cell.fxh .em,.cell.fxh .ic,.cell.fxh .lv{display:none!important}.cell.fxb .nm{word-break:break-all!important;overflow-wrap:anywhere!important}</style>
 <script id="fitcellsjs">(function(){
-var T=null,busy=false;
-function over(c){var cr=c.getBoundingClientRect();if(cr.width<4)return false;
- var L=cr.left,R=cr.right,Tp=cr.top,B=cr.bottom;
+var T=null,busy=false,CACHE={},retry=false;
+function neutralOver(c){var W=c.offsetWidth,Hh=c.offsetHeight;if(W<4||Hh<4)return false;
+ var cr=c.getBoundingClientRect(),s=cr.width/W||1;
+ var L=0,R=W,Tp=0,B=Hh;
  var bars=c.querySelectorAll('.stripe,.band');
- for(var b=0;b<bars.length;b++){var s=bars[b].getBoundingClientRect();if(!s.width||!s.height)continue;
-  if(s.height>=cr.height*.8&&s.width<cr.width*.5){if(s.left-cr.left<cr.width/2)L=Math.max(L,s.right);else R=Math.min(R,s.left)}
-  else if(s.width>=cr.width*.8&&s.height<cr.height*.5){if(s.top-cr.top<cr.height/2)Tp=Math.max(Tp,s.bottom);else B=Math.min(B,s.top)}}
- var els=c.querySelectorAll('*');
+ for(var b=0;b<bars.length;b++){var q=bars[b].getBoundingClientRect();if(!q.width||!q.height)continue;
+  var ql=(q.left-cr.left)/s,qr=(q.right-cr.left)/s,qt=(q.top-cr.top)/s,qb=(q.bottom-cr.top)/s,qw=qr-ql,qh=qb-qt;
+  if(qh>=Hh*.8&&qw<W*.5){if(ql<W/2)L=Math.max(L,qr);else R=Math.min(R,ql)}
+  else if(qw>=W*.8&&qh<Hh*.5){if(qt<Hh/2)Tp=Math.max(Tp,qb);else B=Math.min(B,qt)}}
+ var els=c.querySelectorAll('.nm,.pr,.lv,.em,.ic');
  for(var i=0;i<els.length;i++){var e=els[i];
   if(e.closest&&(e.closest('.tokens')||e.closest('.pawn')||e.closest('.tk')))continue;
-  var has=false;for(var j=0;j<e.childNodes.length;j++){var n=e.childNodes[j];if(n.nodeType===3&&n.textContent.trim()){has=true;break}}
-  if(!has)continue;
   var g=document.createRange();g.selectNodeContents(e);var r=g.getBoundingClientRect();
-  if(r.width>0&&(r.left<L-1||r.right>R+1||r.top<Tp-1||r.bottom>B+1))return true}
+  if(r.width<=0||!e.textContent.trim())continue;
+  var rl=(r.left-cr.left)/s,rr=(r.right-cr.left)/s,rt=(r.top-cr.top)/s,rb=(r.bottom-cr.top)/s;
+  if(rl<L-1||rr>R+1||rt<Tp-1||rb>B+1)return true}
  return false}
 function zoomAll(c,k){var ch=c.querySelectorAll('.nm,.pr,.em,.ic,.lv,.own');for(var i=0;i<ch.length;i++)ch[i].style.zoom=k===1?'':k}
-function fitOne(c){
- c.classList.remove('fxh','fxb');zoomAll(c,1);
- if(!over(c))return;
+function apply(c,st){c.classList.toggle('fxb',!!st.b);c.classList.toggle('fxh',!!st.h);zoomAll(c,st.k)}
+function sigOf(c){var t='';var ch=c.querySelectorAll('.nm,.pr,.lv,.em,.ic');for(var i=0;i<ch.length;i++)t+=ch[i].textContent+'|';return c.offsetWidth+'x'+c.offsetHeight+'#'+t}
+function compute(c){
+ var st={k:1,b:0,h:0};apply(c,st);if(!neutralOver(c))return st;
  var ks=[.9,.8,.72,.65];
- for(var i=0;i<ks.length;i++){zoomAll(c,ks[i]);if(!over(c))return}
- c.classList.add('fxb');if(!over(c))return;
- c.classList.add('fxh');
- var k2=[.65,.58,.5];for(var m=0;m<k2.length;m++){zoomAll(c,k2[m]);if(!over(c))return}
-}
-function run(){if(busy)return;busy=true;try{var cs=document.querySelectorAll('#board .cell');for(var i=0;i<cs.length;i++){if(cs[i].offsetParent)fitOne(cs[i])}}catch(e){}busy=false}
+ for(var i=0;i<ks.length;i++){st.k=ks[i];apply(c,st);if(!neutralOver(c))return st}
+ st.b=1;apply(c,st);if(!neutralOver(c))return st;
+ st.h=1;var k2=[.65,.58,.5];for(var m=0;m<k2.length;m++){st.k=k2[m];apply(c,st);if(!neutralOver(c))return st}
+ return st}
+function fitOne(c){
+ var id=c.getAttribute('data-cell')||c.id||'';var sg=sigOf(c);var o=CACHE[id];
+ if(o&&o.sg===sg){apply(c,o.st);return}
+ var anim=false;try{anim=c.getAnimations({subtree:true}).length>0}catch(e){}
+ if(anim){if(o)apply(c,o.st);retry=true;return}
+ var st=compute(c);CACHE[id]={sg:sg,st:st}}
+function run(){if(busy)return;busy=true;retry=false;try{var cs=document.querySelectorAll('#board .cell');for(var i=0;i<cs.length;i++){if(cs[i].offsetParent)fitOne(cs[i])}}catch(e){}busy=false;if(retry){clearTimeout(T);T=setTimeout(run,500)}}
 function later(){clearTimeout(T);T=setTimeout(run,60)}
-if(typeof renderBoard==='function'){var _r=renderBoard;renderBoard=function(){var x=_r.apply(this,arguments);later();return x}}
+if(typeof renderBoard==='function'){var _r=renderBoard;renderBoard=function(){var x=_r.apply(this,arguments);run();return x}}
 addEventListener('resize',later);addEventListener('orientationchange',later);
 if(window.visualViewport)visualViewport.addEventListener('resize',later);
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(later);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){CACHE={};later()});
 setTimeout(later,300);
 })();</script>
 <script id="m22bgm">
