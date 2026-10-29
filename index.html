@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="ko">
 <head>
+<script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>22세기 브르마블 · 레벨 선택</title>
@@ -33,6 +35,12 @@ a.card .go{color:var(--go)}
 .note{margin-top:22px;font-size:12.5px;color:var(--sub);border-top:1px solid var(--line);padding-top:14px}
 .note b{color:var(--ink)}
 @media (prefers-color-scheme:dark){:root{--bg:#141826;--card:#1d2235;--ink:#eef0f7;--sub:#9aa3bf;--line:#2b3149;--sh:none}}
+
+/* 태블릿·가로: 카드 2열로 한 화면에 */
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:max(40px,env(safe-area-inset-bottom,0px))}
+@media (min-width:640px){.wrap{max-width:900px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cards a.card{margin-bottom:0}.cards a.card:last-child:nth-child(odd){grid-column:1/-1}}
+@media (max-height:480px){.wrap{padding-top:12px;padding-bottom:16px}.eng{margin-bottom:10px}a.card{padding:9px 12px}.note{margin-top:12px;padding-top:8px}}
+@media (min-width:1000px){.wrap{max-width:1000px}h1{font-size:28px}.t{font-size:18px}.d{font-size:14px}}
 </style>
 </head>
 <body>
@@ -40,11 +48,13 @@ a.card .go{color:var(--go)}
   <h1>22세기 브르마블</h1>
   <div class="eng">Blue Marble 2101 · Level 1 – 5</div>
 
-  <a class="card l1" href="level1.html"><div class="no">1</div><div><div class="t">네오 아틀라스 메가시티</div><div class="d">부자 되기 — 부동산·기업·원자재·교육 (입문)</div></div><div class="go">플레이 ›</div></a>
+  <div class="cards">
+<a class="card l1" href="level1.html"><div class="no">1</div><div><div class="t">네오 아틀라스 메가시티</div><div class="d">부자 되기 — 부동산·기업·원자재·교육 (입문)</div></div><div class="go">플레이 ›</div></a>
   <a class="card l2" href="level2.html"><div class="no">2</div><div><div class="t">누리 공화국</div><div class="d">Level 1 + 사회·문화 — 민심과 연쇄 효과</div></div><div class="go">플레이 ›</div></a>
   <a class="card l3" href="level3.html"><div class="no">3</div><div><div class="t">세계를 움직이기</div><div class="d">정치·경제·군사·외교·자원·부동산 6대 분야 (본편)</div></div><div class="go">플레이 ›</div></a>
   <a class="card l4" href="level4.html"><div class="no">4</div><div><div class="t">세계를 제패하기</div><div class="d">지도자 드래프트 · 다중 승리 4종 · 펄 바이올렛 디자인</div></div><div class="go">플레이 ›</div></a>
   <a class="card l5" href="level5.html"><div class="no">5</div><div><div class="t">블루마블 택틱스</div><div class="d">11×19 전장 · 주사위 사거리 전투 · 골드+AP 이중 재화 (전쟁편)</div></div><div class="go">플레이 ›</div></a>
+</div>
 
   <div class="note">
     <b>피드백 보내실 때</b> — 어느 레벨인지, 어떤 기기(아이폰·갤럭시·PC)인지, 어느 장면에서 무엇이 불편했는지 적어 주시면 바로 고칠 수 있습니다.<br>

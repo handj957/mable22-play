@@ -1,4 +1,6 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html lang="ko"><head>
+<script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>네오 아틀라스 메가시티 · 교육판</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -979,4 +981,39 @@ window.addEventListener('error',e=>{const el=document.createElement('div');el.cl
 /* 가로 화면: 글자 크기를 화면 폭(vw) 대신 높이 기준으로 (세로와 같은 크기) */
 html.land .cell{font-size:clamp(6.6px,1.6vh,9.5px)!important}
 </style>
+<style id="fitcellscss">.cell.fxh .em,.cell.fxh .ic,.cell.fxh .lv{display:none!important}.cell.fxb .nm{word-break:break-all!important;overflow-wrap:anywhere!important}</style>
+<script id="fitcellsjs">(function(){
+var T=null,busy=false;
+function over(c){var cr=c.getBoundingClientRect();if(cr.width<4)return false;
+ var L=cr.left,R=cr.right,Tp=cr.top,B=cr.bottom;
+ var bars=c.querySelectorAll('.stripe,.band');
+ for(var b=0;b<bars.length;b++){var s=bars[b].getBoundingClientRect();if(!s.width||!s.height)continue;
+  if(s.height>=cr.height*.8&&s.width<cr.width*.5){if(s.left-cr.left<cr.width/2)L=Math.max(L,s.right);else R=Math.min(R,s.left)}
+  else if(s.width>=cr.width*.8&&s.height<cr.height*.5){if(s.top-cr.top<cr.height/2)Tp=Math.max(Tp,s.bottom);else B=Math.min(B,s.top)}}
+ var els=c.querySelectorAll('*');
+ for(var i=0;i<els.length;i++){var e=els[i];
+  if(e.closest&&(e.closest('.tokens')||e.closest('.pawn')||e.closest('.tk')))continue;
+  var has=false;for(var j=0;j<e.childNodes.length;j++){var n=e.childNodes[j];if(n.nodeType===3&&n.textContent.trim()){has=true;break}}
+  if(!has)continue;
+  var g=document.createRange();g.selectNodeContents(e);var r=g.getBoundingClientRect();
+  if(r.width>0&&(r.left<L-1||r.right>R+1||r.top<Tp-1||r.bottom>B+1))return true}
+ return false}
+function zoomAll(c,k){var ch=c.querySelectorAll('.nm,.pr,.em,.ic,.lv,.own');for(var i=0;i<ch.length;i++)ch[i].style.zoom=k===1?'':k}
+function fitOne(c){
+ c.classList.remove('fxh','fxb');zoomAll(c,1);
+ if(!over(c))return;
+ var ks=[.9,.8,.72,.65];
+ for(var i=0;i<ks.length;i++){zoomAll(c,ks[i]);if(!over(c))return}
+ c.classList.add('fxb');if(!over(c))return;
+ c.classList.add('fxh');
+ var k2=[.65,.58,.5];for(var m=0;m<k2.length;m++){zoomAll(c,k2[m]);if(!over(c))return}
+}
+function run(){if(busy)return;busy=true;try{var cs=document.querySelectorAll('#board .cell');for(var i=0;i<cs.length;i++){if(cs[i].offsetParent)fitOne(cs[i])}}catch(e){}busy=false}
+function later(){clearTimeout(T);T=setTimeout(run,60)}
+if(typeof renderBoard==='function'){var _r=renderBoard;renderBoard=function(){var x=_r.apply(this,arguments);later();return x}}
+addEventListener('resize',later);addEventListener('orientationchange',later);
+if(window.visualViewport)visualViewport.addEventListener('resize',later);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(later);
+setTimeout(later,300);
+})();</script>
 </body></html>

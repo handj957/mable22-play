@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="ko">
 <head>
+<script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>mable22.edu 레벨 선택</title>
@@ -20,6 +22,10 @@
   .d{font-size:13px;color:var(--sub)}
   .url{font-size:11px;color:#8a93a6;margin-top:6px;word-break:break-all}
   .back{display:inline-block;margin-top:14px;font-size:13px;color:var(--accent);text-decoration:none}
+
+@media (min-width:640px){.wrap{max-width:900px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cards a.card{margin-bottom:0}}
+@media (max-height:480px){.wrap{padding-top:10px;padding-bottom:14px}p.lead{margin-bottom:8px}a.card{padding:8px 12px}}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 </style>
 </head>
 <body>
@@ -28,7 +34,8 @@
   <h1>교육용 레벨 선택</h1>
   <p class="lead">배우면서 즐기는 22세기 브르마블 (보드 13×13)</p>
 
-  <a class="card" href="edu-level1.html">
+  <div class="cards">
+<a class="card" href="edu-level1.html">
     <div class="row"><div class="lv">1</div><div><div class="t">Level 1 · 네오 아틀라스 메가시티</div><div class="d">교육판 · 부동산·은행·기업 운영</div></div></div>
     <div class="url">https://handj957.github.io/mable22-play/edu-level1.html</div>
   </a>
@@ -44,6 +51,7 @@
     <div class="row"><div class="lv">4</div><div><div class="t">Level 4 · 세계를 제패하기</div><div class="d">교육판 · 다중 승리 · 지도자 드래프트</div></div></div>
     <div class="url">https://handj957.github.io/mable22-play/edu-level4.html</div>
   </a>
+</div>
 
   <a class="back" href="index.html">← 일반 버전 첫 화면</a>
 </div>
