@@ -981,6 +981,16 @@ window.addEventListener('error',e=>{const el=document.createElement('div');el.cl
 /* 가로 화면: 글자 크기를 화면 폭(vw) 대신 높이 기준으로 (세로와 같은 크기) */
 html.land .cell{font-size:clamp(6.6px,1.6vh,9.5px)!important}
 </style>
+<style id="cellscale">
+/* 패드·큰 화면: 칸 크기에 비례해 칸 글자·아이콘 확대 (작은 화면은 기존 크기가 하한) */
+html:not(.land) body #board .cell{container-type:size}
+html:not(.land) body #board .cell .nm{font-size:clamp(7.6px,min(15cqw,32cqh),15px)!important;line-height:1.1}
+html:not(.land) body #board .cell .pr{font-size:clamp(7px,min(12cqw,26cqh),13px)!important}
+html:not(.land) body #board .cell .em{font-size:clamp(9px,min(20cqw,40cqh),22px)!important}
+html:not(.land) body #board .cell.corner .nm{font-size:clamp(9px,min(16cqw,24cqh),16px)!important}
+html:not(.land) body #board .cell.corner .em{font-size:clamp(14px,min(24cqw,40cqh),30px)!important}
+html:not(.land) body #board .cell .lv{font-size:clamp(7px,min(11cqw,22cqh),12px)!important}
+</style>
 <style id="fitcellscss">.cell.fxh .em,.cell.fxh .ic,.cell.fxh .lv{display:none!important}.cell.fxb .nm{word-break:break-all!important;overflow-wrap:anywhere!important}</style>
 <script id="fitcellsjs">(function(){
 var T=null,busy=false;

@@ -1540,6 +1540,16 @@ window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?
 .eo{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:3px 0}
 .eo .lab{font-size:12px;flex:1;min-width:0}.eo .lab small{display:block;font-size:10px;color:var(--muted)}
 </style>
+<style id="cellscale">
+/* 패드·큰 화면: 칸 크기에 비례해 칸 글자·아이콘 확대 (작은 화면은 기존 크기가 하한) */
+html:not(.land) body #app .cell{container-type:size}
+html:not(.land) body #app .cell .nm{font-size:clamp(7.5px,min(17cqw,27cqh),17px)!important;line-height:1.08!important}
+html:not(.land) body #app .cell .ic{font-size:clamp(13px,min(26cqw,34cqh),32px)!important}
+html:not(.land) body #app .cell.corner .nm{font-size:clamp(9px,min(17cqw,22cqh),17px)!important}
+html:not(.land) body #app .cell.corner .ic{font-size:clamp(17px,min(28cqw,36cqh),34px)!important}
+html:not(.land) body #app .cell .own{font-size:clamp(8px,min(12cqw,16cqh),14px)!important}
+html:not(.land) body #app .cell .vn{font-size:clamp(7px,min(10cqw,13cqh),12px)!important}
+</style>
 <style id="fitcellscss">.cell.fxh .em,.cell.fxh .ic,.cell.fxh .lv{display:none!important}.cell.fxb .nm{word-break:break-all!important;overflow-wrap:anywhere!important}</style>
 <script id="fitcellsjs">(function(){
 var T=null,busy=false;
