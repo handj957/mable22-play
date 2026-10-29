@@ -53,7 +53,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .tile i{display:block;font-style:normal;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tile .up{color:var(--ok)}.tile .dn{color:var(--danger)}
 /* board */
-.board{display:grid;grid-template-columns:1.3fr repeat(11,minmax(0,1fr)) 1.3fr;grid-template-rows:1.3fr repeat(11,minmax(0,1fr)) 1.3fr;gap:2px;width:min(96vw, var(--frameW,480px));height:min(80vh,620px);margin:0 auto;background:var(--line);border:2px solid var(--line);border-radius:14px;overflow:hidden}
+.board{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(11,minmax(0,1fr)) minmax(0,1.3fr);grid-template-rows:minmax(0,1.3fr) repeat(11,minmax(0,1fr)) minmax(0,1.3fr);gap:2px;width:min(96vw, var(--frameW,480px));height:min(80vh,620px);margin:0 auto;background:var(--line);border:2px solid var(--line);border-radius:14px;overflow:hidden}
 .cell{position:relative;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:clamp(7px,1.7vw,11px);line-height:1.1;padding:1px;min-width:0;overflow:hidden;border:0;color:var(--fg)}
 .cell.sel{box-shadow:inset 0 0 0 2px var(--accent2)}
 .cell .stripe{position:absolute;background:var(--g)}
@@ -239,7 +239,7 @@ html.land body.playing #stage{display:contents}
 html.land body.playing .tiles{grid-column:1;grid-row:3;grid-template-columns:1fr 1fr;align-content:start;margin:0;max-width:none;gap:3px}
 html.land body.playing .tiles .tile:last-child{grid-column:1/-1}
 html.land body.playing .board{grid-column:2;grid-row:1/-1;width:100%;height:100%!important;min-height:0;
-  grid-template-columns:1.3fr repeat(11,minmax(0,1fr)) 1.3fr;grid-template-rows:1.3fr repeat(11,minmax(0,1fr)) 1.3fr}
+  grid-template-columns:minmax(0,1.3fr) repeat(11,minmax(0,1fr)) minmax(0,1.3fr);grid-template-rows:minmax(0,1.3fr) repeat(11,minmax(0,1fr)) minmax(0,1.3fr)}
 html.land h1{font-size:11px;letter-spacing:.06em}
 html.land #hdr .cbar{flex-wrap:wrap;gap:3px}
 html.land .cbar .rnd{font-size:1.25em}

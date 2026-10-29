@@ -764,7 +764,7 @@ html{height:100%}
 .vpanel .tile2.good .v{color:var(--ok)}
 .board .center .ticker{border:1px solid rgba(202,168,90,.55)!important;border-radius:10px!important}
 /* ═════════ v11: 바깥 칸 크게 + 영역(깃발·영향권) ═════════ */
-.board{grid-template-columns:1.42fr repeat(9,minmax(0,1fr)) 1.42fr!important;grid-template-rows:1.42fr repeat(20,minmax(0,1fr)) 1.42fr!important}
+.board{grid-template-columns:minmax(0,1.42fr) repeat(9,minmax(0,1fr)) minmax(0,1.42fr)!important;grid-template-rows:minmax(0,1.42fr) repeat(20,minmax(0,1fr)) minmax(0,1.42fr)!important}
 .board .side-b,.board .side-t{--cw:var(--tw,37px);--ch:var(--th,44px)}
 .board .side-l,.board .side-r{--cw:var(--sw,52px);--ch:var(--sh,30px)}
 .board .cell.corner{--cw:var(--sw,52px);--ch:var(--th,44px)}
@@ -6724,7 +6724,7 @@ const _rulesBL=rulesHTML;rulesHTML=function(){return _rulesBL()+`<h2 id="bylaws"
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .app{height:100dvh!important;max-width:none!important;width:100%!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .stage{flex:1 1 auto!important;min-height:0!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .board{aspect-ratio:auto!important;width:100%!important;max-width:none!important;height:100%!important;max-height:none!important;margin:0!important;
-  grid-template-columns:1.42fr repeat(20,minmax(0,1fr)) 1.42fr!important;grid-template-rows:1.42fr repeat(9,minmax(0,1fr)) 1.42fr!important}
+  grid-template-columns:minmax(0,1.42fr) repeat(20,minmax(0,1fr)) minmax(0,1.42fr)!important;grid-template-rows:minmax(0,1.42fr) repeat(9,minmax(0,1fr)) minmax(0,1.42fr)!important}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center{grid-area:2/2/11/22!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.02fr) minmax(0,1fr)!important;
   grid-template-rows:auto auto auto minmax(0,1fr)!important;align-items:start!important;align-content:stretch!important;justify-items:stretch!important;
   gap:5px 7px!important;overflow:hidden!important;padding:5px!important}
@@ -6771,6 +6771,31 @@ const _rulesBL=rulesHTML;rulesHTML=function(){return _rulesBL()+`<h2 id="bylaws"
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>*{zoom:1.55}
 :root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.v28mx{zoom:1.2}
 }
+/* v-fit2: 선택지가 많을수록 확대 비율을 낮춰 패널 안에서 잘리지 않게, 줄 넘침 글자는 줄바꿈 */
+@media (min-width:900px) and (min-height:620px){
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="4"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="5"]{zoom:1.12}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="6"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="7"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="8"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="9"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="10"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="11"]{zoom:1}
+}
+@media (min-width:1250px) and (min-height:800px){
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>*{zoom:1.4}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.v28mx{zoom:1.15}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="4"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center>.amini[data-n="5"]{zoom:1.2}
+}
+/* 글자 넘침: 판 안의 줄·칩·카드 글자는 말줄임 대신 줄바꿈(가로·태블릿 세로) */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28fc *,:root.tab:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28fc *{overflow-wrap:anywhere}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28fc .row,:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28fc [class*="hd"],:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28fc>div>div{white-space:normal!important;text-overflow:clip!important;overflow:visible!important;min-width:0}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .amini .v28turn{flex-wrap:wrap!important;white-space:normal!important;row-gap:1px}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .amini .ap,:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .amini .v31q{white-space:normal!important;text-overflow:clip!important;overflow:visible!important;-webkit-line-clamp:unset!important}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .amini .pv dd{white-space:normal!important;text-overflow:clip!important;overflow:visible!important}
+:root:not(#_l1):not(#_l2):not(#_l3) body .stage{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 4px)!important}
+/* 글자 넘침: 상황 한 줄 설명(.vd)과 비교표 머리 요약(.sb2)은 말줄임 대신 줄바꿈 */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .it>.hd,:root.tab:not(#_l1):not(#_l2):not(#_l3) body .board .center .it>.hd{display:flex!important;flex-wrap:wrap;align-items:center;gap:2px 6px;height:auto!important;min-height:0}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .it>.hd i,:root.tab:not(#_l1):not(#_l2):not(#_l3) body .board .center .it>.hd i{flex:1 1 40px;min-width:30px}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .it>.hd .vd,:root.tab:not(#_l1):not(#_l2):not(#_l3) body .board .center .it>.hd .vd{flex:1 1 100%;order:5;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.25;padding-left:2px}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28mx .sb2,:root.tab:not(#_l1):not(#_l2):not(#_l3) body .board .center .v28mx .sb2{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.1;letter-spacing:-.04em}
+/* 글자 넘침: 안보·경제·정세 칩 줄은 옆으로 넘기지 않고 줄바꿈 */
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .wstrip,:root.tab:not(#_l1):not(#_l2):not(#_l3) body .board .center .wstrip{flex-wrap:wrap!important;overflow:visible!important;row-gap:3px}
+:root.land:not(#_l1):not(#_l2):not(#_l3) body .board .center .wstrip *,:root.tab:not(#_l1):not(#_l2):not(#_l3) body .board .center .wstrip *{max-width:100%}
 </style>
 
 <script id="land36js">
@@ -6825,6 +6850,11 @@ var LAND=false;
   kick();
 })();
 </script>
+<script id="fit2js">
+/* 선택지 개수를 패널에 표시 → CSS가 개수에 따라 확대 비율을 조절 */
+(function(){var _r=renderBoard;renderBoard=function(){var r=_r.apply(this,arguments);try{var am=document.querySelector('#board .center>.amini');if(am)am.dataset.n=am.querySelectorAll('.acts .btn').length}catch(e){}return r}})();
+</script>
+
 <style id="v38fix">
 /* ═════════ v38: 팝업 겹침 정리 · 프로젝트/주식 버튼 확대 · 프레임 어긋남 수정 ═════════ */
 /* ① 토스트: left:50% 때문에 폭이 절반으로 줄어 세로로 길어지던 문제 → 내용 폭 + 최대폭 */
