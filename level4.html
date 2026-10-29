@@ -6914,6 +6914,7 @@ var LAND=false;
   new MutationObserver(fit).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+<style id="apwrap">.board .center .amini .ap{white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:clip!important;line-height:1.25}.board .center .amini .ap small{display:inline}</style>
 <style id="fitcellscss">.cell.fxh .em,.cell.fxh .ic,.cell.fxh .lv{display:none!important}.cell.fxb .nm{word-break:break-all!important;overflow-wrap:anywhere!important}</style>
 <script id="fitcellsjs">(function(){
 var T=null,busy=false;
@@ -6941,7 +6942,8 @@ function fitOne(c){
  c.classList.add('fxh');
  var k2=[.65,.58,.5];for(var m=0;m<k2.length;m++){zoomAll(c,k2[m]);if(!over(c))return}
 }
-function run(){if(busy)return;busy=true;try{var cs=document.querySelectorAll('#board .cell');for(var i=0;i<cs.length;i++){if(cs[i].offsetParent)fitOne(cs[i])}}catch(e){}busy=false}
+function fitTh(){var hs=document.querySelectorAll('#board table.v28mx thead th');for(var i=0;i<hs.length;i++){var h=hs[i];if(!h.offsetParent)continue;var sp=h.children;for(var j=0;j<sp.length;j++)sp[j].style.zoom='';h.style.removeProperty('font-size');if(h.scrollWidth<=h.clientWidth+1)continue;for(var k=.92;k>=.55;k-=.06){for(var j=0;j<sp.length;j++)sp[j].style.zoom=k.toFixed(2);if(h.scrollWidth<=h.clientWidth+1)break}}}
+function run(){if(busy)return;busy=true;try{fitTh();var cs=document.querySelectorAll('#board .cell');for(var i=0;i<cs.length;i++){if(cs[i].offsetParent)fitOne(cs[i])}}catch(e){}busy=false}
 function later(){clearTimeout(T);T=setTimeout(run,60)}
 if(typeof renderBoard==='function'){var _r=renderBoard;renderBoard=function(){var x=_r.apply(this,arguments);later();return x}}
 addEventListener('resize',later);addEventListener('orientationchange',later);
