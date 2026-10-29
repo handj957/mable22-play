@@ -6937,6 +6937,7 @@ if(typeof renderBoard==='function'){var _r=renderBoard;renderBoard=function(){va
 addEventListener('resize',later);addEventListener('orientationchange',later);
 if(window.visualViewport)visualViewport.addEventListener('resize',later);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(later);
+try{var bd=document.getElementById('board');if(bd&&window.MutationObserver)new MutationObserver(function(){later()}).observe(bd,{childList:true,subtree:true,characterData:true})}catch(e){}
 setTimeout(later,300);
 })();</script>
 </body></html>
