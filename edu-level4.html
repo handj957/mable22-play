@@ -6940,7 +6940,7 @@ function fitOne(c){
  if(anim){if(o)apply(c,o.st);retry=true;return}
  var st=compute(c);CACHE[id]={sg:sg,st:st}}
 function fitTh(){var hs=document.querySelectorAll('#board table.v28mx thead th');for(var i=0;i<hs.length;i++){var h=hs[i];if(!h.offsetParent)continue;var sp=h.children;for(var j=0;j<sp.length;j++)sp[j].style.zoom='';h.style.removeProperty('font-size');if(h.scrollWidth<=h.clientWidth+1)continue;for(var k=.92;k>=.55;k-=.06){for(var j=0;j<sp.length;j++)sp[j].style.zoom=k.toFixed(2);if(h.scrollWidth<=h.clientWidth+1)break}}}
-function run(){if(busy)return;busy=true;retry=false;try{fitTh();var cs=document.querySelectorAll('#board .cell');for(var i=0;i<cs.length;i++){if(cs[i].offsetParent)fitOne(cs[i])}}catch(e){}busy=false;if(retry){clearTimeout(T);T=setTimeout(run,500)}}
+function run(){if(busy)return;busy=true;retry=false;try{fitTh();/* 레벨 3·4 칸은 자체 글자 변수로 맞춰져 있어 자동 줄임/아이콘 숨김을 쓰지 않음 */}catch(e){}busy=false;if(retry){clearTimeout(T);T=setTimeout(run,500)}}
 function later(){clearTimeout(T);T=setTimeout(run,60)}
 if(typeof renderBoard==='function'){var _r=renderBoard;renderBoard=function(){var x=_r.apply(this,arguments);run();return x}}
 addEventListener('resize',later);addEventListener('orientationchange',later);
