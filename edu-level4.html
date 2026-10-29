@@ -1,5 +1,20 @@
 <!doctype html><html data-skin="pearl" data-light><head>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
+<script id="fsjs">/* 터치 기기(패드): 첫 터치(게임 시작) 때 전체화면으로 — 탭·주소창을 숨겨 게임 화면을 꽉 채움 */
+(function(){try{
+var de=document.documentElement,rq=de.requestFullscreen||de.webkitRequestFullscreen;
+var sa=(navigator.standalone===true)||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches);
+if(!rq||sa||!(navigator.maxTouchPoints>0))return;
+function go(){try{var fe=document.fullscreenElement||document.webkitFullscreenElement;if(fe)return;var p=rq.call(de,{navigationUI:'hide'});if(p&&p.catch)p.catch(function(){})}catch(e){}}
+function once(){document.removeEventListener('pointerup',once,true);document.removeEventListener('touchend',once,true);go()}
+document.addEventListener('pointerup',once,true);document.addEventListener('touchend',once,true);
+function fit(){try{dispatchEvent(new Event('resize'))}catch(e){}}
+document.addEventListener('fullscreenchange',function(){setTimeout(fit,150)});document.addEventListener('webkitfullscreenchange',function(){setTimeout(fit,150)});
+/* 전체화면이 풀리면(상단 ✕ 등) 다음 터치에 다시 시도 */
+function rearm(){setTimeout(function(){if(!(document.fullscreenElement||document.webkitFullscreenElement)){document.addEventListener('pointerup',once,true)}},300)}
+document.addEventListener('fullscreenchange',rearm);document.addEventListener('webkitfullscreenchange',rearm);
+}catch(e){}})();</script>
 <meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>22세기 브르마블 · Level 4 교육판</title>
 <meta name="claude:viewport-fit-sides" content="cover">
