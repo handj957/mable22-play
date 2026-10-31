@@ -1,0 +1,15 @@
+/* Safe viewport handling for browser and installed PWA. No forced browser chrome removal. */
+html{width:100%;max-width:100%;overflow-x:hidden}
+body{max-width:100%;overflow-x:hidden}
+@supports(height:100dvh){html{min-height:100dvh}}
+@media(display-mode:standalone){html,body{overscroll-behavior:none}}
+@media(max-width:700px){
+ .board,.boardbox{max-width:100%;min-width:0}
+ .board .center{min-width:0;max-width:100%;overflow-x:hidden;overflow-y:auto}
+ .board .center .amini,.board .center .amini>*{min-width:0;max-width:100%;box-sizing:border-box}
+ .board .center .amini .pv{overflow-wrap:anywhere}
+}
+@media(orientation:landscape) and (max-height:550px){
+ .board .center{scrollbar-width:thin}
+ .board .center .amini{max-height:none}
+}
