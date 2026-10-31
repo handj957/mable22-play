@@ -9,3 +9,7 @@
 .bigdie:has(.dual-dice){min-width:100px}
 .hwho:has(.dual-dice){min-width:0!important}.hwho .dual-dice{gap:3px!important}.hwho .dual-die{min-width:32px;padding:2px}.hwho .dual-value{font-size:16px;line-height:18px}.hwho .dual-die small{display:none}
 @media(max-width:420px){.amini>.dual-dice{flex-direction:column}.amini>.dual-dice .dual-die{min-width:38px;padding:2px}.amini>.dual-dice small{display:none}.actmain:has(.dual-dice){flex-wrap:wrap}}
+/* Legacy choice layout reserved only 30px for its single die. */
+:root:not(#_a):not(#_b):not(#_c):not(#_d) body .board .center .amini.asking:not(.v28roll){grid-template-columns:96px minmax(0,1fr)!important}
+:root:not(#_a):not(#_b):not(#_c):not(#_d) body .board .center .amini.asking:not(.v28roll)>.dual-dice{grid-column:1!important;grid-row:1!important;justify-self:start;align-self:center}
+@media(max-width:420px){:root:not(#_a):not(#_b):not(#_c):not(#_d) body .board .center .amini.asking:not(.v28roll){grid-template-columns:44px minmax(0,1fr)!important}}
