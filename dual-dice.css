@@ -37,3 +37,13 @@
 .board .center .amini.v31 .v31l .dual-dice{justify-content:center!important;max-width:100%!important}
 .board .center .amini.v31 .pv,.board .center .amini.v31 .v28turn{min-width:0!important;overflow-wrap:anywhere!important}
 @media(max-width:600px){.board .center .amini.v28a.v31{grid-template-columns:minmax(0,1fr)!important}.board .center .amini.v31 .v31l{grid-column:1!important}.board .center .amini.v31 .v31l .acts{flex-direction:row!important;flex-wrap:wrap!important}.board .center .amini.v31 .v31l .acts>*{width:auto!important;flex:1 1 110px!important}}
+
+/* v5: decision preview must occupy the full second track, not a narrow implicit column. */
+.board .center .amini.v31{display:grid!important;grid-template-columns:minmax(120px,34%) minmax(0,1fr)!important;grid-auto-flow:row!important;align-items:start!important;min-width:0!important}
+.board .center .amini.v31>.v31l{grid-column:1!important;grid-row:1 / span 3!important;width:100%!important;min-width:0!important}
+.board .center .amini.v31>.v28turn{grid-column:2!important;grid-row:1!important;min-width:0!important;white-space:normal!important}
+.board .center .amini.v31>.pv{grid-column:2!important;grid-row:2!important;min-width:0!important;width:100%!important;max-width:100%!important;display:grid!important;grid-template-columns:minmax(62px,max-content) minmax(0,1fr)!important;overflow-wrap:anywhere!important}
+.board .center .amini.v31>.pv dd,.board .center .amini.v31>.pv dt{min-width:0!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:normal!important}
+.board .center .amini.v31 .acts.v31acts{width:100%!important;min-width:0!important}
+.board .center .amini.v31 .acts.v31acts .btn{white-space:normal!important;overflow-wrap:anywhere!important}
+@media(max-width:600px){.board .center .amini.v31{grid-template-columns:minmax(0,1fr)!important}.board .center .amini.v31>.v31l,.board .center .amini.v31>.v28turn,.board .center .amini.v31>.pv{grid-column:1!important;grid-row:auto!important}.board .center .amini.v31>.pv{grid-template-columns:minmax(60px,max-content) minmax(0,1fr)!important}}
