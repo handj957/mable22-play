@@ -1,0 +1,16 @@
+{
+  "name": "22세기 브르마블",
+  "short_name": "브르마블",
+  "description": "22세기 브르마블 Level 1~5",
+  "lang": "ko",
+  "start_url": "./index.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#f4f5f8",
+  "theme_color": "#6040bd",
+  "orientation": "any"
+}
