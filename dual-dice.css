@@ -1,0 +1,11 @@
+/* Separate dice remain readable inside both compact and full action panels. */
+.dual-dice{display:flex!important;gap:5px!important;align-items:center;flex:0 0 auto!important;max-width:100%;padding:2px;box-sizing:border-box}
+.dual-die{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-width:40px;padding:4px;border:1px solid #c5cedc;border-radius:9px;background:#f3f6fb;color:#24334d;font:700 11px/1.2 sans-serif;box-sizing:border-box}
+.dual-die.judge{background:#f1edfc;border-color:#c8b6e9;color:#583b86}
+.dual-die.active{outline:2px solid #bd832b;outline-offset:0}
+.dual-die .dual-value{font-size:21px;line-height:25px}
+.dual-die .dual-name{font-size:10px;white-space:nowrap}
+.dual-die small{font-size:8px;line-height:12px;white-space:nowrap;font-weight:400}
+.bigdie:has(.dual-dice){min-width:100px}
+.hwho:has(.dual-dice){min-width:0!important}.hwho .dual-dice{gap:3px!important}.hwho .dual-die{min-width:32px;padding:2px}.hwho .dual-value{font-size:16px;line-height:18px}.hwho .dual-die small{display:none}
+@media(max-width:420px){.amini>.dual-dice{flex-direction:column}.amini>.dual-dice .dual-die{min-width:38px;padding:2px}.amini>.dual-dice small{display:none}.actmain:has(.dual-dice){flex-wrap:wrap}}

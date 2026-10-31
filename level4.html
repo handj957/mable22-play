@@ -1,4 +1,6 @@
 <!doctype html><html data-skin="pearl" data-light><head>
+<link rel="stylesheet" href="dual-dice.css?v=1">
+<script src="dual-dice.js?v=1"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
 <script id="fsjs">/* 터치 기기(패드): 첫 터치(게임 시작) 때 전체화면으로 — 탭·주소창을 숨겨 게임 화면을 꽉 채움 */
@@ -1865,7 +1867,7 @@ function delay(){return S.speed==='fast'?100:480}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function randn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
-function d12(){return 1+(Math.random()*12|0)}
+function d12(kind){return DualDice.roll(S,kind||'world')}
 function cur(){return S.players[S.turn]}
 function alive(){return S.players.filter(p=>!p.bankrupt)}
 function log(h){S.log.unshift(h);if(S.log.length>90)S.log.pop()}
@@ -1972,7 +1974,7 @@ function warDamage(r){
   Object.keys(S.props).map(Number).forEach(i=>{
     const c=CELLS[i],pr=S.props[i];if(c.region!==r||!pr.level)return;
     const o=S.players[pr.owner];if(o.nuke>=3){log(`${pn(o)} ${c.name}: 핵 억지력으로 피해 없음`);return}
-    const v=d12();S.dv.mil=v;
+    const v=d12('mil');S.dv.mil=v;
     if(v+o.M<10){pr.level--;pr.inv.pop();apc(o,-6);unc(o,5);hits.push(c.name);log(`${pn(o)} ${c.name} 전쟁 피해 (군사 ${v}+${o.M}<10): 건물 파괴, 지지율 −6, 혼란 +5`)}
     else log(`${pn(o)} ${c.name} 방어 성공 (군사 ${v}+${o.M})`);
   });
@@ -1980,7 +1982,7 @@ function warDamage(r){
 }
 // 테러: 위협 수준 + 사회 혼란 + 전쟁이 원인, 특수부대가 방어
 function terrorAttack(p,why){
-  const v=d12();S.dv.mil=v;const def=v+p.sf*2+termB(p);
+  const v=d12('mil');S.dv.mil=v;const def=v+p.sf*2+termB(p);
   if(def>=8){apc(p,3);S.terror=clamp(S.terror-4,0,100);log(`${pn(p)} 테러 저지 (군사 ${v}+특수부대 ${p.sf*2}): 지지율 +3`);
     return[[`${p.name} 테러 저지`,'mil'],[`군사 ${v}+특수부대 ${p.sf*2} ≥ 8`,'mil'],['지지율 +3 · 위협 −4','pol']]}
   const own=ownedIdx(p).filter(i=>CELLS[i].t==='city');let lost='';
@@ -2101,9 +2103,9 @@ function govTick(){
   const ch=[];
   alive().forEach(p=>{
     if(p.gov==='ana'){p.M=Math.max(0,p.M-1);if(d12()>=8){ch.push(...setGov(p,Math.random()<.5?'dict':'dem','질서 회복'),['혼란 −20','pol']);unc(p,-20)}return}
-    if(p.un>=85){const v=d12();S.dv.pol=v;if(v<p.un/10){const g=p.un>=95?'ana':['dem','dict','com'].filter(x=>x!==p.gov)[Math.random()*2|0];ch.push(...setGov(p,g,'혁명'),['안정 −5 · 난민 +4','res']);unc(p,-15);apc(p,-5);S.stab=clamp(S.stab-5,0,100);S.refugees=clamp(S.refugees+4,0,100);if(p.empire)p.empire=0;return}}
+    if(p.un>=85){const v=d12('pol');S.dv.pol=v;if(v<p.un/10){const g=p.un>=95?'ana':['dem','dict','com'].filter(x=>x!==p.gov)[Math.random()*2|0];ch.push(...setGov(p,g,'혁명'),['안정 −5 · 난민 +4','res']);unc(p,-15);apc(p,-5);S.stab=clamp(S.stab-5,0,100);S.refugees=clamp(S.refugees+4,0,100);if(p.empire)p.empire=0;return}}
     if(p.gov==='dict'&&p.ap<25&&d12()<=3){ch.push(...setGov(p,Math.random()<.5?'dict':'dem','쿠데타'),['군사력 −2 · 혼란 +10','mil']);p.M=Math.max(0,p.M-2);unc(p,10);p.ap=45}
-    if(p.gov==='mon'&&S.round%12===0){const v=d12();S.dv.pol=v;if(v+Math.floor(p.ap/20)<6){unc(p,15);apc(p,-5);ch.push([`${p.name} 왕위 계승 분쟁`,'pol'],['혼란 +15 · 지지율 −5','pol']);log(`${pn(p)} 왕위 계승 분쟁`)}else{apc(p,4);log(`${pn(p)} 순조로운 왕위 계승`)}}
+    if(p.gov==='mon'&&S.round%12===0){const v=d12('pol');S.dv.pol=v;if(v+Math.floor(p.ap/20)<6){unc(p,15);apc(p,-5);ch.push([`${p.name} 왕위 계승 분쟁`,'pol'],['혼란 +15 · 지지율 −5','pol']);log(`${pn(p)} 왕위 계승 분쟁`)}else{apc(p,4);log(`${pn(p)} 순조로운 왕위 계승`)}}
   });
   return ch;
 }
@@ -2178,7 +2180,7 @@ function megaTick(){
         log(`${pn(h)} ${m.n} 개막 · ${S.host.type==='wc'?'우승':'종합 1위'} ${pn(w)}`)}
       else log(`${pn(h)} ${m.n} 수입 +${won(rev)}`)}
     S.host.r--;
-    if(S.host.r===0&&h&&!h.bankrupt){const v=d12();S.dv.re=v;
+    if(S.host.r===0&&h&&!h.bankrupt){const v=d12('re');S.dv.re=v;
       if(v<=2){payBank(h,pl(150),m.n+' 경기장 적자');apc(h,-4);ch.push([`${h.name} ${m.n} 폐막: 흰 코끼리 경기장`,'re'],[`적자 ${won(pl(150))} · 지지율 −4`,'eco']);log(`${pn(h)} ${m.n} 적자(흰 코끼리)`)}
       else{if(h.soft<5)h.soft++;ch.push([`${h.name} ${m.n} 성공적 폐막`,'pol'],['국가 브랜드: 대중문화 +1','pol']);log(`${pn(h)} ${m.n} 성공, 대중문화 +1`)}
       S.host=null}}
@@ -2200,7 +2202,7 @@ function megaTick(){
 function roundEnd(){
   const sum=[];S.prev={...S.mkt};
   // 경제
-  const e=d12();S.dv.eco=e;
+  const e=d12('eco');S.dv.eco=e;
   const bias=Math.round((S.infl-3)*1.2),score=e+bias;
   let dr=0;if(score>=15)dr=.75;else if(score>=13)dr=.5;else if(score>=10)dr=.25;else if(score<=0)dr=-.5;else if(score<=4)dr=-.25;
   if(S.depression)dr=Math.min(dr,-.5);
@@ -2208,7 +2210,7 @@ function roundEnd(){
   log(`경제 주사위 ${e}${bias>=0?'+':''}${bias} → ${dr>0?'금리 인상':dr<0?'금리 인하':'동결'} ${S.rate.toFixed(2)}%${S.depression?' (대공황 대응)':''}`);
   sum.push([`경제 ${e}${bias>=0?'+':''}${bias}: 금리 ${dr?sg(dr,2)+'%p':'동결'} → ${S.rate.toFixed(2)}%`,'eco']);
   // 자원
-  const r=d12();S.dv.res=r;const rd=RESDIE[r];
+  const r=d12('res');S.dv.res=r;const rd=RESDIE[r];
   if(rd){const out=applyShock(rd[1],0);sum.push([`자원 ${r}: ${rd[0]}`,'res']);log(`자원 주사위 ${r}: <b>${rd[0]}</b> (${Object.keys(rd[1]).map(k=>TAG[k]+' '+sg(out.d[k])+'%').join(', ')})`)}
   else log(`자원 주사위 ${r}: 공급 평온`);
   // 시장
@@ -2230,7 +2232,7 @@ function roundEnd(){
   S.infl=clamp(S.infl*.6+target*.4,-3,25);S.PL*=1+S.infl/400;
   sum.push([`인플레 ${f1(S.infl)}% · 물가 ${Math.round(S.PL)}`,'eco']);
   // 부동산
-  const q=d12();S.dv.re=q;
+  const q=d12('re');S.dv.re=q;
   const reT=100+(S.infl-2)*3-(S.rate-4)*5+(S.stab-55)*.4-(S.pandemic?10:0)-(S.depression?20:0)-(S.tradewar?5:0);
   const bump=q<=2?-12:q>=11?8:0;
   S.RE=clamp(S.RE+(reT-S.RE)*.3+bump,40,220);
@@ -2266,7 +2268,7 @@ function roundEnd(){
     // 사회 혼란
     let du=S.refugees*.05*(1-.12*p.edu)+Math.max(0,p.phys-p.edu)*3+Math.max(0,S.infl-6)*1.5+(S.depression?6:0)+(S.pandemic?2:0)+TAX[p.tax].un-p.cult*3-4+GOV[p.gov].un+(p.empire?2:0)+(S.tradewar?1:0)-(p.soft||0)*.8;
     unc(p,du);
-    if(p.un>=70){const v=d12();S.dv.pol=v;if(v<p.un/10){const own=ownedIdx(p).filter(i=>S.props[i].level>0);if(own.length){const i=own[Math.random()*own.length|0];S.props[i].level--;S.props[i].inv.pop();log(`${pn(p)} 사회 혼란 ${p.un}: 폭동으로 ${CELLS[i].name} 건물 1단계 손실`)}apc(p,-5);S.stab=clamp(S.stab-2,0,100)}}
+    if(p.un>=70){const v=d12('pol');S.dv.pol=v;if(v<p.un/10){const own=ownedIdx(p).filter(i=>S.props[i].level>0);if(own.length){const i=own[Math.random()*own.length|0];S.props[i].level--;S.props[i].inv.pop();log(`${pn(p)} 사회 혼란 ${p.un}: 폭동으로 ${CELLS[i].name} 건물 1단계 손실`)}apc(p,-5);S.stab=clamp(S.stab-2,0,100)}}
     let da=(55-p.ap)*.05-p.un/25+TAX[p.tax].ap;if(S.infl>4)da-=(S.infl-4)*1.2;if(S.pandemic)da-=3;if(p.debt>assets(p)*.4)da-=2;if(p.sanct)da-=1;apc(p,da);
     log(`${pn(p)} 세수 +${won(tx)} · 콘텐츠 수출 +${won(ct)} · 이자 +${won(it)}${dt?` · 국채이자 −${won(dt)}`:''} · 국방 −${won(up)}${pd?` · 방역 −${won(pd)}`:''} · 생산성 ${pr}% · 혼란 ${p.un} · 지지 ${p.ap}`);
   });
@@ -2284,7 +2286,7 @@ function roundEnd(){
   if(S.round%6===0){
     alive().filter(p=>p.gov==='dem').forEach(p=>{
       const bon=Math.floor(p.ap/10)+Math.floor(p.edu/2)+(p.cult>=3?1:0)-(p.un>=60?2:0);
-      const v=d12();S.dv.pol=v;
+      const v=d12('pol');S.dv.pol=v;
       if(v+bon>=10){p.cash+=pl(150);led(null,p,pl(150),'선거 승리 보너스');apc(p,5);log(`${pn(p)} 선거 승리 (정치 ${v}+${bon})`)}
       else{payFund(p,pl(100),'정권 교체 비용');p.M=Math.max(0,p.M-1);p.ap=50;unc(p,-10);const n=S.treaties.length;S.treaties=S.treaties.filter(t=>t.a!==p.id&&t.b!==p.id);log(`${pn(p)} 정권 교체 (정치 ${v}+${bon}): 군사력 −1, 혼란 −10${n>S.treaties.length?', 협정 파기':''}`)}
     });
@@ -2294,7 +2296,7 @@ function roundEnd(){
   S.lastSum=sum;
   if(!S._evThisRound)S.news={k:`라운드 ${S.round-1} 결산`,t:`금리 ${S.rate.toFixed(2)}% · 인플레 ${f1(S.infl)}% · 부동산 ${Math.round(S.RE)}`,d:'분야별 주사위가 굴러간 결과입니다.',chain:sum};
   S._evThisRound=0;S.hot=null;
-  const gd=d12();S.dv.pol=gd;
+  const gd=d12('pol');S.dv.pol=gd;
   if(gd>=10)runEvent(pickEvent(),`정치 주사위 ${gd} · 국제 정세 속보`);
   else log(`정치 주사위 ${gd}: 큰 사건 없음`);
 }
@@ -2459,7 +2461,7 @@ function aiNuke(p){return p.nuke<3&&p.strategy==='military'&&canPay(p,pl(250),30
 /* ═════════ 턴 진행 ═════════ */
 function ask(prompt,opts){return new Promise(res=>{S.ask={prompt,opts};askResolve=res;render()})}
 async function ok(msg){return ask(msg,[{id:'ok',l:'확인'}])}
-async function rollA(k){const v=d12();S.dv[k]=v;S.hot=k;render();await sleep(S.speed==='fast'?90:420);return v}
+async function rollA(k){const v=d12(k);S.dv[k]=v;S.hot=k;render();await sleep(S.speed==='fast'?90:420);return v}
 async function moveSteps(p,n){for(let k=0;k<n;k++){p.pos=(p.pos+1)%N;if(p.pos===0)passStart(p);selected=p.pos;render();await sleep(S.speed==='fast'?20:70)}}
 async function moveTo(p,to){await moveSteps(p,(to-p.pos+N)%N)}
 function sendJail(p,why){p.pos=JAIL;p.jail=2;selected=JAIL;log(`${pn(p)} 분쟁지대 억류: ${why}`)}
@@ -2587,7 +2589,7 @@ async function takeTurn(p){
         if(ch==='pay'){payBank(p,fee,'휴전 비용');S.fund+=fee;p.jail=0;log(`${pn(p)} 휴전 비용 지불`)}
         else{const v=await rollA('mil');if(v+Math.floor(p.M/2)+p.sf+termB(p)>=10){p.jail=0;log(`${pn(p)} 특수부대 탈출 작전 성공`)}else{p.jail--;log(`${pn(p)} 돌파 실패`);if(p.human)await ok('돌파에 실패했습니다.');return}}}
     }
-    if(p.human){while(true){const r=await ask(`${esc(p.name)}님의 차례${techHint(p)}`,[{id:'roll',l:'이동 주사위 굴리기'},{id:'tech',l:techDone?'🏛️ 프로젝트 (사용함)':'🏛️ 국가 프로젝트 1회',dis:techDone,g:1},{id:'stk',l:'📈 주식',g:1},...(p.empire&&!techDone?[{id:'inv',l:'👑 군대 투입',g:1}]:[])]);if(r==='roll')break;if(r==='stk'){await stockMenu(p);render();continue}if(r==='inv'){techDone=await invadeMenu(p)||techDone;render();continue}techDone=await techMenu(p)||techDone;render()}}
+    if(p.human){while(true){const r=await ask(`${esc(p.name)}님의 차례${techHint(p)}`,[{id:'roll',l:'① 이동 주사위 굴리기'},{id:'tech',l:techDone?'🏛️ 프로젝트 (사용함)':'🏛️ 국가 프로젝트 1회',dis:techDone,g:1},{id:'stk',l:'📈 주식',g:1},...(p.empire&&!techDone?[{id:'inv',l:'👑 군대 투입',g:1}]:[])]);if(r==='roll')break;if(r==='stk'){await stockMenu(p);render();continue}if(r==='inv'){techDone=await invadeMenu(p)||techDone;render();continue}techDone=await techMenu(p)||techDone;render()}}
     else{await sleep(delay());if(!techDone)techDone=await aiTech(p)}
     const mv=await rollA('move');
     if(mv===12){extra++;if(extra===3){sendJail(p,'12가 세 번');return}again=true;log(`${pn(p)} 12! 한 번 더`)}
@@ -2872,7 +2874,7 @@ function rulesHTML(){
 <tr><td>${dc('re')}</td><td>부동산 지수, 건물</td><td>개발 호재, 버블 붕괴, 자산가치·국채 한도</td></tr>
 </table></div>
 
-<h2>12면체 주사위 7개</h2>
+<h2>12면체 주사위 2개 · 7가지 역할</h2><p>① 이동 주사위는 이동 거리·12 추가 턴·이동값 기준 통행료에 사용합니다. ② 판정 주사위는 정치·경제·군사·외교·자원·부동산과 자동 사건을 담당합니다. 두 값은 합산하지 않습니다. 현재는 행동에 맞는 주사위를 자동 사용하며, 자유 선택은 추후 추가됩니다.</p>
 <div class="scroll"><table class="tbl">
 <tr><th>주사위</th><th>판정</th></tr>
 <tr><td>이동</td><td>1~12칸. 12면 한 번 더(세 번이면 억류).</td></tr>
@@ -3217,7 +3219,7 @@ function renderAct(){
   let body;
   if(a)body=`<div class="prompt">${a.prompt}</div>${pvHTML(a.pv)}<div class="acts">${a.opts.map(btns).join('')}</div>`;
   else body=`<div class="prompt" style="color:var(--muted)">${p.human?(ph==='result'?'결과를 확인하세요. 곧 다음 차례로 넘어갑니다.':'진행 중…'):esc(STRAT[p.strategy].n)+' AI가 판단하고 있습니다…'}</div>`;
-  $('#act').innerHTML=`<div class="steps">${steps}</div><div class="actmain"><div class="bigdie"><div class="d12" style="--dc:${d.c}">${S.dv[dk]}</div><span>${d.n} 주사위</span></div><div class="actbody"><div class="who" style="--pc:${p.color}"><span class="dot"></span>${p.human?'내 차례':esc(p.name)+' 차례'} ${GOV[p.gov].e}${face(p)}${p.empire?'👑':''} <span style="font:400 12px var(--f-body);color:var(--muted)">· ${esc(CELLS[p.pos].name)}</span></div>${body}</div></div>${p.human?'':`<div class="intent">💭 ${esc(intent(p))}</div>`}<div class="minidice">${DICE.filter(x=>x.k!==dk).map(x=>`<span title="${x.n}">${x.n} ${S.dv[x.k]}</span>`).join('')}</div>`;
+  $('#act').innerHTML=`<div class="steps">${steps}</div><div class="actmain"><div class="bigdie">${dualDiceHTML(dk)}</div><div class="actbody"><div class="who" style="--pc:${p.color}"><span class="dot"></span>${p.human?'내 차례':esc(p.name)+' 차례'} ${GOV[p.gov].e}${face(p)}${p.empire?'👑':''} <span style="font:400 12px var(--f-body);color:var(--muted)">· ${esc(CELLS[p.pos].name)}</span></div>${body}</div></div>${p.human?'':`<div class="intent">💭 ${esc(intent(p))}</div>`}<div class="minidice">${DICE.filter(x=>x.k!==dk).map(x=>`<span title="${x.n}">${x.n} ${S.dv[x.k]}</span>`).join('')}</div>`;
   const fab=$('#fab');if(fab&&a){fab.hidden=false;fab.innerHTML=`<div class="fabp">${a.prompt.replace(/<small>[\s\S]*?<\/small>/g,'')}</div><div class="acts">${a.opts.map(btns).join('')}</div>`}else if(fab)fab.hidden=true;
 }
 function renderStrip(){
@@ -3276,7 +3278,7 @@ function raceBars(){const al=S.players.slice().sort((a,b)=>netWorth(b)-netWorth(
 function actionMini(){const p=cur(),a=S.ask,dk=S.hot||'move',d=DICE.find(x=>x.k===dk);
   const btns=a?a.opts.map(o=>`<button class="btn${o.g?' ghost':''}" data-ask="${o.id}" ${o.dis?'disabled':''}>${o.l}</button>`).join(''):'';
   const txt=a?a.prompt.replace(/<small>[\s\S]*?<\/small>/g,'').replace(/<[^>]+>/g,'').split(/[.?!]/)[0]:(p.human?'…':STRAT[p.strategy].n+' 판단 중');
-  return`<div class="amini"><div class="d12${S.hot?' hot':''}" style="--dc:${d.c}">${S.dv[dk]}</div><div class="ab"><div class="ap">${esc(txt)}</div><div class="acts">${btns}</div></div></div>`}
+  return`<div class="amini">${dualDiceHTML(dk)}<div class="ab"><div class="ap">${esc(txt)}</div><div class="acts">${btns}</div></div></div>`}
 const FLAG={'나이지리아':'🇳🇬','콩고민주공화국':'🇨🇩','이집트':'🇪🇬','브라질':'🇧🇷','인도네시아':'🇮🇩','호주':'🇦🇺','사우디아라비아':'🇸🇦','이란':'🇮🇷','아랍에미리트':'🇦🇪','우크라이나':'🇺🇦','러시아':'🇷🇺','튀르키예':'🇹🇷','독일':'🇩🇪','네덜란드':'🇳🇱','프랑스':'🇫🇷','인도':'🇮🇳','대한민국':'🇰🇷','일본':'🇯🇵','중국':'🇨🇳','멕시코':'🇲🇽','미국':'🇺🇸','캐나다':'🇨🇦','베트남':'🇻🇳','태평양 해저':'🌊','남태평양':'🏝️','대서양 해저':'🌊','달':'🌙','소행성대':'☄️','L1 궤도':'🛰️','화성':'🔴'};
 const ICON={start:'🚀',jail:'⛓️',fund:'💰',cyber:'🕵️',event:'🌍',supply:'📦',tax:'🏭',wtax:'💎',cp:'⚓',util:'🔬',edu:'🎓',defense:'🛡️',dip:'🕊️',cult:'⛪',robot:'🤖',refugee:'⛺',nuke:'☢️',bank:'🏦',pop:'🎬',terror:'⚠️'};
 function cellIcon(c){if(c.t==='city')return FLAG[c.country]||'🏙️';if(c.t==='util'&&c.kind==='space')return'🛰️';return ICON[c.t]||''}
@@ -3350,7 +3352,7 @@ function actionMini(){const p=cur(),a=S.ask,dk=S.hot||'move',d=DICE.find(x=>x.k=
   const btns=a?a.opts.map(o=>`<button class="btn${o.g?' ghost':''}" data-ask="${o.id}" ${o.dis?'disabled':''}>${o.l}</button>`).join(''):'';
   const txt=a?a.prompt.replace(/<small>[\s\S]*?<\/small>/g,'').replace(/<[^>]+>/g,'').split(/[.?!]/)[0]:(p.human?'…':STRAT[p.strategy].n+' 판단 중');
   const pv=a&&a.pv?`<dl class="pv">${a.pv.rows.slice(0,4).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}${a.pv.risk&&a.pv.risk.length?`<div class="risk">⚠️ ${a.pv.risk[0]}</div>`:''}</dl>`:'';
-  return`<div class="amini"><div class="d12${S.hot?' hot':''}" style="--dc:${d.c}">${S.dv[dk]}</div><div class="ab"><div class="ap">${esc(txt)}</div>${pv}<div class="acts">${btns}</div></div></div>`}
+  return`<div class="amini">${dualDiceHTML(dk)}<div class="ab"><div class="ap">${esc(txt)}</div>${pv}<div class="acts">${btns}</div></div></div>`}
 
 /* 보드 안 센터 순서: 행동 → 정세 → 순서 → 대시보드 → 시장 → 경주 → 티커 */
 const _renderBoard=renderBoard;
@@ -3383,7 +3385,7 @@ async function throwDice(k,v){
   await sleep(fast?160:520);ov.classList.add('out');await sleep(fast?80:220);ov.remove();
 }
 const _rollA=rollA;
-rollA=async function(k){const v=d12();S.dv[k]=v;S.hot=k;await throwDice(k,v);render();await sleep(S.speed==='fast'?40:160);return v};
+rollA=async function(k){const v=d12(k);S.dv[k]=v;S.hot=k;await throwDice(k,v);render();await sleep(S.speed==='fast'?40:160);return v};
 
 /* ── 국가 성장 캐릭터 ── */
 const STAGES=[{n:'신생국',e:'🐣',min:0},{n:'성장국',e:'🐥',min:5},{n:'신흥국',e:'🦊',min:10},{n:'산업국',e:'🐺',min:16},{n:'강대국',e:'🦁',min:23},{n:'초강대국',e:'🐉',min:31},{n:'우주 문명',e:'🪐',min:41}];
@@ -4012,7 +4014,7 @@ function renderHStage(){if(!S)return;const st=$('#hstage');if(!st)return;const p
   const mv=S._mv&&S._mv.id===p.id?S._mv:null,k=S._rollK||'move',d=DICE.find(x=>x.k===k)||DICE[0],rel=Date.now()-(S._rollT||0),rolling=rel<700;
   const phase=mv?(mv.end?`🎯 ${CELLS[p.pos].short}`:`🎲 ${mv.n}칸 이동`):S.ask&&p.human?'👆 내가 선택':p.human?'진행 중':(p.act&&S.round-p.act.r<=1?p.act.t:'💭 구상 중');
   const who=$('#hwho');who.className='hwho'+(p.human&&!mv?' me':'');
-  who.innerHTML=`<div class="hdie${rolling?' roll':''}" style="--dc:${d.c};${rolling?`animation-delay:-${rel}ms`:''}">${S.dv[k]}</div><div class="hn"><b>${p.bankrupt?'💀 ':''}${esc(p.name)}</b><small>${k!=='move'&&rel<4000?d.n+' 주사위 '+S.dv[k]:phase}</small></div>`;
+  who.innerHTML=`${dualDiceHTML(k)}<div class="hn"><b>${p.bankrupt?'💀 ':''}${esc(p.name)}</b><small>${k!=='move'&&rel<4000?d.n+' 주사위 '+S.dv[k]:phase}</small></div>`;
   const a=mv?mv.from:p.pos,steps=mv?((p.pos-mv.from+N)%N):0;let h='';
   for(let j=0;j<=12;j++){const i=(a+j)%N,c=CELLS[i],pr=S.props[i],o=pr?S.players[pr.owner]:null,cls=['hc'];
     if(mv){if(j<=mv.n)cls.push('reach');else cls.push('dim');if(j>0&&j<steps)cls.push('lit');if(j===mv.n)cls.push('dest');if(mv.end&&j===mv.n)cls.push('land')}
@@ -4256,7 +4258,7 @@ actionMini=function(){const p=cur(),a=S.ask,dk=S.hot||'move',d=DICE.find(x=>x.k=
   const btns=a?a.opts.map(o=>`<button class="btn${o.g?' ghost':''}${po[o.id]?' sub':''}" data-ask="${o.id}" ${o.dis?'disabled':''}><span class="bl">${o.l}</span>${po[o.id]?`<small>${po[o.id]}</small>`:''}</button>`).join(''):'';
   const txt=a?a.prompt.replace(/<small>[\s\S]*?<\/small>/g,'').replace(/<[^>]+>/g,'').split(/[.?!]/)[0]:`${p.name} · ${actText(p)}`;
   const pv=a&&a.pv&&!a.pv.inline&&a.pv.rows&&a.pv.rows.length?`<dl class="pv">${a.pv.rows.slice(0,list?3:6).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}${a.pv.risk&&a.pv.risk.length?`<div class="risk">⚠️ ${a.pv.risk[0]}</div>`:''}</dl>`:(a&&a.pv&&a.pv.inline&&a.pv.risk&&a.pv.risk.length?`<div class="risk">⚠️ ${a.pv.risk[0]}</div>`:'');
-  return`<div class="amini${a?' asking':''}${list?' list':''}"><div class="d12${S.hot?' hot':''}" style="--dc:${d.c}">${S.dv[dk]}</div><div class="ab"><div class="ap">${esc(txt)}</div>${a?'':`<div class="asc"><b>예상</b> ${esc(scen(p))}</div>`}${pv}<div class="acts">${btns}</div></div></div>`};
+  return`<div class="amini${a?' asking':''}${list?' list':''}">${dualDiceHTML(dk)}<div class="ab"><div class="ap">${esc(txt)}</div>${a?'':`<div class="asc"><b>예상</b> ${esc(scen(p))}</div>`}${pv}<div class="acts">${btns}</div></div></div>`};
 /* ── 턴 메뉴에 📈 주식 (명령 횟수 안 씀) ── */
 /* ── 표시 ── */
 const _rbS=renderBoard;
@@ -6119,7 +6121,7 @@ terrorAttack=function(p,why){v32Init();const iv=p.intel||0;
   if(iv&&Math.random()<.15*iv){apc(p,4);S.terror=clamp(S.terror-8,0,100);log(`🕵️ ${pn(p)} 첩보국이 테러 조직을 사전 검거`);
     if(p.human||Math.random()<.5)v32Banner('peace',['TERROR FOILED','🕵️','테러 실패 — 사전 검거'],`${esc(p.name)} · ${esc(why)}<br>첩보국 ${INTEL[iv].n}이(가) 잠입 조직을 먼저 찾아냈습니다`,'지지율 +4 · 테러 위협 −8');
     return[[`🛡️ 테러 실패: ${p.name} 첩보국 사전 검거`,'mil'],[`첩보국 ${iv}단계 → 검거 확률 ${15*iv}%`,'mil'],['지지율 +4 · 위협 −8','pol']]}
-  const v=d12();S.dv.mil=v;const def=v+p.sf*2+termB(p)+iv;
+  const v=d12('mil');S.dv.mil=v;const def=v+p.sf*2+termB(p)+iv;
   if(def>=8){apc(p,3);S.terror=clamp(S.terror-4,0,100);log(`${pn(p)} 테러 저지 (군사 ${v}+특수부대 ${p.sf*2}${iv?'+첩보 '+iv:''})`);
     if(p.human)v32Banner('peace',['TERROR FAILED','🛡️','테러 실패 — 현장 저지'],`${esc(p.name)} · ${esc(why)}<br>군사 ${v} + 특수부대 ${p.sf*2}${iv?` + 첩보국 ${iv}`:''} = ${def} ≥ 8`,'지지율 +3 · 위협 −4');
     return[[`🛡️ 테러 실패: ${p.name} 현장 저지`,'mil'],[`군사 ${v}+특수부대 ${p.sf*2}${iv?`+첩보 ${iv}`:''} = ${def} ≥ 8`,'mil'],['지지율 +3 · 위협 −4','pol']]}
