@@ -4011,10 +4011,11 @@ function renderHStage(){if(!S)return;const st=$('#hstage');if(!st)return;const p
   if(hdr)hdr.style.setProperty('--tc',p.color);
   const rp=Math.min(100,(Math.min(S.round,S.maxRounds)-1)/Math.max(1,S.maxRounds-1)*100);const rail=$('#hrail');
   if(rail){rail.style.setProperty('--rp',rp+'%');if(!rail.dataset.m){rail.dataset.m=1;let s='<i></i>';for(let r=5;r<S.maxRounds;r+=5)s+=`<s style="left:${(r-1)/(S.maxRounds-1)*100}%"></s>`;rail.innerHTML=s+'<b></b>'}rail.querySelector('b').textContent=`R${Math.min(S.round,S.maxRounds)}`;rail.title=`라운드 ${Math.min(S.round,S.maxRounds)} / ${S.maxRounds}`}
-  const mv=S._mv&&S._mv.id===p.id?S._mv:null,k=S._rollK||'move',d=DICE.find(x=>x.k===k)||DICE[0],rel=Date.now()-(S._rollT||0),rolling=rel<700;
+  const mv=S._mv&&S._mv.id===p.id?S._mv:null;
   const phase=mv?(mv.end?`🎯 ${CELLS[p.pos].short}`:`🎲 ${mv.n}칸 이동`):S.ask&&p.human?'👆 내가 선택':p.human?'진행 중':(p.act&&S.round-p.act.r<=1?p.act.t:'💭 구상 중');
   const who=$('#hwho');who.className='hwho'+(p.human&&!mv?' me':'');
-  who.innerHTML=`${dualDiceHTML(k)}<div class="hn"><b>${p.bankrupt?'💀 ':''}${esc(p.name)}</b><small>${k!=='move'&&rel<4000?d.n+' 주사위 '+S.dv[k]:phase}</small></div>`;
+  // Dice results belong to the board action panel; the header only shows player/phase.
+  who.innerHTML=`<div class="hn"><b>${p.bankrupt?'💀 ':''}${esc(p.name)}</b><small>${esc(phase)}</small></div>`;
   const a=mv?mv.from:p.pos,steps=mv?((p.pos-mv.from+N)%N):0;let h='';
   for(let j=0;j<=12;j++){const i=(a+j)%N,c=CELLS[i],pr=S.props[i],o=pr?S.players[pr.owner]:null,cls=['hc'];
     if(mv){if(j<=mv.n)cls.push('reach');else cls.push('dim');if(j>0&&j<steps)cls.push('lit');if(j===mv.n)cls.push('dest');if(mv.end&&j===mv.n)cls.push('land')}

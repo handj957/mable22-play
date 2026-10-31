@@ -21,8 +21,10 @@ for(const prefix of ['','edu-'])for(const n of [3,4]){
  assert(html.includes("const mv=await rollA('move');"));
  assert(html.includes('await moveSteps(p,mv);await land(p,mv);'));
  assert(html.includes('if(mv===12){extra++;if(extra===3)'));
- assert((html.match(/dualDiceHTML\(dk\)/g)||[]).length>=4);assert(html.includes('dualDiceHTML(k)'));
- assert(html.includes('dual-dice.js?v=1'));assert(html.includes('dual-dice.css?v=2'));
+ assert((html.match(/dualDiceHTML\(dk\)/g)||[]).length>=4);if(prefix)assert(html.includes('dualDiceHTML(k)'));
+ else assert(!html.slice(html.indexOf('function renderHStage(){'),html.indexOf('const _topH=renderTop;')).includes('dualDiceHTML('));
+ assert(html.includes('dual-dice.js?v=1'));assert(/dual-dice\.css\?v=\d+/.test(html));
  console.log(file+' syntax and route contract PASS');
 }
 console.log('Single draw, boundaries, uniform distribution, channel isolation, migration, persistence PASS');
+
