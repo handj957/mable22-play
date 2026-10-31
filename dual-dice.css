@@ -16,14 +16,24 @@
 .board .center .amini .dual-dice{min-width:0;max-width:100%;align-self:start}
 .board .center .amini .pv,.board .center .amini .acts{min-width:0;max-width:100%;overflow-wrap:anywhere}
 .board .center .amini.asking:not(.v28roll),.board .center .amini.v31{grid-template-columns:minmax(74px,96px) minmax(0,1fr)!important}
-.board .center .amini.asking:not(.v28roll)>.dual-dice,.board .center .amini.v31>.dual-dice{grid-column:1!important;grid-row:1!important;justify-self:start}
-.board .center .amini.v31 .v31l,.board .center .amini.v31>.ab{display:contents!important}
-.board .center .amini.v31 .v28turn{grid-column:2!important;grid-row:1!important;min-width:0}
-.board .center .amini.v31 .pv{grid-column:1/-1!important;grid-row:2!important}
-.board .center .amini.v31 .acts{grid-column:1/-1!important;grid-row:3!important;display:flex!important;flex-wrap:wrap;width:100%!important}
+.board .center .amini.asking:not(.v28roll)>.dual-dice,
+
+
+
+
 @media(max-width:600px){
  .board .center .amini.asking:not(.v28roll),.board .center .amini.v31{grid-template-columns:minmax(0,1fr)!important}
  .board .center .amini.asking:not(.v28roll)>.dual-dice,.board .center .amini.v31>.dual-dice{grid-column:1!important;grid-row:auto!important}
  .board .center .amini.v31 .v28turn,.board .center .amini.v31 .pv,.board .center .amini.v31 .acts{grid-column:1!important;grid-row:auto!important}
  .dual-die small{display:none}
 }
+
+/* v31 regression fix: v31l is a real grid item containing the die AND actions.
+   Never display:contents or force its children into a 76px grid track. */
+.board .center .amini.v28a.v31{grid-template-columns:minmax(118px, 34%) minmax(0,1fr)!important;align-items:start!important}
+.board .center .amini.v31 .v31l{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;min-width:0!important;width:100%!important;gap:6px!important}
+.board .center .amini.v31 .v31l .acts{display:flex!important;flex-direction:column!important;align-items:stretch!important;flex-wrap:nowrap!important;width:100%!important;min-width:0!important}
+.board .center .amini.v31 .v31l .acts>*{width:100%!important;min-width:0!important;box-sizing:border-box!important;overflow-wrap:anywhere!important;writing-mode:horizontal-tb!important;white-space:normal!important}
+.board .center .amini.v31 .v31l .dual-dice{justify-content:center!important;max-width:100%!important}
+.board .center .amini.v31 .pv,.board .center .amini.v31 .v28turn{min-width:0!important;overflow-wrap:anywhere!important}
+@media(max-width:600px){.board .center .amini.v28a.v31{grid-template-columns:minmax(0,1fr)!important}.board .center .amini.v31 .v31l{grid-column:1!important}.board .center .amini.v31 .v31l .acts{flex-direction:row!important;flex-wrap:wrap!important}.board .center .amini.v31 .v31l .acts>*{width:auto!important;flex:1 1 110px!important}}
