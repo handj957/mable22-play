@@ -1189,7 +1189,7 @@ function check(){
 function __check(){
   var intro=isIntro();
   if(intro&&!muted&&unlocked)startMusic();else stopMusic();
-  /* 소리 설정은 시작 화면과 게임 중 모두 사용할 수 있습니다. */
+  if(btn.hidden===intro)btn.hidden=!intro; /* 시작 화면에서만 소리 설정 표시 */
 }
 function unlock(e){
   if(e&&e.target&&e.target.closest&&e.target.closest('#m22snd'))return;
