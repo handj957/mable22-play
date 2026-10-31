@@ -16,11 +16,6 @@
 .board .center .amini .dual-dice{min-width:0;max-width:100%;align-self:start}
 .board .center .amini .pv,.board .center .amini .acts{min-width:0;max-width:100%;overflow-wrap:anywhere}
 .board .center .amini.asking:not(.v28roll),.board .center .amini.v31{grid-template-columns:minmax(74px,96px) minmax(0,1fr)!important}
-.board .center .amini.asking:not(.v28roll)>.dual-dice,
-
-
-
-
 @media(max-width:600px){
  .board .center .amini.asking:not(.v28roll),.board .center .amini.v31{grid-template-columns:minmax(0,1fr)!important}
  .board .center .amini.asking:not(.v28roll)>.dual-dice,.board .center .amini.v31>.dual-dice{grid-column:1!important;grid-row:auto!important}

@@ -1,5 +1,5 @@
 <!doctype html><html data-skin="pearl" data-light><head>
-<link rel="stylesheet" href="dual-dice.css?v=5">
+<link rel="stylesheet" href="dual-dice.css?v=6">
 <script src="dual-dice.js?v=1"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
@@ -17,7 +17,8 @@ document.addEventListener('fullscreenchange',function(){setTimeout(fit,150)});do
 function rearm(){setTimeout(function(){if(!(document.fullscreenElement||document.webkitFullscreenElement)){document.addEventListener('pointerup',once,true)}},300)}
 document.addEventListener('fullscreenchange',rearm);document.addEventListener('webkitfullscreenchange',rearm);
 }catch(e){}})();</script>
-<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><link rel="stylesheet" href="responsive-board.css?v=1">
+</head><body>
 <title>22세기 브르마블 · Level 4</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6822,7 +6823,7 @@ const _rulesBL=rulesHTML;rulesHTML=function(){return _rulesBL()+`<h2 id="bylaws"
 /* 가로 화면: 보드 칸 좌표를 90° 시계 방향으로 돌림 (세로 화면은 그대로) */
 var LAND=false;
 (function(){
-  function isLand(){try{return innerWidth>innerHeight&&(innerHeight<=600||(navigator.maxTouchPoints>0&&innerHeight<=1100))}catch(e){return false}}
+  function isLand(){try{return innerWidth>innerHeight}catch(e){return false}}
   function isTab(L){try{return !L&&innerWidth>=700&&innerHeight>=innerWidth*.95}catch(e){return false}}
   var rcP=rc, sideP=side, SIDE={b:'l',l:'t',t:'r',r:'b'};
   rc=function(i){var a=rcP(i);return LAND?[a[1],21-a[0]]:a};
@@ -6835,8 +6836,8 @@ var LAND=false;
     try{cellVars()}catch(e){}try{fitCells()}catch(e){}try{setHdr()}catch(e){}fixVars()}
   var b=document.getElementById('board');
   if(b&&window.ResizeObserver)new ResizeObserver(fixVars).observe(b);
-  var t;addEventListener('resize',function(){clearTimeout(t);t=setTimeout(apply,120)});
-  addEventListener('orientationchange',function(){setTimeout(apply,250)});
+  var t;addEventListener('resize',function(){cancelAnimationFrame(t);t=requestAnimationFrame(apply)});
+  addEventListener('orientationchange',function(){cancelAnimationFrame(t);t=requestAnimationFrame(apply)});
   /* 알림 팝업: 가로판은 줄이 11개 */
   if(typeof showToast==='function'){var st=showToast;showToast=function(){st.apply(this,arguments);if(!LAND)return;
     try{var el=document.getElementById('toast'),r=document.getElementById('board').getBoundingClientRect();
@@ -7163,4 +7164,6 @@ wrap('showResult',function(){var r=S.players.slice().sort(function(a,b){return(a
 window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
 })();
 </script>
+
+<script src="responsive-board.js?v=1"></script>
 </body></html>
