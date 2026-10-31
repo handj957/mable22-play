@@ -1542,7 +1542,7 @@ function init(){
   if(ctx)return true;
   var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
   ctx=new AC();
-  master=ctx.createGain();master.gain.value=.65;
+  master=ctx.createGain();master.gain.value=muted?0:.65;
   var comp=ctx.createDynamicsCompressor();master.connect(comp);comp.connect(ctx.destination);
   musicBus=ctx.createGain();musicBus.connect(master);
   sfxBus=ctx.createGain();sfxBus.connect(master);
@@ -1628,7 +1628,7 @@ function stopMusic(){
 }
 function sfx(kind){
   if(muted)return;
-  var now=Date.now(),gap=kind==='win'?2000:kind==='popup'?500:450;
+  var now=Date.now(),gap=kind==='win'?2000:kind==='popup'?500:kind==='bad'?1200:450;
   if(last[kind]&&now-last[kind]<gap)return;
   last[kind]=now;
   if(!init())return;
@@ -1636,7 +1636,7 @@ function sfx(kind){
   var k=CFG.key,t=ctx.currentTime+.02,o={bus:sfxBus};
   if(kind==='popup'){tone(t,F(k+19),.55,{bus:sfxBus,type:'sine',gain:.16,pluck:true});tone(t+.13,F(k+24),.7,{bus:sfxBus,type:'sine',gain:.14,pluck:true})}
   if(kind==='good'){[0,4,7,12,16].forEach(function(x,i){tone(t+i*.075,F(k+12+x),.35,{bus:sfxBus,type:'triangle',gain:.14,pluck:true})})}
-  if(kind==='bad'){[7,3,0].forEach(function(x,i){tone(t+i*.17,F(k+x),.5,{bus:sfxBus,type:'sawtooth',gain:.09,lp:900,att:.02,rel:.3})})}
+  if(kind==='bad'){tone(t,F(k),.14,{bus:sfxBus,type:'sine',gain:.025,att:.025,rel:.1})}
   if(kind==='win'){[[0,0],[.22,5],[.44,7]].forEach(function(a){[0,4,7,12].forEach(function(y){tone(t+a[0],F(k+12+a[1]+y),1.1,{bus:sfxBus,type:'triangle',gain:.08,att:.02,rel:.7})})});
     tone(t+.7,F(k+31),1.2,{bus:sfxBus,type:'sine',gain:.1,pluck:true})}
 }
@@ -1645,12 +1645,12 @@ function sfx(kind){
 function isIntro(){try{return !!((function(){var s=document.getElementById('setup');return !!(s&&!s.hidden)})())}catch(e){return false}}
 var btn=document.createElement('button');
 btn.id='m22snd';btn.type='button';btn.setAttribute('aria-label','소리 켜기/끄기');
-btn.style.cssText='position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:calc(8px + env(safe-area-inset-right,0px));z-index:2147483000;width:44px;height:44px;border-radius:50%;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.92);font-size:20px;line-height:1;padding:0;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)';
-function paint(){btn.textContent=muted?'🔇':'🔊'}
+btn.style.cssText='position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:calc(8px + env(safe-area-inset-right,0px));z-index:2147483000;min-width:112px;height:44px;border-radius:22px;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.92);font-size:14px;font-weight:700;line-height:1;padding:0 12px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)';
+function paint(){btn.textContent=muted?'🔇 소리 OFF':'🔊 소리 ON';btn.setAttribute('aria-pressed',String(!muted));btn.setAttribute('aria-label',muted?'소리 켜기':'소리 끄기');btn.title='배경음악·효과음 ON/OFF'}
 btn.addEventListener('click',function(e){
   e.stopPropagation();muted=!muted;
   try{localStorage.setItem('m22_mute',muted?'1':'0')}catch(x){}
-  unlocked=true;paint();check();
+  unlocked=true;if(ctx){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setTargetAtTime(muted?0:.65,ctx.currentTime,.01)}paint();check();
 });
 var busy=false;
 function check(){
@@ -1660,9 +1660,10 @@ function check(){
 function __check(){
   var intro=isIntro();
   if(intro&&!muted&&unlocked)startMusic();else stopMusic();
-  if(btn.hidden===intro)btn.hidden=!intro; /* 값이 바뀔 때만 써서 감시자가 반복되지 않게 함 */
+  /* 소리 설정은 시작 화면과 게임 중 모두 사용할 수 있습니다. */
 }
-function unlock(){
+function unlock(e){
+  if(e&&e.target&&e.target.closest&&e.target.closest('#m22snd'))return;
   if(unlocked)return;unlocked=true;
   if(init()){try{ctx.resume()}catch(e){}}
   check();

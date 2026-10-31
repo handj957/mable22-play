@@ -48,7 +48,16 @@ a.card .go{color:var(--go)}
   <h1>22세기 브르마블</h1>
   <div class="eng">Blue Marble 2101 · Level 1 – 5</div>
 
-  <div class="cards">
+  <section style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 16px;border:1px solid #b9c4d6;border-radius:14px;background:#fff;color:#1d2433" aria-label="소리 설정">
+  <div><b>소리 설정</b><div style="font-size:12px;color:#5b6577">배경음악·효과음 · 모든 레벨에 적용</div></div>
+  <button type="button" id="m22snd" style="min-width:112px;min-height:44px;border:1px solid #b9c4d6;border-radius:22px;background:#f6f8fc;color:#1d2433;font-size:14px;font-weight:700;cursor:pointer"></button>
+</section>
+<script>
+(function(){var b=document.getElementById('m22snd'),muted=false;try{muted=localStorage.getItem('m22_mute')==='1'}catch(e){}
+function paint(){b.textContent=muted?'🔇 소리 OFF':'🔊 소리 ON';b.setAttribute('aria-pressed',String(!muted));b.setAttribute('aria-label',muted?'소리 켜기':'소리 끄기')}
+b.addEventListener('click',function(){muted=!muted;try{localStorage.setItem('m22_mute',muted?'1':'0')}catch(e){}paint()});paint()})();
+</script>
+<div class="cards">
 <a class="card l1" href="level1.html"><div class="no">1</div><div><div class="t">네오 아틀라스 메가시티</div><div class="d">부자 되기 — 부동산·기업·원자재·교육 (입문)</div></div><div class="go">플레이 ›</div></a>
   <a class="card l2" href="level2.html"><div class="no">2</div><div><div class="t">누리 공화국</div><div class="d">Level 1 + 사회·문화 — 민심과 연쇄 효과</div></div><div class="go">플레이 ›</div></a>
   <a class="card l3" href="level3.html"><div class="no">3</div><div><div class="t">세계를 움직이기</div><div class="d">정치·경제·군사·외교·자원·부동산 6대 분야 (본편)</div></div><div class="go">플레이 ›</div></a>

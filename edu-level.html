@@ -34,7 +34,16 @@
   <h1>교육용 레벨 선택</h1>
   <p class="lead">배우면서 즐기는 22세기 브르마블 (보드 13×13)</p>
 
-  <div class="cards">
+  <section style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 16px;border:1px solid #b9c4d6;border-radius:14px;background:#fff;color:#1d2433" aria-label="소리 설정">
+  <div><b>소리 설정</b><div style="font-size:12px;color:#5b6577">배경음악·효과음 · 모든 레벨에 적용</div></div>
+  <button type="button" id="m22snd" style="min-width:112px;min-height:44px;border:1px solid #b9c4d6;border-radius:22px;background:#f6f8fc;color:#1d2433;font-size:14px;font-weight:700;cursor:pointer"></button>
+</section>
+<script>
+(function(){var b=document.getElementById('m22snd'),muted=false;try{muted=localStorage.getItem('m22_mute')==='1'}catch(e){}
+function paint(){b.textContent=muted?'🔇 소리 OFF':'🔊 소리 ON';b.setAttribute('aria-pressed',String(!muted));b.setAttribute('aria-label',muted?'소리 켜기':'소리 끄기')}
+b.addEventListener('click',function(){muted=!muted;try{localStorage.setItem('m22_mute',muted?'1':'0')}catch(e){}paint()});paint()})();
+</script>
+<div class="cards">
 <a class="card" href="edu-level1.html">
     <div class="row"><div class="lv">1</div><div><div class="t">Level 1 · 네오 아틀라스 메가시티</div><div class="d">교육판 · 부동산·은행·기업 운영</div></div></div>
     <div class="url">https://handj957.github.io/mable22-play/edu-level1.html</div>
