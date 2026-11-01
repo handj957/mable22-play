@@ -42,3 +42,23 @@ body{max-width:100%;overflow-x:hidden}
  .board .cell .nm,.board .cell .name,.board .cell .label{font-size:clamp(7px,1.35vw,10px)!important}
  .board .cell .em,.board .cell .ic,.board .cell .emoji{font-size:clamp(9px,1.7vw,14px)!important}
 }
+
+/* v3: standalone PWA has no host close button; reclaim header space. */
+@media (display-mode:standalone){
+ .wrap>header,.app>.hdr,.app>header.hdr{padding-left:0!important;min-height:0!important}
+}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:600px) and (display-mode:browser){
+ .wrap>header,.app>.hdr,.app>header.hdr{min-height:48px!important}
+}
+/* Fit names to their tile without pushing adjacent grid tracks. */
+.board .cell .nm,.board .cell .name,.board .cell .label{
+  width:100%!important;box-sizing:border-box!important;
+  text-align:center!important;vertical-align:middle!important;
+}
+.board .cell .em,.board .cell .ic,.board .cell .emoji{
+  width:100%!important;text-align:center!important;
+}
+@media (orientation:landscape) and (max-height:550px){
+ .board .cell{padding:0 1px!important}
+ .board .cell .nm,.board .cell .name,.board .cell .label{line-height:1.05!important}
+}
