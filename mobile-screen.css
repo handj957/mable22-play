@@ -13,3 +13,32 @@ body{max-width:100%;overflow-x:hidden}
  .board .center{scrollbar-width:thin}
  .board .center .amini{max-height:none}
 }
+
+/* v2: reserve the upper-left browser close overlay without moving browser UI. */
+@media (pointer:coarse) and (max-width:1400px){
+  .wrap>header,.app>.hdr,.app>header.hdr{padding-left:clamp(78px,8vw,104px)!important;min-height:72px!important;box-sizing:border-box!important}
+  .wrap>header>* , .app>.hdr>*{min-width:0}
+}
+@media (pointer:coarse) and (orientation:portrait) and (max-width:700px){
+  .wrap>header,.app>.hdr,.app>header.hdr{padding-left:82px!important}
+}
+@media (orientation:landscape) and (max-height:600px){
+  .wrap>header,.app>.hdr,.app>header.hdr{padding-left:92px!important}
+}
+/* Board tile text: no word-by-word vertical splitting; retain icons and borders. */
+.board .cell{min-width:0!important;min-height:0!important;box-sizing:border-box!important;overflow:hidden!important}
+.board .cell .nm,.board .cell .name,.board .cell .label{
+  max-width:100%!important;min-width:0!important;
+  word-break:keep-all!important;overflow-wrap:normal!important;
+  white-space:nowrap!important;text-overflow:ellipsis!important;
+  overflow:hidden!important;display:block!important;
+  line-height:1.15!important;
+}
+.board .cell .em,.board .cell .ic,.board .cell .emoji{
+  display:block!important;flex-shrink:0!important;line-height:1.1!important;
+  max-width:100%!important;overflow:hidden!important;
+}
+@media (orientation:portrait) and (max-width:600px){
+ .board .cell .nm,.board .cell .name,.board .cell .label{font-size:clamp(7px,1.35vw,10px)!important}
+ .board .cell .em,.board .cell .ic,.board .cell .emoji{font-size:clamp(9px,1.7vw,14px)!important}
+}
