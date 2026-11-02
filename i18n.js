@@ -54,6 +54,10 @@
   function init() {
     exact = new Map(); tpl = []; var segKeys = [];
     segMap = new Map();
+    for (var o = 0; o < API.dicts.length; o++) {   // over: 다른 사전보다 먼저 적용되는 짧은 표기(좁은 칸 전용)
+      var OV = API.dicts[o].over || [];
+      for (var oi = 0; oi < OV.length; oi++) exact.set(OV[oi][0], OV[oi][1]);
+    }
     for (var d = 0; d < API.dicts.length; d++) {
       var D = API.dicts[d];
       for (var i = 0; i < D.exact.length; i++) {
@@ -139,7 +143,7 @@
         if (mm) {
           var out = pre + tpl[i][1].replace(/\{(\d+)\}/g, function (_, n) { return tr(mm[+n - 1] || '', d + 1); }) + post;
           if (!HAN.test(out)) return out;
-          cands.push(out); break;
+          cands.push(out); continue;
         }
       }
       // 끝에 붙은 숫자(예: '공공시설 1곳 −1')는 떼어 두고 앞부분만 번역
@@ -147,6 +151,12 @@
       if (tn && HAN.test(tn[1]) && tn[1] !== c) {
         var o1 = m[1] + core(tn[1], d + 1) + tn[2] + m[3];
         if (o1 !== s) { if (!HAN.test(o1)) return o1; cands.push(o1); }
+      }
+      // 끝에 붙은 화살표·구분기호(예: '제재 결의 통과 →')는 떼어 두고 앞부분만 번역
+      var ta = /^([\s\S]*?\S)(\s*[→·—]+)$/.exec(c);
+      if (ta && HAN.test(ta[1]) && ta[1] !== c) {
+        var o3 = m[1] + core(ta[1], d + 1) + ta[2] + m[3];
+        if (o3 !== s) { if (!HAN.test(o3)) return o3; cands.push(o3); }
       }
       // '·', '—', '→' 등으로 이어 붙인 문장(join 결과)은 조각별로 번역
       var parts = s.split(CHUNK);
@@ -165,10 +175,26 @@
       var r2 = s.replace(forceRe, function (_, a, k) { return a + forceMap.get(k); });
       if (r2 !== s) cands.push(r2);
     }
-    if (!cands.length) return s;
+    if (!cands.length) return s.charCodeAt(s.length - 1) === 8230 ? truncFix(s, s) : s;
     var best = cands[0], bh = (best.match(/[가-힣]/g) || []).length;
     for (var q = 1; q < cands.length; q++) { var h = (cands[q].match(/[가-힣]/g) || []).length; if (h < bh) { best = cands[q]; bh = h; } }
+    if (bh && s.charCodeAt(s.length - 1) === 8230) best = truncFix(s, best);
     return best;
+  }
+
+  /* 게임이 한글 문장을 '…'로 잘라 보여 주는 경우(예: 앞 14자만) — 잘린 한글은 사전에 없으므로
+     ① 사전의 긴 문장 앞부분과 같으면 그 영어를 같은 비율로 잘라 쓰고, ② 아니면 번역 안 된 한글 직전까지만 남기고 '…'을 붙인다 */
+  function truncFix(s, r) {
+    if (!HAN.test(r)) return r;
+    var stem = s.slice(0, -1).replace(/\s+$/, ''), bestK = null;
+    exact.forEach(function (en, k) { if (k.length > stem.length + 1 && k.lastIndexOf(stem, 0) === 0 && (bestK === null || k.length < bestK.length)) bestK = k; });
+    if (bestK !== null) {
+      var en = exact.get(bestK), n = Math.max(8, Math.round(en.length * stem.length / bestK.length)), c = en.slice(0, n);
+      if (n < en.length) { var sp = c.lastIndexOf(' '); if (sp > n * 0.5) c = c.slice(0, sp); }
+      return c.replace(/[\s·,—\-:;(]+$/, '') + '…';
+    }
+    var i = r.search(HAN), head = r.slice(0, i).replace(/[\s·,(\[「—→\-:;]+$/, '');
+    return head.length >= 3 ? head + '…' : r;
   }
 
   API.t = function (s) { return lang === 'en' ? tr(String(s)) : s; };

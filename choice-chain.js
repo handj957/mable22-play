@@ -58,7 +58,10 @@ function whyText(w){
 }
 const money=x=>typeof won==='function'?won(x):'₵'+Math.round(x).toLocaleString('ko-KR');
 const fmt=(x,m,u)=>m?money(x):x+(u||'');
-const plain=h=>String(h==null?'':h).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+/* 태그를 지운 글줄. 영어에서는 태그로 나뉘어 있던 조각을 줄바꿈(\n)으로 이어 두어, 번역기(i18n.js)가 조각별로 번역할 수 있게 한다 */
+const plain=h=>{const s=String(h==null?'':h);
+  if(!isEn())return s.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+  return s.split(/<[^>]+>/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean).join('\n')};
 const cut=(s,n)=>s.length>n?s.slice(0,n-1)+'…':s;
 const DLAB={move:'이동',mv:'이동',mil:'군사',dip:'외교',econ:'경제',eco:'경제',res:'자원',pol:'정치',world:'세계',so:'사회',re:'부동산',rd:'결과'};
 
