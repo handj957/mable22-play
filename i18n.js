@@ -23,6 +23,7 @@
 
   document.documentElement.setAttribute('lang', lang);
   var me = document.currentScript;
+  var isHub = !!(me && me.hasAttribute('data-hub'));   // 레벨 선택·Beginning 선택 화면 전용 (게임 화면에는 전환 버튼을 만들지 않음)
   var dictUrl = me && me.getAttribute('data-dict');
   if (lang === 'en' && dictUrl) dictUrl.split(',').forEach(function (u) { document.write('<script src="' + u.trim() + '"><\/script>'); });
   if (lang !== 'en') {   // 한국어 모드: 번역 없이 전환 버튼만 (시작 화면이 다시 그려질 때마다 넣음)
@@ -277,7 +278,8 @@
     var f = document.getElementById('setupForm');
     if (!f) {
       var su = document.querySelector('#setup .su');
-      if (!su) {   // 레벨 선택·Beginning 선택 같은 정적 안내 화면: .wrap 맨 위에 전환 버튼
+      if (!su) {   // 레벨 선택·Beginning 선택 같은 정적 안내 화면에서만: .wrap 맨 위에 전환 버튼 (게임 화면에서는 절대 만들지 않음)
+        if (!isHub) { var stray = document.getElementById('langField'); if (stray && !stray.closest('#setup')) stray.remove(); return; }
         var wr = document.querySelector('.wrap');
         if (!wr || document.getElementById('setup') || document.getElementById('langField')) return;
         var bar = document.createElement('div');

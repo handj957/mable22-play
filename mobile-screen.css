@@ -14,17 +14,7 @@ body{max-width:100%;overflow-x:hidden}
  .board .center .amini{max-height:none}
 }
 
-/* v2: reserve the upper-left browser close overlay without moving browser UI. */
-@media (pointer:coarse) and (max-width:1400px){
-  .wrap>header,.app>.hdr,.app>header.hdr{padding-left:clamp(78px,8vw,104px)!important;min-height:72px!important;box-sizing:border-box!important}
-  .wrap>header>* , .app>.hdr>*{min-width:0}
-}
-@media (pointer:coarse) and (orientation:portrait) and (max-width:700px){
-  .wrap>header,.app>.hdr,.app>header.hdr{padding-left:82px!important}
-}
-@media (orientation:landscape) and (max-height:600px){
-  .wrap>header,.app>.hdr,.app>header.hdr{padding-left:92px!important}
-}
+/* v4: 상단 왼쪽 여백 제거 — 예전에 브라우저 닫기 버튼 자리로 78~104px을 비워 두던 규칙을 삭제 (세로·가로 공통). 헤더는 항상 화면 왼쪽 끝부터 시작. */
 /* Board tile text: no word-by-word vertical splitting; retain icons and borders. */
 .board .cell{min-width:0!important;min-height:0!important;box-sizing:border-box!important;overflow:hidden!important}
 .board .cell .nm,.board .cell .name,.board .cell .label{
@@ -43,13 +33,6 @@ body{max-width:100%;overflow-x:hidden}
  .board .cell .em,.board .cell .ic,.board .cell .emoji{font-size:clamp(9px,1.7vw,14px)!important}
 }
 
-/* v3: standalone PWA has no host close button; reclaim header space. */
-@media (display-mode:standalone){
- .wrap>header,.app>.hdr,.app>header.hdr{padding-left:0!important;min-height:0!important}
-}
-@media (pointer:coarse) and (orientation:landscape) and (max-height:600px) and (display-mode:browser){
- .wrap>header,.app>.hdr,.app>header.hdr{min-height:48px!important}
-}
 /* Fit names to their tile without pushing adjacent grid tracks. */
 .board .cell .nm,.board .cell .name,.board .cell .label{
   width:100%!important;box-sizing:border-box!important;
