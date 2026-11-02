@@ -47,6 +47,10 @@
       'html[lang="en"] .btn{letter-spacing:-.01em}' +
       'html[lang="en"] td.cur,html[lang="en"] .cmp td:first-child{letter-spacing:-.04em}' +
       'html[lang="en"] .sb2,html[lang="en"] .buy{letter-spacing:-.04em}' +
+      'html[lang="en"] .hc .t{font-size:7.4px!important;letter-spacing:-.05em!important;max-width:40px!important;text-overflow:ellipsis}' +
+      'html[lang="en"] .bl{letter-spacing:-.03em}' +
+      'html[lang="en"] .board .center .amini .btn .bl{white-space:normal;line-height:1.1;overflow-wrap:anywhere}' +
+      'html[lang="en"] .oc small,html[lang="en"] .fr small{white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.12;letter-spacing:-.03em;overflow:hidden;overflow-wrap:anywhere}' +
       'html[lang="en"] .nm{hyphens:auto}';
     (document.head || document.documentElement).appendChild(st);
   })();
