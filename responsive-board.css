@@ -34,3 +34,19 @@
 }
 :root[data-board-fit].land:not(#rf1):not(#rf2):not(#rf3):not(#rf4) body #board .amini.v31{grid-template-columns:minmax(0,1fr)!important}
 :root[data-board-fit].land:not(#rf1):not(#rf2):not(#rf3):not(#rf4) body #board .amini.v31>.v31l,:root[data-board-fit].land:not(#rf1):not(#rf2):not(#rf3):not(#rf4) body #board .amini.v31>.v28turn,:root[data-board-fit].land:not(#rf1):not(#rf2):not(#rf3):not(#rf4) body #board .amini.v31>.pv{grid-column:1!important;grid-row:auto!important}
+
+/* --- v2 device-fit: header dice + decision chip (Level 3/4, Beginning 3/4) ---
+   Header dice sat 79px tall in a 76px header and spilled over the board's top row.
+   Keep them in one compact row; allow the decision chip to wrap on word boundaries. */
+.hdr .hwho .dual-dice{flex-direction:row!important;flex-wrap:nowrap!important;align-items:stretch!important;gap:3px!important;padding:0!important;max-height:100%!important}
+.hdr .hwho .dual-die{flex:0 0 auto!important;min-width:30px!important;max-width:46px!important;padding:1px 3px!important;border-radius:7px!important}
+.hdr .hwho .dual-die .dual-value{font-size:15px!important;line-height:17px!important}
+.hdr .hwho .dual-die .dual-name{font-size:8.5px!important;line-height:1.1!important}
+.hdr .hwho .dual-die small{display:none!important}
+.board .center .amini .v28turn .v29rep{word-break:keep-all!important;overflow-wrap:break-word!important;font-size:clamp(10px,.9vw + 1px,11.5px)!important;line-height:1.25!important;min-width:0!important;max-width:100%!important;-webkit-line-clamp:2;text-overflow:ellipsis}
+.board .center .amini .v28turn{min-width:0!important;max-width:100%!important;flex-wrap:wrap!important;row-gap:3px!important}
+.board .center .amini .v28turn #hint3,.board .center .amini .v28turn .edu-hint-chip{flex:0 0 auto!important}
+.board .center .amini .acts .btn .bl{word-break:keep-all!important}
+.board .center .wstrip,.board .center .wstrip .wg{flex-wrap:wrap!important;min-width:0!important}
+/* The same two dice always show inside the board console, so the header copy only crowds the name card (any orientation). */
+.hdr .hwho .dual-dice{display:none!important}
