@@ -1191,7 +1191,8 @@ function isIntro(){try{return !!(!document.body.classList.contains('playing'))}c
 var btn=document.createElement('button');
 btn.id='m22snd';btn.type='button';btn.setAttribute('aria-label','소리 켜기/끄기');
 btn.style.cssText='min-width:112px;height:44px;border-radius:22px;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.92);color:inherit;font-size:14px;font-weight:700;line-height:1;padding:0 14px;cursor:pointer';
-function paint(){btn.textContent=muted?'🔇 소리 OFF':'🔊 소리 ON';btn.setAttribute('aria-pressed',String(!muted));btn.setAttribute('aria-label',muted?'소리 켜기':'소리 끄기');btn.title='배경음악·효과음 ON/OFF'}
+var look='';
+function paint(){btn.textContent=look==='mini'?(muted?'🔇':'🔊'):(muted?'🔇 소리 OFF':'🔊 소리 ON');btn.setAttribute('aria-pressed',String(!muted));btn.setAttribute('aria-label',muted?'소리 켜기':'소리 끄기');btn.title='배경음악·효과음 ON/OFF'}
 btn.addEventListener('click',function(e){
   e.stopPropagation();muted=!muted;
   try{localStorage.setItem('m22_mute',muted?'1':'0')}catch(x){}
@@ -1230,6 +1231,7 @@ function setLook(kind){ /* kind: ''=설정 항목용 알약 / 'compact'=옆 버�
   var cls=kind?'btn ghost':'',css=kind?(kind==='mini'?'font-size:11px;min-height:26px;padding:3px 7px':''):BASE_CSS;
   if(btn.className!==cls)btn.className=cls; /* 값이 바뀔 때만 써서 변경 감지가 되풀이되지 않게 한다 */
   if(btn.style.cssText!==css)btn.style.cssText=css;
+  if(look!==kind){look=kind;paint()} /* 상단 줄(mini)에서는 옆 버튼처럼 아이콘만 */
 }
 var busy=false;
 function check(){
