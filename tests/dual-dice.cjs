@@ -13,7 +13,7 @@ assert.throws(()=>DualDice.channel('unknown'));
 assert.equal(DualDice.roll(s,undefined,()=>.5),7);
 let copy=JSON.parse(JSON.stringify(s));assert.deepEqual(DualDice.state(copy),s.dicePair);
 let counts=Array(12).fill(0);for(let i=0;i<12000;i++)counts[DualDice.roll(null,'move',()=>(i+.5)/12000)-1]++;assert(counts.every(n=>n===1000));
-for(const prefix of ['','edu-'])for(const n of [3,4]){
+for(const prefix of ['','beginning-'])for(const n of [3,4]){
  const file=prefix+'level'+n+'.html',html=fs.readFileSync(file,'utf8');
  for(const m of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))new vm.Script(m[1]);
  assert(html.includes('function d12(kind){return DualDice.roll(S,kind||\'world\')}'));
