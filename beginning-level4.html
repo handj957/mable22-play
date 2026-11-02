@@ -1557,7 +1557,7 @@ html[data-skin="pearl"] .board .cell .pr{color:#4c4170!important;font-weight:600
   <div class="drawer" id="drawer">
     <div class="scroll-body">
       <div class="pane" data-pane="act">
-        <div class="toolbar"><button class="btn ghost" id="speedBtn">속도: 보통</button><button class="btn ghost" id="newBtn">새 게임</button></div>
+        <div class="toolbar"><button class="btn ghost" id="speedBtn">속도: 보통</button><button class="btn ghost" id="newBtn">새 게임</button><span data-m22-snd-host="compact" style="display:contents"></span></div>
         <div class="card act" id="act"></div>
         <div class="strip" id="strip"></div>
       </div>
@@ -7107,19 +7107,33 @@ var boxLab=document.createElement('label');boxLab.className='t';boxLab.innerHTML
 var boxRow=document.createElement('div');boxRow.style.cssText='margin-top:6px';boxRow.appendChild(btn);box.appendChild(boxLab);box.appendChild(boxRow);
 function place(){
   try{
-    var host=document.querySelector('[data-m22-snd-host]');
-    if(host){if(!host.contains(btn))host.appendChild(btn);return}
-    if(!boxRow.contains(btn))boxRow.appendChild(btn);
     var form=document.querySelector('#setupForm');
-    if(!form||form.hidden||!form.getClientRects().length||form.contains(box))return;
-    var a=form.querySelector('.sxgo')||form.querySelector(':scope > p.sub')||form.querySelector('button[type=submit]');
-    if(a&&a.parentNode){a.parentNode.insertBefore(box,a);
-      /* 다른 설정 항목과 같은 여백·번호 모양으로 맞춘다 */
-      var fs=form.querySelectorAll('.field:not(.m22-snd-field)'),sib=fs[fs.length-1];
-      if(sib){var cs=getComputedStyle(sib);box.style.padding=cs.padding;box.style.margin=cs.margin;
-        var em=sib.querySelector('label em');
-        if(em){var n=(parseInt(em.textContent,10)||fs.length)+1;boxLab.innerHTML='<em>'+n+'</em>소리 <span class="sxtot">배경음악·효과음</span>'}}}
+    /* 1) 시작 설정 화면이 보이면 설정 항목으로 */
+    if(form&&!form.hidden&&form.getClientRects().length){
+      setLook('');if(!boxRow.contains(btn))boxRow.appendChild(btn);
+      if(form.contains(box))return;
+      var a=form.querySelector('.sxgo')||form.querySelector(':scope > p.sub')||form.querySelector('button[type=submit]');
+      if(a&&a.parentNode){a.parentNode.insertBefore(box,a);
+        /* 다른 설정 항목과 같은 여백·번호 모양으로 맞춘다 */
+        var fs=form.querySelectorAll('.field:not(.m22-snd-field)'),sib=fs[fs.length-1];
+        if(sib){var cs=getComputedStyle(sib);box.style.padding=cs.padding;box.style.margin=cs.margin;
+          var em=sib.querySelector('label em');
+          if(em){var n=(parseInt(em.textContent,10)||fs.length)+1;boxLab.innerHTML='<em>'+n+'</em>소리 <span class="sxtot">배경음악·효과음</span>'}}}
+      return;
+    }
+    /* 2) 그 밖에는 게임 중 메뉴(도구줄·설정 패널)의 소리 자리로 — 같은 버튼 하나를 옮겨 쓰므로 중복이 없다 */
+    var hosts=document.querySelectorAll('[data-m22-snd-host]'),host=null;
+    for(var i=0;i<hosts.length;i++){if(hosts[i].getClientRects().length){host=hosts[i];break}}
+    host=host||hosts[0];
+    if(host){setLook(host.getAttribute('data-m22-snd-host')||'');if(!host.contains(btn))host.appendChild(btn)}
   }catch(e){}
+}
+window.m22PlaceSound=place;
+var BASE_CSS=btn.style.cssText;
+function setLook(kind){ /* kind: ''=설정 항목용 알약 / 'compact'=옆 버튼과 같은 .btn.ghost / 'mini'=Level 1 상단 줄(작은 글씨) */
+  var cls=kind?'btn ghost':'',css=kind?(kind==='mini'?'font-size:11px;min-height:26px;padding:3px 7px':''):BASE_CSS;
+  if(btn.className!==cls)btn.className=cls; /* 값이 바뀔 때만 써서 변경 감지가 되풀이되지 않게 한다 */
+  if(btn.style.cssText!==css)btn.style.cssText=css;
 }
 var busy=false;
 function check(){
