@@ -150,7 +150,7 @@
     if (!b) return;
     for (var i = 0; i < ml.length; i++) {
       var t = ml[i].target;
-      if (b.contains(t) || t.contains(b)) { schedule(); return; }
+      if (b.contains(t) || t.contains(b)) { run(); schedule(); return; } // 즉시 한 번(화면에 그려지기 전) + 다음 프레임에 한 번 더
     }
   }).observe(document.body, { childList: true, subtree: true, characterData: true });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(invalidate);
