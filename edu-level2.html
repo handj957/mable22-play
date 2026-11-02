@@ -21,11 +21,11 @@ document.addEventListener('fullscreenchange',rearm);document.addEventListener('w
 body{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
 @media (min-width:700px){body{padding-left:max(6px,env(safe-area-inset-left,0px));padding-right:max(6px,env(safe-area-inset-right,0px))}}
 </style></head><body>
-<title>22세기 브르마블 · Level 2 교육판</title>
+<title>도시관리 프로젝트 · Beginning</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
 <style>
-/* Layout(교육판): 13×13 테두리 보드(48칸)가 화면을 채우고, 가운데 11×11 칸에 현황·행동·탭이 들어간다 */
+/* Layout(Beginning): 13×13 테두리 보드(48칸)가 화면을 채우고, 가운데 11×11 칸에 현황·행동·탭이 들어간다 */
 :root{
   --bg:#e7f0e6; --board:#d4e4d1; --cell:#fbfdf8; --ink:#1d2b22; --muted:#5d6f62;
   --green:#1f6a43; --orange:#e2711d; --line:#b9cdb7; --panel:#f6faf3;
@@ -155,7 +155,7 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .mini i.on{transform:scale(1.25);background:var(--orange);box-shadow:0 0 0 2px var(--hero),0 0 10px 1px color-mix(in srgb,var(--orange) 70%,transparent);z-index:1}
 .mini .core{grid-column:2/13;grid-row:2/13;display:flex;flex-direction:column;justify-content:center;padding:4px 10px;min-width:0}
 .eyebrow{font-size:10.5px;letter-spacing:.18em;font-weight:700;color:var(--orange)}
-.hero h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(30px,10vw,46px);line-height:1;margin:4px 0 2px;letter-spacing:-.01em;color:var(--hero-ink)}
+.hero h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(26px,8vw,42px);line-height:1.1;margin:4px 0 2px;letter-spacing:-.01em;word-break:keep-all;text-wrap:balance;color:var(--hero-ink)}
 .hero .tag{font-size:12.5px;color:var(--hero-mute);line-height:1.45}
 .hero .tag b{color:var(--hero-ink);font-weight:600}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px;border-top:1px solid color-mix(in srgb,var(--hero-ink) 18%,transparent);padding-top:9px}
@@ -351,7 +351,7 @@ const CELLS=[
 // 가격
 {const k={};CELLS.forEach(c=>{if(c.t==='prop'){k[c.pv]=(k[c.pv]||0);c.price=PROV[c.pv].price+k[c.pv]*10;k[c.pv]++;}
  if(c.t==='public')c.price=120; if(c.t==='transport')c.price=200;});}
-const N=CELLS.length; // 48 (교육판)
+const N=CELLS.length; // 48 (Beginning)
 const IND={'제조':{ic:'🏭',d:'철강을 원료로 씀'},'IT':{ic:'💻',d:'교육 효과 2배'},'식품':{ic:'🍱',d:'식량을 원료로 씀'},
  '에너지':{ic:'⚡',d:'석유 시세만큼 매출'},'관광':{ic:'🧳',d:'문화력 +8%/단계'},'사회적':{ic:'🌻',d:'이익 절반, 혼란 −2·지지 +1/R'}};
 const TIER=['','스타트업','중견기업','대기업'], TIERCOST=[0,150,300,500], TIERVAL=[0,150,450,950];
@@ -411,7 +411,7 @@ function newGame(cfg){
     skip:0,hsr:false,out:false,freeInt:false,policy:'none',venues:[],strat:s.human?'균형':POOL[i]}));
   const pubs=shuffle(CELLS.filter(c=>c.t==='public').map(c=>c.i));
   G.players.forEach((p,i)=>{G.cells[pubs[i]].o=i;});
-  log(`🏛️ 누리 공화국 1라운드 시작 · 지도자 ${G.players.length}명 · 난이도 ${({easy:'쉬움',normal:'보통',hard:'어려움'})[G.diff]}`,'rd');
+  log(`🏛️ 도시관리 1라운드 시작 · 지도자 ${G.players.length}명 · 난이도 ${({easy:'쉬움',normal:'보통',hard:'어려움'})[G.diff]}`,'rd');
   pickTheme();
 }
 function pickTheme(){const cand=THEMES.map((t,i)=>i).filter(i=>!G.themeHist.includes(i));const i=cand[Math.floor(Math.random()*cand.length)];G.theme=i;G.themeHist.push(i);if(G.themeHist.length>5)G.themeHist.shift();log(`🎴 라운드 테마 「${THEMES[i].t}」 ${THEMES[i].d}`);}
@@ -420,7 +420,7 @@ function log(t,cls){G.log.unshift({t,cls,r:G.round});if(G.log.length>80)G.log.le
 function save(){try{localStorage.setItem('bm22_edu_L2',JSON.stringify(G));}catch(e){}}
 function loadSaved(){try{const s=localStorage.getItem('bm22_edu_L2');if(!s)return null;const g=JSON.parse(s);return g&&g.v===1&&!g.winner?g:null;}catch(e){return null}}
 
-/* ========= 교육판 장치: 도감·해설·참모·하이라이트 ========= */
+/* ========= Beginning 장치: 도감·해설·참모·하이라이트 ========= */
 const DEX=[
  {id:'rate',n:'금리',d:'돈을 빌리는 값. 오르면 이자 부담↑, 기업 이익↓.',h:'금리가 바뀌는 사건'},
  {id:'infl',n:'인플레이션',d:'원자재·물가가 함께 오르는 현상. 심하면 금리를 올려 잡아요.',h:'원자재가 많이 오를 때'},
@@ -475,7 +475,7 @@ function highlightsHtml(){
   const H=G.hist||[];let jump=null,low=null;
   for(let k=1;k<H.length;k++){const d=H[k-1].rk-H[k].rk;if(d>0&&H[k].rk<99&&(!jump||d>jump.d))jump={r:H[k].r,d,to:H[k].rk};}
   H.forEach(h=>{if(!low||h.un>low.un)low=h;});
-  const n=Object.keys(G.dex||{}).length,ttl=n>=20?'🎓 누리 공화국 마스터':n>=14?'📊 정책 분석가':n>=7?'🧭 경제 탐험가':'🌱 경제 새내기';
+  const n=Object.keys(G.dex||{}).length,ttl=n>=20?'🎓 도시관리 마스터':n>=14?'📊 정책 분석가':n>=7?'🧭 경제 탐험가':'🌱 경제 새내기';
   const w=G.players[G.winner.p];
   return `<div class="hl"><div>🏆 <b>MVP</b> ${w.name} — ${G.winner.why}</div>`+
     (jump?`<div>🔄 <b>역전 순간</b> R${jump.r}에 순위가 ${jump.d}계단 올라 ${jump.to}위가 됐어요</div>`:'')+
@@ -1087,7 +1087,7 @@ function render(){
   if(!G)return;renderBoard();
   const p=cur(),f=focusP();const fc=forecast(f);
   const h=[];
-  h.push(`<div class="hud"><span class="ttl">누리 공화국</span><span class="chip">R${G.round}/${G.rounds}</span><span class="chip ${G.boom==='호황'?'b-good':G.boom==='불황'?'b-bad':''}">${G.boom}</span><span class="chip ${G.rate>5?'b-bad':''}">${G.rate.toFixed(1)}%</span><span class="chip" title="축제 기금">🎉${won(G.fund)}</span><span class="chip" title="다음 선거">🗳️${6-((G.round-1)%6)}R</span><button class="fb" id="frameBtn" aria-label="기기 프레임 바꾸기" title="기기 프레임">📐</button></div>`);
+  h.push(`<div class="hud"><span class="ttl">도시관리</span><span class="chip">R${G.round}/${G.rounds}</span><span class="chip ${G.boom==='호황'?'b-good':G.boom==='불황'?'b-bad':''}">${G.boom}</span><span class="chip ${G.rate>5?'b-bad':''}">${G.rate.toFixed(1)}%</span><span class="chip" title="축제 기금">🎉${won(G.fund)}</span><span class="chip" title="다음 선거">🗳️${6-((G.round-1)%6)}R</span><button class="fb" id="frameBtn" aria-label="기기 프레임 바꾸기" title="기기 프레임">📐</button></div>`);
   // 지도자 줄
   h.push(`<div class="strip" aria-label="지도자 현황"><div class="prow" style="background:transparent;color:var(--muted);font-size:9.5px"><span></span><span>지도자</span><span class="r">현금</span><span class="r">지지</span><span class="r">혼란</span><span class="r">문화</span></div>`+
     G.players.map(x=>`<div class="prow ${x===p?'now':''} ${x.out?'out':''}" id="pr${x.id}"><span style="color:${x.col};font-weight:700">${x.sym}</span><span class="nm">${x.name}${x.human?'':' 🤖'}</span><span class="r">${won(x.cash)}</span><span class="r" style="color:${x.support<40?'var(--warn)':'inherit'}">${x.support}</span><span class="r" style="color:${x.unrest>=70?'var(--bad)':x.unrest>=50?'var(--warn)':'inherit'}">${x.unrest}</span><span class="r">${x.culture}</span></div>`).join('')+`</div>`);
@@ -1190,7 +1190,7 @@ function tabBody(f,fc){
   <h4>칸 화살표</h4>칸에 도착하거나 사건이 일어나면 그 칸(결산 때는 경제 주사위)에서 영향을 받은 보드 칸으로 곡선 화살표가 그려지고, 칸마다 바뀐 내용(통행료 +12, 매입, 건물 −1 등)이 뜹니다. 탭이 차례로 열릴 때도 화살표가 보드 칸에서 출발합니다(행동 ← 미리보기 값이 바뀐 칸, 내 지방 ← 사거나 지은 땅, 민심 ← 사건이 난 칸, 순위 ← 통행료가 바뀐 칸). 칸을 누르면 그 칸이 평소 영향을 주는 칸들로 점선 화살표가 그려지고, 칸 정보에 '영향을 주는 칸' 목록이 나옵니다.
   <h4>주사위 출처 표시</h4>주사위로 결과가 정해지면 순서대로 이어집니다. ① 숫자 비행: 주사위 숫자가 결과 줄로 날아감 → ② 색 연결·출처 리본: 주사위와 결과 줄이 같은 색으로 깜빡이고 🎲 리본이 박힘(이동 주황·경제 파랑·사회 보라) → ③ 점선 화살표: 결과 줄에서 바뀐 탭으로 선이 이어지며 숫자가 따라감 → ④ 탭 순회: 행동 → 내 지방 → 민심 → 순위 중 바뀐 탭이 차례로 열리고 바뀐 줄이 깜빡인 뒤 원래 탭으로 돌아옴. 다른 탭에는 배지(지+2, ▲1 등)가 남습니다. 설정에서 하나씩 끌 수 있습니다.
   <h4>시각효과</h4>A 민심 파동: 사건이 칸에서 물결로 퍼지고, 땅은 주인 혼란 50↑ 주황·70↑ 빨강. B 연쇄 카운트: 원인별 숫자가 지표 위로 튀어 오르며 쌓임. C 결과 예고: 선택 버튼에 예상 변화와 영향 칸 점선. D 화살표: 직접 효과는 실선, 파급은 점선.
-  <h4>배움 장치 (교육판)</h4>📘 개념 도감 22개: 처음 겪은 경제·사회 개념이 모입니다 · ❔ 해설: 결과의 이유를 접어 둠 · 🧑‍🏫 AI 참모: 선택할 때 힌트 3번 · 🛟 구제 금융: 파산 직전 ₵300을 한 번 받고 다시 시작 · 노동·진로 확장 카드(선택): 재교육·플랫폼 노동·청년 구직 카드 6장.
+  <h4>배움 장치 (Beginning)</h4>📘 개념 도감 22개: 처음 겪은 경제·사회 개념이 모입니다 · ❔ 해설: 결과의 이유를 접어 둠 · 🧑‍🏫 AI 참모: 선택할 때 힌트 3번 · 🛟 구제 금융: 파산 직전 ₵300을 한 번 받고 다시 시작 · 노동·진로 확장 카드(선택): 재교육·플랫폼 노동·청년 구직 카드 6장.
   <h4>알림</h4><span class="disc">※ 게임의 수치는 설계값입니다. 실제 경제의 정답이 아니라 원인과 결과를 연습하기 위한 모형이에요.</span>`;
 }
 
@@ -1468,7 +1468,7 @@ let SETUP={seats:[{name:'나',human:true},{name:'한솔',human:false},{name:'다
 let SU_TIMER=null;
 function miniBoard(){
   const cells=CELLS.map(c=>{const [r,col]=pos2gridP(c.i);return `<i id="mb${c.i}" class="${c.t==='corner'?'c':''}" style="grid-column:${col};grid-row:${r};--mc:${c.t==='prop'?PROV[c.pv].c:'color-mix(in srgb,var(--hero-ink) 22%,var(--hero))'}"></i>`;}).join('');
-  return `<div class="mini" aria-hidden="true">${cells}<div class="core"><div class="eyebrow">22세기 브르마블 · LEVEL 2 · 교육판</div><h1>누리 공화국</h1><div class="tag"><b>나라 살리기</b> — 땅과 기업을 키우되, 민심을 잃으면 끝입니다.</div></div></div>`;
+  return `<div class="mini" aria-hidden="true">${cells}<div class="core"><div class="eyebrow">22세기 브르마블 · LEVEL 2 · Beginning</div><h1>도시관리 프로젝트</h1><div class="tag"><b>도시정책</b> — 땅과 기업을 키우되, 민심을 잃으면 끝입니다.</div></div></div>`;
 }
 function showSetup(){
   const el=$('#setup');el.hidden=false;const saved=loadSaved();
@@ -1489,7 +1489,7 @@ function showSetup(){
   <section><div class="sh"><h2>난이도</h2><span>규칙은 같고 사건 카드 비율만 다릅니다</span></div>
     <div class="diffs">${[['easy','쉬움'],['normal','보통'],['hard','어려움']].map(([k,n])=>`<button class="df ${SETUP.diff===k?'on':''}" data-d="${k}" aria-pressed="${SETUP.diff===k}"><b>${n}</b><span class="ratio"><i style="width:${ratio[k][0]*10}%;background:var(--good)"></i><i style="width:${ratio[k][1]*10}%;background:var(--bad)"></i></span><small>호재 ${ratio[k][0]} : 악재 ${ratio[k][1]}</small></button>`).join('')}</div>
   </section>
-  <section><div class="sh"><h2>한 판 길이 · 배움 장치</h2><span>교육판 설정</span></div>
+  <section><div class="sh"><h2>한 판 길이 · 배움 장치</h2><span>Beginning 설정</span></div>
     <div style="background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:6px 12px">
       <div class="eo"><span class="lab">라운드 수<small>선거는 6라운드마다</small></span><div class="seg">${[12,15,18].map(n=>`<button data-rounds="${n}" class="${SETUP.rounds===n?'on':''}">${n}R</button>`).join('')}</div></div>
       ${[['dex','📘 개념 도감','처음 겪은 개념을 모아요'],['why','❔ 한 줄 해설','결과의 이유를 접어 둠'],['hint','🧑‍🏫 AI 참모','선택 때 힌트 3번'],['bail','🛟 구제 금융','파산 직전 ₵300, 1회'],['labor','👷 노동·진로 카드','재교육·플랫폼 노동·청년 구직 6장']].map(([k,l,s])=>`<div class="eo"><span class="lab">${l}<small>${s}</small></span><div class="seg"><button data-eo="${k}" data-v="1" class="${SETUP.opt[k]?'on':''}">켬</button><button data-eo="${k}" data-v="0" class="${SETUP.opt[k]?'':'on'}">끔</button></div></div>`).join('')}

@@ -21,7 +21,7 @@ function rearm(){setTimeout(function(){if(!(document.fullscreenElement||document
 document.addEventListener('fullscreenchange',rearm);document.addEventListener('webkitfullscreenchange',rearm);
 }catch(e){}})();</script>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>네오 아틀라스 메가시티</title>
+<title>네오 아틀라스 부자 경영</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -284,7 +284,7 @@ html.land .d12{width:36px;height:36px;font-size:19px;border-radius:10px}
 html.land .acts .btn.main{min-height:36px;font-size:1.1em}
 </style><link rel="stylesheet" href="./mobile-screen.css?v=3"></head><body>
 <div class="wrap">
-<header><h1>NEO ATLAS <b>MEGACITY</b></h1><div id="hdr"></div></header><div id="who"></div>
+<header><h1>네오 아틀라스 <b>부자 경영</b></h1><div id="hdr"></div></header><div id="who"></div>
 <main id="stage"><div class="nojs" id="nojs">⚠️ 이 미리보기에서는 게임이 실행되지 않습니다. 파일을 <b>Safari나 Chrome 브라우저로 열어</b> 주세요.</div></main>
 </div>
 <script>
@@ -889,7 +889,7 @@ function flows(){const f=[];f.push(`<div id="fl-rate"><span>금리 ${S.rate.toFi
  f.push(`<div id="fl-redev"><span>재개발 카드</span><em>→</em><span>재개발촌(A) 시세·통행료 ${S.redev?'×2 ('+S.redev+'R 남음)':'×1 (대기)'}</span></div>`);
  f.push(`<div id="fl-syn"><span>전력공사</span><em>→</em><span>석유 ${S.mkt.oil} 연동</span><em>·</em><span>기업 보유</span><em>→</em><span>같은 업종 구역 통행료 +10%</span></div>`);
  f.push(`<div id="fl-infl"><span>인플레 ${S.infl.toFixed(1)}%</span><em>→</em><span>${S.infl>=3.5?'다음 결산 금리 인상 압력':S.infl<=1.5?'다음 결산 금리 인하 여지':'금리 유지'}</span><em>→</em><span>1번 연결로</span></div>`);return f.join('')}
-function rulesHTML(){return`<div class="rule"><h2>📖 규칙 (2쪽)<span>Level 1 · 부자 되기</span></h2>
+function rulesHTML(){return`<div class="rule"><h2>📖 규칙 (2쪽)<span>Level 1 · 부자되기 (재무관리·기업가정신)</span></h2>
  <h3>목표</h3><p>2101년 메가시티 '네오 아틀라스'의 사업가가 되어 <b>${S.maxRounds}라운드 뒤 순자산 1위</b>를 노립니다. 상대가 전원 파산하거나 <b>구역 2개를 독점</b>하면 즉시 승리합니다. 나라·전쟁·외교는 없고, 돈이 어떻게 도는지만 다룹니다.</p>
  <h3>한 턴</h3><ul><li>차례마다 <b>이동 주사위(12면)</b>를 굴려 시계 방향으로 가고 도착 칸을 처리합니다. 월급날을 지나면 ₵200.</li><li>이어서 <b>경제 주사위(12면)</b>가 바로 굴러갑니다. 높을수록 경기 지수(0~100)가 오르고(65 이상 호황, 35 이하 불황) 원자재 한 종류가 움직입니다.</li><li>주사위를 굴리기 전에 내 땅 1곳에 건물을 지을 수 있습니다(한 턴에 1곳).</li><li>빈 땅: 시세로 매입. 내 땅: 건물 건설(상가 → 빌딩 → 랜드마크, 통행료 ×2.5 → ×5 → ×9). 남의 땅: 통행료.</li><li>같은 구역을 모두 가지면 통행료 2배. 기능 칸은 각각의 효과(아래).</li></ul>
  <h3>8구역과 반응 지표</h3><div class="scroll"><table class="tbl"><tr><th>구역</th><th>기준가</th><th>반응</th></tr>${Object.keys(DIST).map(d=>`<tr><td>${DIST[d].e} ${d} ${DIST[d].n}</td><td class="n">${won(DIST[d].price)}</td><td>${esc(DIST[d].note)}</td></tr>`).join('')}</table></div><p>주거단지(D)와 금융가(G)는 금리에 반대로 움직입니다. 둘을 같이 가지면 금리 변화에 버티는 분산 투자가 됩니다.</p>
@@ -909,7 +909,7 @@ function showResult(){const w=S.winner;const ps=S.players.slice().sort((a,b)=>(a
 
 /* ═════════ 시작 화면 ═════════ */
 function renderSetup(){document.body.classList.remove('playing');const saved=load();$('#hdr').innerHTML='';$('#who').innerHTML='';
- $('#stage').innerHTML=`<div class="panel setup"><h2>🏙️ 새 게임<span>Level 1 · 부자 되기 · 40~50분</span></h2>
+ $('#stage').innerHTML=`<div class="panel setup"><h2>🏙️ 네오 아틀라스 부자 경영<span style="display:block;margin:3px 0 0">Level 1 · 부자되기 (재무관리·기업가정신) · 40~50분</span></h2>
  ${saved?`<div class="hint"><b>이어하기</b> 저장된 판(R${saved.round}/${saved.maxRounds})이 있습니다. <button class="btn sec" id="btnResume" style="margin-left:6px">이어서 하기</button></div>`:''}
  <form id="setupForm"><div class="field"><label for="nm">① 내 이름</label><input type="text" id="nm" name="nm" value="동진" maxlength="8"></div>
  <div class="field"><label>② AI 상대</label><div class="opts">${[1,2,3].map(n=>`<label><input type="radio" name="nai" value="${n}" ${n===2?'checked':''}><span>${n}명<small>${AINAME.slice(0,n).map(a=>a[2]+a[0]+'('+STRATN[a[3]]+')').join(' ')}</small></span></label>`).join('')}</div></div>

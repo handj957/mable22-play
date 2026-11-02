@@ -26,7 +26,7 @@ document.addEventListener('fullscreenchange',rearm);document.addEventListener('w
 body{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
 @media (min-width:700px){body{padding-left:max(6px,env(safe-area-inset-left,0px));padding-right:max(6px,env(safe-area-inset-right,0px))}}
 </style><link rel="stylesheet" href="./mobile-screen.css?v=3"></head><body>
-<title>22세기 브르마블 · Level 2</title>
+<title>네오 아틀라스 시티 건설</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
 <style>
@@ -160,7 +160,7 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .mini i.on{transform:scale(1.25);background:var(--orange);box-shadow:0 0 0 2px var(--hero),0 0 10px 1px color-mix(in srgb,var(--orange) 70%,transparent);z-index:1}
 .mini .core{grid-column:2/22;grid-row:2/11;display:flex;flex-direction:column;justify-content:center;padding:4px 10px;min-width:0}
 .eyebrow{font-size:10.5px;letter-spacing:.18em;font-weight:700;color:var(--orange)}
-.hero h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(30px,10vw,46px);line-height:1;margin:4px 0 2px;letter-spacing:-.01em;color:var(--hero-ink)}
+.hero h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(26px,8vw,42px);line-height:1.1;margin:4px 0 2px;letter-spacing:-.01em;word-break:keep-all;text-wrap:balance;color:var(--hero-ink)}
 .hero .tag{font-size:12.5px;color:var(--hero-mute);line-height:1.45}
 .hero .tag b{color:var(--hero-ink);font-weight:600}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px;border-top:1px solid color-mix(in srgb,var(--hero-ink) 18%,transparent);padding-top:9px}
@@ -417,7 +417,7 @@ function newGame(cfg){
     skip:0,hsr:false,out:false,freeInt:false,policy:'none',venues:[],strat:s.human?'균형':POOL[i]}));
   const pubs=shuffle(CELLS.filter(c=>c.t==='public').map(c=>c.i));
   G.players.forEach((p,i)=>{G.cells[pubs[i]].o=i;});
-  log(`🏛️ 누리 공화국 1라운드 시작 · 지도자 ${G.players.length}명 · 난이도 ${({easy:'쉬움',normal:'보통',hard:'어려움'})[G.diff]}`,'rd');
+  log(`🏛️ 시티 건설 1라운드 시작 · 지도자 ${G.players.length}명 · 난이도 ${({easy:'쉬움',normal:'보통',hard:'어려움'})[G.diff]}`,'rd');
   pickTheme();
 }
 function pickTheme(){const cand=THEMES.map((t,i)=>i).filter(i=>!G.themeHist.includes(i));const i=cand[Math.floor(Math.random()*cand.length)];G.theme=i;G.themeHist.push(i);if(G.themeHist.length>5)G.themeHist.shift();log(`🎴 라운드 테마 「${THEMES[i].t}」 ${THEMES[i].d}`);}
@@ -1041,7 +1041,7 @@ function render(){
   if(!G)return;renderBoard();
   const p=cur(),f=focusP();const fc=forecast(f);
   const h=[];
-  h.push(`<div class="hud"><span class="ttl">누리 공화국</span><span class="chip">R${G.round}/${MAXR}</span><span class="chip ${G.boom==='호황'?'b-good':G.boom==='불황'?'b-bad':''}">${G.boom}</span><span class="chip ${G.rate>5?'b-bad':''}">${G.rate.toFixed(1)}%</span><span class="chip" title="축제 기금">🎉${won(G.fund)}</span><span class="chip" title="다음 선거">🗳️${6-((G.round-1)%6)}R</span><button class="fb" id="frameBtn" aria-label="기기 프레임 바꾸기" title="기기 프레임">📐</button></div>`);
+  h.push(`<div class="hud"><span class="ttl">시티 건설</span><span class="chip">R${G.round}/${MAXR}</span><span class="chip ${G.boom==='호황'?'b-good':G.boom==='불황'?'b-bad':''}">${G.boom}</span><span class="chip ${G.rate>5?'b-bad':''}">${G.rate.toFixed(1)}%</span><span class="chip" title="축제 기금">🎉${won(G.fund)}</span><span class="chip" title="다음 선거">🗳️${6-((G.round-1)%6)}R</span><button class="fb" id="frameBtn" aria-label="기기 프레임 바꾸기" title="기기 프레임">📐</button></div>`);
   // 지도자 줄
   h.push(`<div class="strip" aria-label="지도자 현황"><div class="prow" style="background:transparent;color:var(--muted);font-size:9.5px"><span></span><span>지도자</span><span class="r">현금</span><span class="r">지지</span><span class="r">혼란</span><span class="r">문화</span></div>`+
     G.players.map(x=>`<div class="prow ${x===p?'now':''} ${x.out?'out':''}" id="pr${x.id}"><span style="color:${x.col};font-weight:700">${x.sym}</span><span class="nm">${x.name}${x.human?'':' 🤖'}</span><span class="r">${won(x.cash)}</span><span class="r" style="color:${x.support<40?'var(--warn)':'inherit'}">${x.support}</span><span class="r" style="color:${x.unrest>=70?'var(--bad)':x.unrest>=50?'var(--warn)':'inherit'}">${x.unrest}</span><span class="r">${x.culture}</span></div>`).join('')+`</div>`);
@@ -1417,7 +1417,7 @@ let SETUP={seats:[{name:'나',human:true},{name:'한솔',human:false},{name:'다
 let SU_TIMER=null;
 function miniBoard(){
   const cells=CELLS.map(c=>{const [r,col]=pos2gridP(c.i);return `<i id="mb${c.i}" class="${c.t==='corner'?'c':''}" style="grid-column:${r};grid-row:${col};--mc:${c.t==='prop'?PROV[c.pv].c:'color-mix(in srgb,var(--hero-ink) 22%,var(--hero))'}"></i>`;}).join('');
-  return `<div class="mini" aria-hidden="true">${cells}<div class="core"><div class="eyebrow">22세기 브르마블 · LEVEL 2</div><h1>누리 공화국</h1><div class="tag"><b>나라 살리기</b> — 땅과 기업을 키우되, 민심을 잃으면 끝입니다.</div></div></div>`;
+  return `<div class="mini" aria-hidden="true">${cells}<div class="core"><div class="eyebrow">22세기 브르마블 · LEVEL 2</div><h1>네오 아틀라스 시티 건설</h1><div class="tag"><b>도시정책</b> (도시경영·이해관계자 관리) — 땅과 기업을 키우되, 민심을 잃으면 끝입니다.</div></div></div>`;
 }
 function showSetup(){
   const el=$('#setup');el.hidden=false;const saved=loadSaved();

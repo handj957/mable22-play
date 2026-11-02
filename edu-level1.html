@@ -16,13 +16,13 @@ function rearm(){setTimeout(function(){if(!(document.fullscreenElement||document
 document.addEventListener('fullscreenchange',rearm);document.addEventListener('webkitfullscreenchange',rearm);
 }catch(e){}})();</script>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>네오 아틀라스 메가시티 · 교육판</title>
+<title>부자경영 비기닝 · Beginning</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
-/* layout: 교육판 48칸(13×13) 둘레 보드. 가운데 콘솔 = 상단 띠(라운드·경기·금리·기금) + 플레이어 칩 + 주사위·선택 + 뉴스 + 탭 4개(행동·내 회사·순위·규칙, 튜토리얼 포함). 위에 지표 타일 5개. 폰 세로 화면 기준 */
+/* layout: Beginning 48칸(13×13) 둘레 보드. 가운데 콘솔 = 상단 띠(라운드·경기·금리·기금) + 플레이어 칩 + 주사위·선택 + 뉴스 + 탭 4개(행동·내 회사·순위·규칙, 튜토리얼 포함). 위에 지표 타일 5개. 폰 세로 화면 기준 */
 :root{
   --frameW:480px;
   --bg:#f6f3ec; --panel:#ffffff; --panel2:#f0ebdf; --line:#dcd4c3; --fg:#2b2a33; --muted:#6f6c7a;
@@ -296,7 +296,7 @@ html.land .acts .btn.main{min-height:36px;font-size:1.1em}
 .disc{color:var(--muted);font-size:11px;margin-top:6px}
 </style></head><body>
 <div class="wrap">
-<header><h1>NEO ATLAS <b>MEGACITY</b> <span class="edubadge">EDU</span></h1><div id="hdr"></div></header><div id="who"></div>
+<header><h1>부자경영 <b>비기닝</b> <span class="edubadge">Beginning</span></h1><div id="hdr"></div></header><div id="who"></div>
 <main id="stage"><div class="nojs" id="nojs">⚠️ 이 미리보기에서는 게임이 실행되지 않습니다. 파일을 <b>Safari나 Chrome 브라우저로 열어</b> 주세요.</div></main>
 </div>
 <script>
@@ -320,7 +320,7 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const SAVE='neo-atlas-edu-l1';
 
-/* ═════════ 보드 데이터 (교육판 · 13×13 둘레 48칸) ═════════ */
+/* ═════════ 보드 데이터 (Beginning · 13×13 둘레 48칸) ═════════ */
 const DIST={
  B:{n:'대학가',e:'🎓',c:'var(--dB)',price:90,note:'주인의 교육 단계 1마다 통행료 +10%'},
  C:{n:'전통시장',e:'🏮',c:'var(--dC)',price:120,note:'식량 시세에 연동'},
@@ -912,7 +912,7 @@ function renderTab(){const el=$('#tabbody');const me=S.players[0];
  else if(tab==='rank'){const ps=alive().slice().sort((a,b)=>netWorth(b)-netWorth(a));const mx=Math.max(...ps.map(netWorth),1);
   el.innerHTML=`<h2>🏅 순위<span>순자산 기준</span></h2>`+ps.map((p,k)=>`<div class="pl" id="rk-${p.id}" style="--pc:${p.color}"><span>${k+1}위 ${p.emoji}</span><span><b style="font-family:var(--f-body)">${esc(p.name)}</b> ${p.human?'':'<small>'+STRATN[p.strat]+'</small>'}</span><b>${won(netWorth(p))}</b><span class="m">현금 ${won(p.cash)} · 땅 ${landOf(p)} · 건물 ${bldOf(p)} · 기업 ${Object.values(p.comp).filter(Boolean).length} · 교육 ${EDUN[p.edu]} · 대출 ${won(p.debt)} · 독점 ${monopolies(p).length}</span><span class="m" style="grid-column:2/4"><span class="bar"><i style="width:${Math.round(netWorth(p)/mx*100)}%"></i></span></span></div>`).join('')+
   `<h3>AI 상대</h3>${S.players.filter(p=>!p.human).map(p=>`<div class="sub">${p.emoji} ${esc(p.name)} · ${STRATN[p.strat]}: ${STRATD[p.strat]}</div>`).join('')}`}
- else if(tab==='dex'){S._dexNew=false;el.innerHTML=`<h2>📘 개념 도감<span>${dexN()}/${DEX.length}${dexN()===DEX.length?' · 🎓 네오 아틀라스 마스터':''}</span></h2><div class="dex">${DEX.map(d=>S.dex[d.id]?`<div class="dcard got"><h4>${d.e} ${d.n}</h4>${d.def}<small>예: ${d.ex}</small><small>R${S.dex[d.id]}에 획득</small></div>`:`<div class="dcard lock"><h4>❓ ???</h4><small>${d.how}</small></div>`).join('')}</div>`}
+ else if(tab==='dex'){S._dexNew=false;el.innerHTML=`<h2>📘 개념 도감<span>${dexN()}/${DEX.length}${dexN()===DEX.length?' · 🎓 부자경영 마스터':''}</span></h2><div class="dex">${DEX.map(d=>S.dex[d.id]?`<div class="dcard got"><h4>${d.e} ${d.n}</h4>${d.def}<small>예: ${d.ex}</small><small>R${S.dex[d.id]}에 획득</small></div>`:`<div class="dcard lock"><h4>❓ ???</h4><small>${d.how}</small></div>`).join('')}</div>`}
  else el.innerHTML=rulesHTML()}
 function cellDetail(){if(selected==null)return'';const i=selected,c=CELLS[i],pr=S.props[i],o=pr?S.players[pr.owner]:null;let d=`<div class="detail"><h2>${c.d?DIST[c.d].e:CEM[c.t]} ${esc(c.name)}<span>${c.d?DIST[c.d].n+' 구역 ('+c.d+')':'기능 칸'} · ${i}번</span></h2><dl>`;
  if(c.t==='land'){d+=`<dt>시세</dt><dd>${won(priceOf(i))} (기준 ${won(c.price)})</dd><dt>반응</dt><dd>${esc(DIST[c.d].note)}</dd><dt>주인</dt><dd>${o?`${o.emoji} ${esc(o.name)} · ${BLD[pr.level]}${ownsAll(o,c.d)?' · 독점 ×2':''}`:'없음'}</dd><dt>통행료</dt><dd>${o?won(rent(i,null))+' — '+esc(rentWhy(i)):won(Math.round(c.price*.1))+' (땅만)'}</dd><dt>건설비</dt><dd>상가 ${won(buildCost(i,1))} · 빌딩 ${won(buildCost(i,2))} · 랜드마크 ${won(buildCost(i,3))}</dd>`}
@@ -928,7 +928,7 @@ function flows(){const f=[];const me=S.players[0];
  f.push(`<div id="fl-infl"><span>인플레 ${S.infl.toFixed(1)}%</span><em>→</em><span>${S.infl>=3.5?'다음 결산 금리 인상 압력':S.infl<=1.5?'다음 결산 금리 인하 여지':'금리 유지'}</span><em>→</em><span>1번 연결로</span></div>`+whyD('물가가 계속 오르면 중앙은행이 금리를 올려 돈의 흐름을 줄입니다. 그러면 첫 줄(금리)로 이어져 순환합니다.'));
  if(Object.entries(S.props).some(([i,pr])=>pr.owner===me.id&&CELLS[i].t==='util'))f.push(`<div id="fl-syn"><span>전력공사</span><em>→</em><span>석유 ${S.mkt.oil} 연동</span><em>·</em><span>기업 보유</span><em>→</em><span>같은 업종 구역 통행료 +10%</span></div>`+whyD('전력공사는 석유를 써서 통행료가 석유 시세를 따라가고, 같은 업종 기업을 가진 사람은 그 구역 통행료도 10% 더 받습니다.'));
  return f.join('')}
-function rulesHTML(){return`<div class="rule"><h2>📖 규칙 (2쪽)<span>Level 1 · 부자 되기 · 교육판</span></h2>
+function rulesHTML(){return`<div class="rule"><h2>📖 규칙 (2쪽)<span>Level 1 · 부자되기 · Beginning</span></h2>
  <h3>목표</h3><p>2101년 메가시티 '네오 아틀라스'의 사업가가 되어 <b>${S.maxRounds}라운드 뒤 순자산 1위</b>를 노립니다. 상대가 전원 파산하거나 <b>구역 2개를 독점</b>하면 즉시 승리합니다. 나라·전쟁·외교는 없고, 돈이 어떻게 도는지만 다룹니다.</p>
  <h3>한 턴</h3><ul><li>(선택) 내 땅 1곳에 건물을 짓습니다(한 턴에 1곳). 그다음 <b>이동 주사위(12면)</b>를 굴려 시계 방향으로 가고 도착 칸을 처리합니다. 월급날을 지나면 ₵150.</li><li>이어서 <b>경제 주사위(12면)</b>가 바로 굴러갑니다. 높을수록 경기 지수(0~100)가 오르고(65 이상 호황, 35 이하 불황) 원자재 한 종류가 움직입니다.</li><li>빈 땅: 시세로 매입. 내 땅: 건물 건설(상가 → 빌딩 → 랜드마크, 통행료 ×2.5 → ×5 → ×9). 남의 땅: 통행료.</li><li>같은 구역의 3칸을 모두 가지면 통행료 2배 + 완성 보너스.</li></ul>
  <h3>6구역과 반응 지표</h3><div class="scroll"><table class="tbl"><tr><th>구역</th><th>기준가</th><th>반응</th></tr>${Object.keys(DIST).map(d=>`<tr><td>${DIST[d].e} ${d} ${DIST[d].n}</td><td class="n">${won(DIST[d].price)}</td><td>${esc(DIST[d].note)}</td></tr>`).join('')}</table></div><p>주거단지(D)와 금융가(G)는 금리에 반대로 움직입니다. 둘을 같이 가지면 금리 변화에 버티는 분산 투자가 됩니다.</p>
@@ -948,7 +948,7 @@ function highlights(){const me=S.players[0];const R=S.rank||{};const rs=Object.k
  const pos=r=>R[r].findIndex(x=>x.n===me.name)+1;let jump=null;for(let k=1;k<rs.length;k++){const d=pos(rs[k-1])-pos(rs[k]);if(d>0&&(!jump||d>jump.d))jump={d,r:rs[k],to:pos(rs[k])}}
  const mx=Math.max(1,...rs.flatMap(r=>R[r].map(x=>x.nw)));const mn=Math.min(0,...rs.flatMap(r=>R[r].map(x=>x.nw)));
  const line=(nm,c)=>{if(rs.length<2)return'';const pts=rs.map((r,k)=>{const x=R[r].find(y=>y.n===nm);return x?`${(k/(rs.length-1)*200).toFixed(1)},${(50-(x.nw-mn)/(mx-mn||1)*46).toFixed(1)}`:null}).filter(Boolean).join(' ');return`<polyline fill="none" stroke="${c}" stroke-width="2" points="${pts}"/>`};
- const n=dexN(),ttl=!S.opt.dex?'':n>=12?'🎓 네오 아틀라스 마스터':n>=8?'📊 시장 분석가':n>=4?'🧭 경제 탐험가':'🌱 경제 새내기';
+ const n=dexN(),ttl=!S.opt.dex?'':n>=12?'🎓 부자경영 마스터':n>=8?'📊 시장 분석가':n>=4?'🧭 경제 탐험가':'🌱 경제 새내기';
  const topC=S.players.slice().sort((a,b)=>(b.coTotal||0)-(a.coTotal||0))[0];
  return`<div class="hl"><div>🏆 <b>MVP</b> ${esc(S.winner.name)} — ${esc(S.why)}</div>${jump?`<div>🔄 <b>역전 순간</b> R${jump.r}에 내 순위가 ${jump.d}계단 올라 ${jump.to}위가 됐어요</div>`:''}${S.best?`<div>⚡ <b>내 최고의 한 방</b> R${S.best.r} ${esc(S.best.why)} +${won(S.best.a)}</div>`:''}${topC&&topC.coTotal>0?`<div>🏢 <b>최고의 기업가</b> ${esc(topC.name)} 누적 기업 손익 +${won(topC.coTotal)}</div>`:''}${S.opt.dex?`<div>📘 <b>도감</b> ${n}/12 · ${ttl}</div>`:''}
  <div><svg viewBox="0 0 200 54" width="100%" height="54" aria-label="순자산 곡선">${S.players.map(p=>line(p.name,p.color)).join('')}</svg><small style="color:var(--muted)">라운드별 순자산 곡선</small></div>
@@ -959,7 +959,7 @@ function showResult(){const w=S.winner;const ps=S.players.slice().sort((a,b)=>(a
 
 /* ═════════ 시작 화면 ═════════ */
 function renderSetup(){document.body.classList.remove('playing');const saved=load();$('#hdr').innerHTML='';$('#who').innerHTML='';
- $('#stage').innerHTML=`<div class="panel setup"><h2>🏙️ 새 게임<span>Level 1 · 부자 되기 · 교육판 · 32~40분</span></h2>
+ $('#stage').innerHTML=`<div class="panel setup"><h2>🏙️ 부자경영 비기닝<span style="display:block;margin:3px 0 0">Level 1 · 부자되기 · Beginning · 32~40분</span></h2>
  ${saved?`<div class="hint"><b>이어하기</b> 저장된 판(R${saved.round}/${saved.maxRounds})이 있습니다. <button class="btn sec" id="btnResume" style="margin-left:6px">이어서 하기</button></div>`:''}
  <form id="setupForm"><div class="field"><label for="nm">① 내 이름</label><input type="text" id="nm" name="nm" value="동진" maxlength="8"></div>
  <div class="field"><label>② AI 상대</label><div class="opts">${[1,2,3].map(n=>`<label><input type="radio" name="nai" value="${n}" ${n===3?'checked':''}><span>${n}명<small>${AINAME.slice(0,n).map(a=>a[2]+a[0]+'('+STRATN[a[3]]+')').join(' ')}</small></span></label>`).join('')}</div></div>

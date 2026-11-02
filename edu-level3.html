@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="dual-dice.css?v=2">
 <script src="dual-dice.js?v=1"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="국가경영 대통령2101"><meta name="theme-color" content="#1b2340">
 <script id="fsjs">/* 터치 기기(패드): 첫 터치(게임 시작) 때 전체화면으로 — 탭·주소창을 숨겨 게임 화면을 꽉 채움 */
 (function(){try{
 var de=document.documentElement,rq=de.requestFullscreen||de.webkitRequestFullscreen;
@@ -18,7 +18,7 @@ function rearm(){setTimeout(function(){if(!(document.fullscreenElement||document
 document.addEventListener('fullscreenchange',rearm);document.addEventListener('webkitfullscreenchange',rearm);
 }catch(e){}})();</script>
 <meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>22세기 브르마블 · Level 3 교육판</title>
+<title>국가경영 대통령2101 · Beginning</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1098,7 +1098,7 @@ html{height:100%}
 </div>
 <div class="overlay" id="setup" hidden>
   <form class="modal sx" id="setupForm">
-    <div class="sxhead"><small>2101 · 지정학 경제 보드게임 · Level 3 교육판</small><h2>새 세계 질서 시작</h2></div>
+    <div class="sxhead"><small>2101 · 국가경영·국제외교 · Level 3 · Beginning</small><h2>국가경영 대통령2101</h2></div>
     <div class="sxwin"><i>🏆</i><p><b>승리 조건</b> 마지막 라운드에 순자산(현금 − 국채 + 자산 + 크립토 + 주식)이 가장 큰 지도자가 이깁니다. 다른 나라가 모두 부도나면 즉시 승리합니다.</p></div>
     <div class="field"><label class="t"><em>1</em>플레이 방식</label>
       <div class="opts c3">
@@ -1237,7 +1237,7 @@ const CELLS=[
  city(9,'섀클턴 달 기지','달기지','달',380,'gas',.6,'N','space','헬륨-3 채굴. 핵융합 연료.'),
  city(9,'소행성대 채굴단','소행성','소행성대',380,'gold',.5,'N','space','백금족·니켈 소행성 채굴.')
 ];
-const N=CELLS.length; // 48 (교육판)
+const N=CELLS.length; // 48 (Beginning)
 CELLS.forEach((c,i)=>c.i=i);
 const IDX=n=>CELLS.findIndex(c=>c.name===n);
 const CP={pan:IDX('파나마 운하'),suez:IDX('수에즈 운하'),horm:IDX('호르무즈 해협'),mal:IDX('말라카 해협')};
@@ -2314,7 +2314,7 @@ function rulesHTML(){
 <h2>게임 목표</h2>
 <p>2101년 세계의 지도자가 되어 6대 분야를 운영합니다. 정해진 라운드가 끝났을 때 <b>총자산(현금 − 국채 + 자산 가치)</b>이 가장 큰 사람이 승리합니다. 다른 지도자가 모두 부도나면 즉시 승리, 내가 부도나면 패배입니다. 예외로 <b>스카이넷</b>이 세계를 장악한 채 5라운드가 지나면 그 소유자가 즉시 승리합니다(통제를 벗어난 스카이넷이면 모두 패배). 막는 방법은 터미네이터와 타임머신 시간여행뿐입니다 — <a href="#tech">첨단기술</a> 장을 보세요.</p>
 
-<h2>보드 (가로 9 × 세로 17, 48칸 · 교육판)</h2>
+<h2>보드 (가로 9 × 세로 17, 48칸 · Beginning)</h2>
 <p>휴대폰 세로 화면에 맞춘 48칸 보드입니다. 12면체 이동 주사위 평균 6.5칸으로 약 7턴에 한 바퀴를 돕니다. 한 바퀴를 줄인 만큼 출발 예산과 배당은 원본의 77%로 낮췄습니다. 보드 가운데에는 차례가 돌 때마다 그 나라의 현황 카드가 표시됩니다.</p>
 <div class="scroll"><table class="tbl">
 <tr><th>칸</th><th>수</th><th>효과</th></tr>
@@ -6586,7 +6586,7 @@ ${AG.slice(1).map((t,k)=>`<li><b>${t.e} ${k+1}단계 ${t.n}</b> (₵${t.c}·물�
 })();
 </script>
 <script id="edu3trim">
-/* ═════ 교육판: 카드 정리 (153 → 약 80장) — 반대짝은 함께 남김 ═════ */
+/* ═════ Beginning: 카드 정리 (153 → 약 80장) — 반대짝은 함께 남김 ═════ */
 (function(){
   function keep(arr,titles,key){key=key||'t';for(let i=arr.length-1;i>=0;i--){if(!titles.includes(arr[i][key]))arr.splice(i,1)}}
   keep(EVENTS,['수에즈 운하 확장 개통','수에즈 운하 좌초 사고','난민 귀환 프로그램','대규모 난민 위기','골디락스 호황','대공황','글로벌 경기 호황','글로벌 경기 침체','조세 개혁 성공','조세 저항 시위','기축통화 신뢰 회복','기축통화 신뢰 위기','세계 대풍작','초대형 가뭄과 흉작','AI 버블 붕괴','AI 특이점급 모델 공개','반도체 공급 과잉','반도체 수출 통제','디스인플레이션 안착','스태그플레이션 경고','부동산 대호황','부동산 버블 경고','증시 대랠리',
@@ -6616,7 +6616,7 @@ ${AG.slice(1).map((t,k)=>`<li><b>${t.e} ${k+1}단계 ${t.n}</b> (₵${t.c}·물�
 .edu-opts label{display:flex;gap:6px;align-items:flex-start;font-size:12px;margin:3px 0;text-align:left}
 </style>
 <script id="edu3js">
-/* ═════ 교육판 장치: 개념 도감 · 한 줄 해설 · AI 참모 · 경기 하이라이트 ═════ */
+/* ═════ Beginning 장치: 개념 도감 · 한 줄 해설 · AI 참모 · 경기 하이라이트 ═════ */
 const DEX3=[
  {id:'rate',lv:1,n:'금리',d:'돈을 빌리는 값. 오르면 이자 부담이 커지고 부동산이 식어요.',h:'2라운드 결산'},
  {id:'loan',lv:1,n:'대출·예금 이자',d:'빌린 돈엔 이자를 내고 맡긴 돈엔 이자를 받아요. 국채는 나라의 대출이에요.',h:'세계 중앙은행 칸'},
