@@ -44,7 +44,10 @@
       '@media (max-width:420px){html[lang="en"] .who span b{font-size:.8em;letter-spacing:-.04em}}' +
       'html[lang="en"] .tile small,html[lang="en"] .tile i{font-size:8px;letter-spacing:-.02em}' +
       'html[lang="en"] .tile b{letter-spacing:-.02em}' +
-      'html[lang="en"] .btn{letter-spacing:-.01em}';
+      'html[lang="en"] .btn{letter-spacing:-.01em}' +
+      'html[lang="en"] td.cur,html[lang="en"] .cmp td:first-child{letter-spacing:-.04em}' +
+      'html[lang="en"] .sb2,html[lang="en"] .buy{letter-spacing:-.04em}' +
+      'html[lang="en"] .nm{hyphens:auto}';
     (document.head || document.documentElement).appendChild(st);
   })();
 
@@ -81,12 +84,18 @@
     }
   }
 
+  /* 번역 뒤에도 남은 '숫자+단위'·조사를 정리 (사전에 없는 문장도 읽을 수 있게) */
+  function post(r) {
+    return r.replace(/(\d)주(?![가-힣])/g, '$1 sh.').replace(/(\d)척(?![가-힣])/g, '$1 ships').replace(/(\d)곳(?![가-힣])/g, '$1 sites')
+      .replace(/([A-Za-z0-9₵%)\]」])(이\(가\)|을\(를\)|은\(는\)|와\(과\))(?![가-힣])/g, '$1');
+  }
   function tr(s, depth) {
     if (!s || !HAN.test(s)) return s;
     var c = cache[s];
     if (c !== undefined) return c;
     if (exact === null) init();
     var r = core(s, depth || 0);
+    if (HAN.test(r)) r = post(r);
     if (HAN.test(r)) API.missing[s] = 1;
     if (Object.keys(cache).length > 20000) cache = Object.create(null);
     cache[s] = r;
@@ -127,7 +136,9 @@
     return found || first;
   }
 
-  var CHUNK = /( · | — | \| | → | \/ |; |, |\n)/;
+  var CHUNK = /( · | — | \| | → | \/ |\n)/;       // 강한 구분(문장 단위)
+  var CHUNK2 = /(; |, )/;                          // 약한 구분(강한 구분이 없을 때만)
+  var LEAD = /^(\s*(?:[·•└↳→\-–]\s+|[·•└↳→]))([\s\S]+)$/;   // 줄머리 기호('· ', '└ ' …)는 떼어 두고 본문만 번역
   var TAILNUM = /^([\s\S]*?\S)(\s+[+\-−±]?\d[\d.,]*(?:%p?|%)?)$/;
   function core(s, d) {
     if (d > 6) return s;
@@ -160,6 +171,9 @@
       }
       // '·', '—', '→' 등으로 이어 붙인 문장(join 결과)은 조각별로 번역
       var parts = s.split(CHUNK);
+      if (parts.length === 1) parts = s.split(CHUNK2);
+      var lm = LEAD.exec(s);
+      if (lm && HAN.test(lm[2])) { var o4 = lm[1] + core(lm[2], d + 1); if (o4 !== s) { if (!HAN.test(o4)) return o4; cands.push(o4); } }
       if (parts.length > 1) {
         var o2 = '';
         for (var k = 0; k < parts.length; k++) o2 += (k % 2) ? parts[k] : (parts[k] ? core(parts[k], d + 1) : '');

@@ -25,7 +25,7 @@
   function clear(el) {
     if (!el) return;
     ['font-size', 'white-space', 'word-break', 'overflow-wrap', 'text-overflow', 'overflow',
-      'max-width', 'max-height', 'line-height', 'letter-spacing', 'text-align', 'height', 'margin', 'display', 'text-wrap'].forEach(function (p) { el.style.removeProperty(p); });
+      'max-width', 'max-height', 'line-height', 'letter-spacing', 'text-align', 'height', 'margin', 'display', 'text-wrap', 'hyphens'].forEach(function (p) { el.style.removeProperty(p); });
   }
   var PADS = ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'];
   function padForStripe(cell) { // 색 띠(.stripe/.band)가 가린 쪽만큼 안쪽 여백을 줘서 글자가 띠 위로 겹치지 않게
@@ -71,10 +71,11 @@
     var prBase = k.pr ? (parseFloat(getComputedStyle(k.pr).fontSize) || 8) : 0;
     res.ic = icBase; res.pr = prBase;
 
+    var hyMode = false;
     function set(fs, wrap) {
       imp(nm, 'font-size', fs.toFixed(2) + 'px');
       imp(nm, 'white-space', wrap ? 'normal' : 'nowrap');
-      if (wrap) imp(nm, 'overflow-wrap', 'normal');
+      if (wrap) imp(nm, 'overflow-wrap', hyMode ? 'anywhere' : 'normal');
       if (k.ic) imp(k.ic, 'font-size', res.ic.toFixed(2) + 'px');
       if (k.pr) imp(k.pr, 'font-size', res.pr.toFixed(2) + 'px');
     }
@@ -92,7 +93,8 @@
       fs = base; res.wrap = true; set(fs, true); guard = 0;
       while ((!fitsW() || !fitsH()) && fs > MIN && guard++ < 40) { fs = Math.max(MIN, fs - .5); set(fs, true); }
       if (!fitsW()) { // 3) 띄어쓰기가 없는 긴 이름: 마지막 수단으로 글자 단위 줄바꿈
-        imp(nm, 'word-break', 'break-all'); imp(nm, 'overflow-wrap', 'anywhere');
+        if (document.documentElement.lang === 'en') { hyMode = true; imp(nm, 'word-break', 'normal'); imp(nm, 'overflow-wrap', 'anywhere'); imp(nm, 'hyphens', 'auto'); }
+        else { imp(nm, 'word-break', 'break-all'); imp(nm, 'overflow-wrap', 'anywhere'); }
       }
     }
     // 4) 세로가 모자라면 이모지·가격 글자를 먼저 줄이고, 그래도 안 되면 이모지를 숨김(이름·가격이 우선)
@@ -109,6 +111,7 @@
     res.nm = fs;
     res.hideIc = !!(k.ic && k.ic.style.display === 'none');
     res.brk = nm.style.getPropertyValue('word-break');
+    res.hy = nm.style.getPropertyValue('hyphens') === 'auto';
     cache[key] = res;
     return [k, res, cell];
   }
@@ -119,6 +122,7 @@
     imp(nm, 'max-height', 'none'); imp(nm, 'height', 'auto'); imp(nm, 'line-height', '1.12');
     imp(nm, 'letter-spacing', '-.03em'); imp(nm, 'text-align', 'center'); imp(nm, 'margin', '0');
     imp(nm, 'text-wrap', 'balance'); imp(nm, 'word-break', r.brk || 'keep-all'); imp(nm, 'overflow-wrap', r.brk === 'break-all' ? 'anywhere' : 'normal');
+    if (r.hy) { imp(nm, 'word-break', 'normal'); imp(nm, 'overflow-wrap', 'anywhere'); imp(nm, 'hyphens', 'auto'); }
     imp(nm, 'font-size', r.nm.toFixed(2) + 'px');
     imp(nm, 'white-space', r.wrap ? 'normal' : 'nowrap');
     if (k.ic) { imp(k.ic, 'font-size', r.ic.toFixed(2) + 'px'); if (r.hideIc) imp(k.ic, 'display', 'none'); else k.ic.style.removeProperty('display'); }
