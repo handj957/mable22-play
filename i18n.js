@@ -123,7 +123,8 @@
     return found || first;
   }
 
-  var CHUNK = /( · | — | \| | → | \/ |; |\n)/;
+  var CHUNK = /( · | — | \| | → | \/ |; |, |\n)/;
+  var TAILNUM = /^([\s\S]*?\S)(\s+[+\-−±]?\d[\d.,]*(?:%p?|%)?)$/;
   function core(s, d) {
     if (d > 6) return s;
     var v = exact.get(s);
@@ -140,6 +141,12 @@
           if (!HAN.test(out)) return out;
           cands.push(out); break;
         }
+      }
+      // 끝에 붙은 숫자(예: '공공시설 1곳 −1')는 떼어 두고 앞부분만 번역
+      var tn = TAILNUM.exec(c);
+      if (tn && HAN.test(tn[1]) && tn[1] !== c) {
+        var o1 = m[1] + core(tn[1], d + 1) + tn[2] + m[3];
+        if (o1 !== s) { if (!HAN.test(o1)) return o1; cands.push(o1); }
       }
       // '·', '—', '→' 등으로 이어 붙인 문장(join 결과)은 조각별로 번역
       var parts = s.split(CHUNK);
@@ -196,6 +203,8 @@
   function fixText(n) {
     var s = n.data;
     if (!HAN.test(s)) return;
+    var pp = n.parentNode;
+    if (pp && pp.closest && pp.closest('[translate="no"]')) return;
     var t = tr(s);
     if (t !== s) n.data = t;
   }
@@ -222,7 +231,21 @@
   /* ---- 🌐 언어 전환 (시작 화면 설정 양식 맨 위에 한 줄로 넣음 — 게임 중 화면에는 넣지 않아 레이아웃을 건드리지 않음) ---- */
   function installSwitch() {
     var f = document.getElementById('setupForm');
-    if (!f || f.querySelector('#langField')) return;
+    if (!f) {
+      var su = document.querySelector('#setup .su');
+      if (!su || su.querySelector('#langField')) return;
+      var foot = su.querySelector('.foot') || su.querySelector('.cta');
+      if (!foot) return;
+      var sec = document.createElement('section');
+      sec.id = 'langField'; sec.setAttribute('translate', 'no');
+      sec.innerHTML = '<div class="sh"><h2>🌐 Language / 언어</h2></div>' +
+        '<div class="seg"><button type="button" data-l="ko" class="' + (lang === 'ko' ? 'on' : '') + '">한국어</button>' +
+        '<button type="button" data-l="en" class="' + (lang === 'en' ? 'on' : '') + '">English</button></div>';
+      sec.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button[data-l]'); if (b && b.getAttribute('data-l') !== lang) API.setLang(b.getAttribute('data-l')); });
+      su.insertBefore(sec, foot);
+      return;
+    }
+    if (f.querySelector('#langField')) return;
     var d = document.createElement('div');
     d.className = 'field'; d.id = 'langField';
     d.innerHTML = '<label>🌐 Language / 언어</label><div class="opts">' +
