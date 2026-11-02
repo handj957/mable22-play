@@ -114,7 +114,9 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .tile .bar i{display:block;height:100%}
 .tile.warn{border-color:var(--warn)} .tile.crit{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--panel))}
 .tile .s{font-size:8px;line-height:1.2;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.act{background:var(--panel);border:2px solid var(--green);border-radius:10px;padding:5px;display:flex;flex-direction:column;gap:4px}
+.act{--pc:var(--orange);--actbg:#fffaf0;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 16%,var(--actbg)),var(--actbg) 70%);border:3px solid var(--pc);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:4px;box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 24%,transparent),0 8px 20px color-mix(in srgb,var(--pc) 38%,transparent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .act{--actbg:#26241a}}
+:root[data-theme="dark"] .act{--actbg:#26241a}
 .act .who{display:flex;align-items:center;gap:6px;font-family:var(--f-disp);font-size:15px}
 .act .who.go{background:var(--orange);color:#fff;border:0;border-radius:8px;padding:6px 8px;cursor:pointer;width:100%;text-align:left}
 .act .who.go .die{color:var(--ink)}
@@ -1061,7 +1063,7 @@ function render(){
     tile('인구',f.pop,`매출 ${sg(Math.round((Math.max(0.8,1+0.1*(f.pop-3))-1)*100))}%`,null,f.pop>f.edu+3?'warn':'')+`</div>`);
   // 행동 패널
   const canRoll=p.human&&(G.phase==='roll'||G.phase==='hsr');
-  h.push(`<div class="act"><${canRoll?'button id="roll" class="who go"':'div class="who"'}><span style="color:${canRoll?'#fff':p.col}">${p.sym}</span><span class="lbl">${p.name} 차례${p.human?'':' 🤖'}${canRoll?' · 🎲 주사위 굴리기':''}</span><span class="dice"><span class="die${dieLit('mv')}" id="die-mv" style="--sc:var(--d-mv)" title="이동 주사위">${G.dice.mv??'–'}<small>이동</small></span><span class="die${dieLit('ec')}" id="die-ec" style="--sc:var(--d-ec)" title="경제 주사위">${G.dice.ec??'–'}<small>경제</small></span><span class="die${dieLit('so')}" id="die-so" style="--sc:var(--d-so)" title="사회 주사위">${G.dice.so??'–'}<small>사회</small></span></span></${canRoll?'button':'div'}>`);
+  h.push(`<div class="act" style="--pc:${p.col}"><${canRoll?'button id="roll" class="who go"':'div class="who"'}><span style="color:${canRoll?'#fff':p.col}">${p.sym}</span><span class="lbl">${p.name} 차례${p.human?'':' 🤖'}${canRoll?' · 🎲 주사위 굴리기':''}</span><span class="dice"><span class="die${dieLit('mv')}" id="die-mv" style="--sc:var(--d-mv)" title="이동 주사위">${G.dice.mv??'–'}<small>이동</small></span><span class="die${dieLit('ec')}" id="die-ec" style="--sc:var(--d-ec)" title="경제 주사위">${G.dice.ec??'–'}<small>경제</small></span><span class="die${dieLit('so')}" id="die-so" style="--sc:var(--d-so)" title="사회 주사위">${G.dice.so??'–'}<small>사회</small></span></span></${canRoll?'button':'div'}>`);
   if(G.phase==='over'&&G.winner){const w=G.players[G.winner.p];
     h.push(`<div class="over"><h3>🏆 ${w.sym} ${w.name} 승리</h3><div class="msg">${G.winner.why}</div><table style="width:100%;font-size:11px;margin-top:4px">${G.players.slice().sort((a,b)=>worth(b)-worth(a)).map((x,i)=>`<tr><td>${i+1}. ${x.sym} ${x.name}</td><td style="text-align:right">${won(worth(x))}</td><td style="text-align:right">문화 ${x.culture}·지지 ${x.support}</td></tr>`).join('')}</table></div><button class="btn main" id="again">새 게임</button>`);
   } else {
