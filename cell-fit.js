@@ -5,6 +5,7 @@
   'use strict';
   var board = document.getElementById('board'); // 게임이 시작·다시 그릴 때 #board 자체가 바뀔 수 있어 매번 다시 찾는다
   var MIN = 6.5;
+  var GROW = 14; // 시작 글자 크기(칸에 맞게 줄어들므로 넉넉한 칸은 더 크게 보임)
   var cache = Object.create(null);
   var frame = 0;
   var busy = false;
@@ -47,16 +48,16 @@
   function fitCell(cell) {
     var k = kids(cell);
     var nm = k.nm;
-    if (!nm) return;
+    if (!nm) return null;
     var w = cell.clientWidth, h = cell.clientHeight;
-    if (w < 8 || h < 8) return;
+    if (w < 8 || h < 8) return null;
     padForStripe(cell);
     var key = w + 'x' + h + '|' + nm.textContent + '|' + (k.pr ? k.pr.textContent.length : 0);
     var hit = cache[key];
-    if (hit) { apply(k, hit); return; }
+    if (hit) { apply(k, hit); return [k, hit, cell]; }
 
     clear(nm); if (k.ic) clear(k.ic); if (k.pr) clear(k.pr); if (k.lv) clear(k.lv);
-    var base = parseFloat(getComputedStyle(nm).fontSize) || 10;
+    var base = Math.max(parseFloat(getComputedStyle(nm).fontSize) || 10, GROW);
     var cs0 = getComputedStyle(cell);
     var availH = Math.max(4, h - (parseFloat(cs0.paddingTop) || 0) - (parseFloat(cs0.paddingBottom) || 0) - 3);
     var res = { nm: base, ic: 0, pr: 0, wrap: false };
@@ -109,6 +110,7 @@
     res.hideIc = !!(k.ic && k.ic.style.display === 'none');
     res.brk = nm.style.getPropertyValue('word-break');
     cache[key] = res;
+    return [k, res, cell];
   }
 
   function apply(k, r) {
@@ -123,6 +125,42 @@
     if (k.pr) imp(k.pr, 'font-size', r.pr.toFixed(2) + 'px');
   }
 
+
+  // 같은 줄(위·아래 가로줄, 좌·우 세로줄)의 칸은 글자 크기를 통일한다.
+  // 3글자·4글자 이름이 서로 다른 크기로 보이지 않게, 흔한 길이(3~4글자) 이름 중 가장 작은 크기를 기준으로, 그보다 큰 칸만 줄이고
+  // 긴 이름 때문에 이미 더 작아진 칸은 그대로 둔다(줄이기만 하므로 넘침이 생기지 않음).
+  function groupKey(cell, br, hasPr) {
+    if (cell.classList.contains('corner')) return 'C';
+    var r = cell.getBoundingClientRect(), t = 3;
+    var side = r.top - br.top < t ? 'T' : (br.bottom - r.bottom < t ? 'B' : (r.left - br.left < t ? 'L' : (br.right - r.right < t ? 'R' : '')));
+    return side;
+  }
+  function unify(items) {
+    var br = board.getBoundingClientRect(), groups = Object.create(null);
+    items.forEach(function (it) {
+      var key = groupKey(it[2], br, !!it[0].pr);
+      if (!key) return;
+      (groups[key] = groups[key] || []).push(it);
+    });
+    Object.keys(groups).forEach(function (key) {
+      var g = groups[key];
+      if (g.length < 3) return;
+      var sizes = g.map(function (it) { return it[1].nm; }).sort(function (a, b) { return a - b; });
+      var med = sizes[Math.floor(sizes.length / 2)];
+      var lens = g.map(function (it) { return it[0].nm.textContent.replace(/\s/g, '').length; }).sort(function (a, b) { return a - b; });
+      var refLen = lens[Math.floor((lens.length - 1) * .7)]; // 흔한 길이(보통 3~4글자)까지만 기준으로 삼고, 더 긴 이름은 자기 크기를 유지
+      var target = Infinity;
+      g.forEach(function (it) {
+        var n = it[0].nm.textContent.replace(/\s/g, '').length, v = it[1].nm;
+        if (n <= refLen && v >= med * .7 && v < target) target = v;
+      });
+      if (target === Infinity) return;
+      g.forEach(function (it) {
+        if (it[1].nm > target + .05) apply(it[0], Object.assign({}, it[1], { nm: target }));
+      });
+    });
+  }
+
   function run() {
     frame = 0;
     if (busy) return;
@@ -132,7 +170,9 @@
       if (!nb) { busy = false; return; }
       if (nb !== board) { board = nb; if (ro) { ro.disconnect(); ro.observe(board); } cache = Object.create(null); }
       var cells = board.querySelectorAll(':scope > .cell');
-      for (var i = 0; i < cells.length; i++) fitCell(cells[i]);
+      var items = [];
+      for (var i = 0; i < cells.length; i++) { var it = fitCell(cells[i]); if (it) items.push(it); }
+      unify(items);
     } catch (e) { if (window.console) console.error('cell-fit', e); }
     busy = false;
   }

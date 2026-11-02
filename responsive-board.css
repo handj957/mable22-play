@@ -50,3 +50,6 @@
 .board .center .wstrip,.board .center .wstrip .wg{flex-wrap:wrap!important;min-width:0!important}
 /* The same two dice always show inside the board console, so the header copy only crowds the name card (any orientation). */
 .hdr .hwho .dual-dice{display:none!important}
+
+/* --- v3 uniform cell text: 한 줄의 칸은 모두 같은 글자 크기(3·4글자 차이 없음), 4글자 이상은 2+2로 균형 줄바꿈 --- */
+:root[data-board-fit]:not(#rf1):not(#rf2):not(#rf3):not(#rf4) body #board>.cell .nm{line-height:1.2!important;text-wrap:balance!important;letter-spacing:-.02em!important}
