@@ -24,7 +24,7 @@
   document.documentElement.setAttribute('lang', lang);
   var me = document.currentScript;
   var dictUrl = me && me.getAttribute('data-dict');
-  if (lang === 'en' && dictUrl) document.write('<script src="' + dictUrl + '"><\/script>');
+  if (lang === 'en' && dictUrl) dictUrl.split(',').forEach(function (u) { document.write('<script src="' + u.trim() + '"><\/script>'); });
   if (lang !== 'en') {   // 한국어 모드: 번역 없이 전환 버튼만 (시작 화면이 다시 그려질 때마다 넣음)
     new MutationObserver(installSwitch).observe(document.documentElement, { childList: true, subtree: true });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installSwitch); else installSwitch();
@@ -233,7 +233,19 @@
     var f = document.getElementById('setupForm');
     if (!f) {
       var su = document.querySelector('#setup .su');
-      if (!su || su.querySelector('#langField')) return;
+      if (!su) {   // 레벨 선택·Beginning 선택 같은 정적 안내 화면: .wrap 맨 위에 전환 버튼
+        var wr = document.querySelector('.wrap');
+        if (!wr || document.getElementById('setup') || document.getElementById('langField')) return;
+        var bar = document.createElement('div');
+        bar.id = 'langField'; bar.setAttribute('translate', 'no');
+        bar.style.cssText = 'display:flex;gap:6px;justify-content:flex-end;margin:0 0 10px';
+        var mk = function (l, t) { return '<button type="button" data-l="' + l + '" aria-pressed="' + (lang === l) + '" style="min-height:36px;padding:0 14px;border-radius:18px;border:1px solid #b9c4d6;font-size:13px;font-weight:700;cursor:pointer;background:' + (lang === l ? '#3b6cf6;color:#fff' : '#fff;color:#1d2433') + '">' + t + '</button>'; };
+        bar.innerHTML = '<span style="align-self:center;font-size:12px;color:#5b6577">🌐</span>' + mk('ko', '한국어') + mk('en', 'English');
+        bar.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button[data-l]'); if (b && b.getAttribute('data-l') !== lang) API.setLang(b.getAttribute('data-l')); });
+        wr.insertBefore(bar, wr.firstChild);
+        return;
+      }
+      if (su.querySelector('#langField')) return;
       var foot = su.querySelector('.foot') || su.querySelector('.cta');
       if (!foot) return;
       var sec = document.createElement('section');
