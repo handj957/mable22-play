@@ -6186,13 +6186,33 @@ function sfx(kind){
 function isIntro(){try{return !!((function(){var s=document.getElementById('setup');return !!(s&&!s.hidden)})())}catch(e){return false}}
 var btn=document.createElement('button');
 btn.id='m22snd';btn.type='button';btn.setAttribute('aria-label','소리 켜기/끄기');
-btn.style.cssText='position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:calc(8px + env(safe-area-inset-right,0px));z-index:2147483000;min-width:112px;height:44px;border-radius:22px;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.92);font-size:14px;font-weight:700;line-height:1;padding:0 12px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)';
+btn.style.cssText='min-width:112px;height:44px;border-radius:22px;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.92);color:inherit;font-size:14px;font-weight:700;line-height:1;padding:0 14px;cursor:pointer';
 function paint(){btn.textContent=muted?'🔇 소리 OFF':'🔊 소리 ON';btn.setAttribute('aria-pressed',String(!muted));btn.setAttribute('aria-label',muted?'소리 켜기':'소리 끄기');btn.title='배경음악·효과음 ON/OFF'}
 btn.addEventListener('click',function(e){
   e.stopPropagation();muted=!muted;
   try{localStorage.setItem('m22_mute',muted?'1':'0')}catch(x){}
   unlocked=true;if(ctx){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setTargetAtTime(muted?0:.65,ctx.currentTime,.01)}paint();check();
 });
+/* 소리 ON/OFF는 화면에 떠 있지 않고 설정 메뉴(시작 설정 항목)에 둔다 */
+var box=document.createElement('div');box.className='field m22-snd-field';box.style.cssText='margin:12px 0';
+var boxLab=document.createElement('label');boxLab.className='t';boxLab.innerHTML='🔊 소리 <span class="sub">(배경음악·효과음)</span>';
+var boxRow=document.createElement('div');boxRow.style.cssText='margin-top:6px';boxRow.appendChild(btn);box.appendChild(boxLab);box.appendChild(boxRow);
+function place(){
+  try{
+    var host=document.querySelector('[data-m22-snd-host]');
+    if(host){if(!host.contains(btn))host.appendChild(btn);return}
+    if(!boxRow.contains(btn))boxRow.appendChild(btn);
+    var form=document.querySelector('#setupForm');
+    if(!form||form.hidden||!form.getClientRects().length||form.contains(box))return;
+    var a=form.querySelector('.sxgo')||form.querySelector(':scope > p.sub')||form.querySelector('button[type=submit]');
+    if(a&&a.parentNode){a.parentNode.insertBefore(box,a);
+      /* 다른 설정 항목과 같은 여백·번호 모양으로 맞춘다 */
+      var fs=form.querySelectorAll('.field:not(.m22-snd-field)'),sib=fs[fs.length-1];
+      if(sib){var cs=getComputedStyle(sib);box.style.padding=cs.padding;box.style.margin=cs.margin;
+        var em=sib.querySelector('label em');
+        if(em){var n=(parseInt(em.textContent,10)||fs.length)+1;boxLab.innerHTML='<em>'+n+'</em>소리 <span class="sxtot">배경음악·효과음</span>'}}}
+  }catch(e){}
+}
 var busy=false;
 function check(){
   if(busy)return;busy=true;
@@ -6201,7 +6221,7 @@ function check(){
 function __check(){
   var intro=isIntro();
   if(intro&&!muted&&unlocked)startMusic();else stopMusic();
-  if(btn.hidden===intro)btn.hidden=!intro; /* 시작 화면에서만 소리 설정 표시 */
+  place();
 }
 function unlock(e){
   if(e&&e.target&&e.target.closest&&e.target.closest('#m22snd'))return;
@@ -6215,7 +6235,7 @@ document.addEventListener('visibilitychange',function(){
   if(document.hidden){try{ctx.suspend()}catch(e){}}else{try{ctx.resume()}catch(e){}}
 });
 function boot(){
-  document.body.appendChild(btn);paint();check();
+  paint();check();
   try{new MutationObserver(check).observe(document.body,{attributes:true,subtree:true,attributeFilter:['hidden','class']})}catch(e){}
   setInterval(check,700);
 }
