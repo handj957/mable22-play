@@ -18,10 +18,10 @@ const css=`
  font:700 clamp(10px,1.45vw,13px)/1.25 var(--f-body,system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif);pointer-events:none;
  animation:ccin .3s ease-out;transition:opacity .5s;max-width:calc(100vw - 12px)}
 .ccrib.out{opacity:0}
-.ccrib .why{display:flex;align-items:center;gap:5px;font-weight:800;color:color-mix(in srgb,var(--rc,#e8a33a) 78%,#000);max-width:100%}
+.ccrib .why{display:flex;align-items:center;gap:5px;font-weight:800;color:color-mix(in srgb,var(--rc,#e8a33a) 52%,#000);max-width:100%}
 .ccrib .why i{width:8px;height:8px;border-radius:50%;background:var(--rc,#e8a33a);flex:none}
 .ccrib .rw{display:flex;flex-wrap:wrap;align-items:center;gap:3px 5px}
-.ccrib .lb{font-size:.84em;font-weight:800;color:#7a7390;min-width:3.2em}
+.ccrib .lb{font-size:.84em;font-weight:800;color:#5a5472;min-width:3.2em}
 .ccrib .ar{opacity:0;font-weight:800;transition:opacity .25s}
 .ccrib .ar.on{opacity:.55}
 .ccrib.still .ar{opacity:.55;transition:none}

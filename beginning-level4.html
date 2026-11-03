@@ -1496,6 +1496,14 @@ html[data-light] .tcard.disaster .tb{color:#161b27!important}
 html[data-light] .tcard.disaster small{color:#004485!important}
 html[data-light] .tcard.disaster b{color:#161b27!important}
 html[data-light] .tcard.disaster p{color:#1f2637!important}
+/* v36.1 팝업 가독성: 밝은 화면에서 전쟁·폭락·재해 카드는 배경을 밝게(짙은 배경+어두운 글자 → 밝은 배경+진한 글자) */
+html[data-light] .tcard.war .tb{background:linear-gradient(160deg,#fff4f1,#ffd8d0)!important;border-color:#e0503e!important;box-shadow:0 0 0 2px #f2a79b,0 14px 32px rgba(120,20,10,.30),0 0 24px rgba(255,80,60,.22)!important}
+html[data-light] .tcard.crash .tb{background:linear-gradient(160deg,#f5f1ff,#ddd3fa)!important;border-color:#6b4fd8!important;box-shadow:0 0 0 2px #b7a7ef,0 14px 32px rgba(50,25,130,.30),0 0 24px rgba(107,79,216,.22)!important}
+html[data-light] .tcard.disaster .tb{background:linear-gradient(160deg,#eff8ff,#cfe5fa)!important;border-color:#2f7fd1!important;box-shadow:0 0 0 2px #9cc5ee,0 14px 32px rgba(20,60,110,.28),0 0 24px rgba(47,127,209,.22)!important}
+html[data-light] .tcard.war small,html[data-light] .tcard.crash small,html[data-light] .tcard.disaster small{font-size:11px!important;font-weight:800!important}
+html[data-light] .tcard.war .tb,html[data-light] .tcard.crash .tb,html[data-light] .tcard.disaster .tb{text-shadow:none}
+html[data-light] .tcard.war p,html[data-light] .tcard.crash p,html[data-light] .tcard.disaster p{font-size:13.5px!important;font-weight:600!important}
+
 html[data-light] .board .cell .dzb{color:#161b27!important;background-color:rgba(var(--tone-rgb),.07)!important}
 html[data-light] .board .center .amini .risk{color:#851100!important}
 html[data-light] .vmod{background-color:rgba(var(--tone-rgb),.07)!important}
@@ -7190,7 +7198,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
 </script>
 <script src="responsive-board.js?v=2"></script>
 <script src="quick-acts.js?v=2"></script>
-<script src="choice-chain.js?v=3"></script><script src="result-dice.js?v=1"></script>
+<script src="choice-chain.js?v=4"></script><script src="result-dice.js?v=1"></script>
 </body></html>
 <script id="edu3trim">
 /* ═════ Beginning: 카드 정리 (153 → 약 80장) — 반대짝은 함께 남김 ═════ */
