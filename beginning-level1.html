@@ -1,4 +1,5 @@
 <!doctype html><html lang="ko"><head>
+<script src="orient-guard.js?v=1"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
 <script src="./i18n.js?v=12" data-dict="./i18n/level1.en.js?v=4,./i18n/beginning.en.js?v=1,./i18n/common.en.js?v=8"></script>
@@ -352,7 +353,7 @@ const EDUN=['없음','기초','전문','석사'];const EDUCOST=[100,200,300];
 const COMPN=['없음','스타트업','중견기업','대기업'];const COMPCOST=[150,300,500];const COMPREV=[0,40,80,160];
 const PASS_BONUS=150,START_BONUS=75;   // 62칸 → 48칸: 한 바퀴가 짧아져 통과 보너스를 약 0.77배로
 let LAND=false;
-function isLand(){try{return innerWidth>innerHeight&&(innerHeight<=600||(navigator.maxTouchPoints>0&&innerHeight<=1100))}catch(e){return false}}
+function isLand(){try{return (window.__landscape?__landscape():innerWidth>innerHeight)&&(innerHeight<=600||(navigator.maxTouchPoints>0&&innerHeight<=1100))}catch(e){return false}}
 function rc(i){return rcP(i)}           // 13×13 정사각 격자라 가로 화면에서도 회전하지 않음
 function side(i){return sideP(i)}
 function applyOrient(){const L=isLand();document.documentElement.classList.toggle('land',L);if(L!==LAND){LAND=L;if(S&&document.body.classList.contains('playing'))render()}}

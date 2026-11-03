@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><link rel="manifest" href="./manifest.webmanifest?v=1">
+<head><script src="orient-guard.js?v=1"></script>
+<link rel="manifest" href="./manifest.webmanifest?v=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="브르마블">
@@ -489,7 +490,7 @@ function startGame(tut){
 /* ============================================================
    레이아웃 (세로 11×19 / 가로 19×11) — 항상 한 화면
 ============================================================ */
-function isLand(){return innerWidth>innerHeight}
+function isLand(){return window.__landscape?__landscape():innerWidth>innerHeight}
 function vh(){return (window.visualViewport?window.visualViewport.height:innerHeight)}
 function layout(){
   if(isLand())document.documentElement.style.setProperty('--sidew',Math.max(200,Math.min(260,innerWidth*0.25))+'px');

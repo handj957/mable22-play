@@ -29,3 +29,10 @@ Chrome의 실제 브라우저 실행에서 같은 게임을 아래 화면 크기
 - 기존 `node tests/dual-dice.cjs`, `node tests/header-dice.cjs` 통과. 일반/교육용 Level 3·4 스크립트 구문, 난수 경계·분포·분리, 저장 복원, 상단 렌더링 상태를 검사한다.
 - `node --check responsive-board.js`, `git diff --check` 통과.
 - 화면 크기 검사는 iframe 뷰포트로 수행했다. 실제 iPhone·Android·iPad 하드웨어 및 Safari에서의 직접 검증은 수행하지 않았다.
+
+## 회전 직후 중앙 패널 찌그러짐 (2026-11-03)
+
+- 증상: 아이폰을 가로로 돌리면 가끔 보드가 세로 모양(폭 약 225px)으로 작게 남고, 중앙의 주사위·버튼 패널이 한 글자씩 세로로 쪼개짐.
+- 원인: 회전 직후 `innerWidth/innerHeight`가 이전(세로) 값으로 남거나 resize 이벤트가 누락돼, 가로 판별(`isLand`)이 세로로 고정됨. 이후 크기가 맞아져도 다시 계산하는 이벤트가 없음.
+- 수정: `orient-guard.js` 추가(전체 게임 9개 페이지 head 맨 앞). ① `__landscape()`는 CSS 미디어쿼리 기준으로 판별 ② 회전·리사이즈·복귀 후 60~1500ms 재확인 ③ 0.4초 감시로 크기 변화를 감지하면 resize를 직접 발생. 각 파일의 `isLand()`가 이 값을 사용.
+- 검증: resize/orientationchange 이벤트를 모두 막은 상태에서 세로→가로→세로 회전 시 Level 1~5·Beginning 1~4 모두 올바르게 전환. 7개 화면 크기 × Level 1~4 회귀 검수 통과(JS 오류 0, 보드 이탈 0, 가로 스크롤 0).
