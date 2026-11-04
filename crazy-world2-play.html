@@ -15,20 +15,30 @@ window.CWP={key:'cw2',theme:'w2',intro:'crazy-world2.html',title:'Crazy World 2 
 cells:[{"no": 0, "type": "corner", "name": "지구 관제 출발"}, {"no": 1, "type": "함대·로봇군", "name": "심해 잠수함 기지"}, {"no": 2, "type": "달", "name": "달 뒷면 전파 관측소"}, {"no": 3, "type": "위기·외교", "name": "군비통제 회담장"}, {"no": 4, "type": "기술·경제", "name": "범용 AI 에이전트 센터"}, {"no": 5, "type": "화성", "name": "화성 정착 본부"}, {"no": 6, "type": "궤도·발사", "name": "궤도 청소선 기지"}, {"no": 7, "type": "함대·로봇군", "name": "우주함대 조선소"}, {"no": 8, "type": "기후·기상", "name": "허리케인 추적 센터"}, {"no": 9, "type": "궤도·발사", "name": "재사용 발사장"}, {"no": 10, "type": "corner", "name": "핵 위기 시계"}, {"no": 11, "type": "달", "name": "달여행 터미널"}, {"no": 12, "type": "이벤트", "name": "기상무기 의혹"}, {"no": 13, "type": "기술·경제", "name": "양자내성 암호 센터"}, {"no": 14, "type": "달", "name": "달 남극 물 채굴 기지"}, {"no": 15, "type": "기후·기상", "name": "폭염 대응 냉방 도시"}, {"no": 16, "type": "궤도·발사", "name": "궤도정거장"}, {"no": 17, "type": "화성", "name": "화성 자원순환 플랜트"}, {"no": 18, "type": "위기·외교", "name": "국제위기협의회"}, {"no": 19, "type": "함대·로봇군", "name": "로봇군대 통제센터"}, {"no": 20, "type": "corner", "name": "달 궤도 정상회의"}, {"no": 21, "type": "함대·로봇군", "name": "극초음속 요격망"}, {"no": 22, "type": "위기·외교", "name": "기상 검증 위원회"}, {"no": 23, "type": "화성", "name": "화성 착륙 허브"}, {"no": 24, "type": "달", "name": "달 헬륨-3 광산"}, {"no": 25, "type": "이벤트", "name": "핵전쟁 위기"}, {"no": 26, "type": "기후·기상", "name": "해일 방벽 도시"}, {"no": 27, "type": "화성", "name": "화성 모듈 거주촌"}, {"no": 28, "type": "위기·외교", "name": "핵 비상 벙커 도시"}, {"no": 29, "type": "궤도·발사", "name": "위성군 관제센터"}, {"no": 30, "type": "corner", "name": "화성 개척 관문"}, {"no": 31, "type": "궤도·발사", "name": "궤도 태양광 발전소"}, {"no": 32, "type": "기술·경제", "name": "우주 자원 거래소"}, {"no": 33, "type": "이벤트", "name": "화성 보급 지연"}, {"no": 34, "type": "함대·로봇군", "name": "태평양함대 사령부"}, {"no": 35, "type": "기후·기상", "name": "기상제어 연구소"}, {"no": 36, "type": "달", "name": "달 중계 도시"}, {"no": 37, "type": "함대·로봇군", "name": "무인 드론 모함"}, {"no": 38, "type": "위기·외교", "name": "조기경보 위성망"}, {"no": 39, "type": "화성", "name": "화성 폐쇄형 농장"}],
 cat:{'궤도·발사':{ico:'🚀',base:85},'달':{ico:'🌙',base:90},'화성':{ico:'🔴',base:110},'함대·로봇군':{ico:'🛰',base:95},'위기·외교':{ico:'🕊',base:70},'기후·기상':{ico:'🌪',base:60},'기술·경제':{ico:'💠',base:100},'이벤트':{ico:'🎴',base:0},'corner':{ico:'🚩',base:0}},
 initGauge:function(){return {tension:1,cd:0};},
+start:function(G,lg,d,o){var s=(o&&o.scenario)||'open',g=G.gauge;if(s==='nuke'){g.tension=4;lg('☢ 시나리오: 핵 위기 시계 — 긴장도 4에서 시작');}if(s==='lunar'){lg('🌙 시나리오: 달 개척 경쟁');}if(s==='mars'){lg('🔴 시나리오: 화성 이주 붐');}if(s==='weather'){lg('🌪 시나리오: 기상무기 의혹');}if(s==='sky'){lg('🤖 시나리오: 스카이넷 각성');}},
 priceMul:function(G,c){var p=G.players[G.turn];if(c.type==='화성'&&p){var n=0;window.CWP.cells.forEach(function(x){if(G.owner[x.no]===p.id&&x.type==='달')n++;});if(n>=2)return 0.75;}return 1;},
 rentMul:function(G,c){return 1+G.gauge.tension*0.04;},
 applyGauge:function(G,g,lg){var v=Math.max(0,Math.min(6,G.gauge.tension+g[1]));G.gauge.tension=v;lg('☢ 긴장도 '+(g[1]>0?'▲':'▼')+' ('+v+'/6)');},
 gaugeHtml:function(G){var t=G.gauge.tension;return '<div class="gauges"><div class="g'+(t>=5?' hot':'')+'"><span>긴장도</span><span class="bar">'+[1,2,3,4,5,6].map(function(i){return '<i class="'+(i<=t?'on':'')+'"></i>'}).join('')+'</span></div>'+(G.gauge.cd?'<div class="g hot"><b>⚠ 핵 위기 카운트다운 '+G.gauge.cd+'턴</b></div>':'')+'<div class="g"><span>달 2곳 → 화성 -25%</span></div></div>';},
 onLand:function(G,p,c,lg,bought){if(bought){if(c.type==='함대·로봇군')window.CWP.applyGauge(G,['t',1],lg);if(c.type==='위기·외교')window.CWP.applyGauge(G,['t',-1],lg);}
  if(c.type==='위기·외교'&&G.owner[c.no]==null&&!bought){}},
-onTurn:function(G,lg,chk){var g=G.gauge;if(g.tension>=6){if(!g.cd){g.cd=3;lg('☢ 긴장도 최대! 3턴 안에 낮추지 못하면 핵 위기',true);}else{g.cd--;if(g.cd===0){G.players.forEach(function(q){if(q.alive)q.cash=Math.round(q.cash*0.7);});g.tension=3;lg('💥 핵 위기 발발 — 모두 현금 30% 손실, 긴장도 3으로',true);}}}else g.cd=0;},
+onTurn:function(G,lg,o){var g=G.gauge;if(o&&o.cycle==='off'&&g.tension>=6)g.tension=5;if(g.tension>=6){if(!g.cd){g.cd=3;lg('☢ 긴장도 최대! 3턴 안에 낮추지 못하면 핵 위기',true);}else{g.cd--;if(g.cd===0){G.players.forEach(function(q){if(q.alive)q.cash=Math.round(q.cash*0.7);});g.tension=3;lg('💥 핵 위기 발발 — 모두 현금 30% 손실, 긴장도 3으로',true);}}}else g.cd=0;},
 cards:[
 {t:'군비통제 합의 — 긴장도 ▼',g:['t',-1]},{t:'국경 충돌 — 긴장도 ▲',g:['t',1]},
 {t:'위성 요격 시험 — 긴장도 ▲',g:['t',1]},{t:'정상회담 성공 — 긴장도 ▼',g:['t',-1]},
 {t:'발사 대성공 +100',cash:100},{t:'발사체 폭발 -80',cash:-80},
 {t:'기상무기 의혹 — 모두 -30',all:-30},{t:'달 자원 계약 +90',cash:90},
 {t:'화성 보급선 도착 +70',cash:70},{t:'AI 군집 오작동 — 긴장도 ▲ -40',cash:-40,g:['t',1]},
-{t:'궤도 엘리베이터 시범 — 앞으로 4칸',move:4},{t:'국제 우주 기금 — 모두 +40',all:40},{t:'우주 쓰레기 청소비 -50',cash:-50}]};
+{t:'궤도 엘리베이터 시범 — 앞으로 4칸',move:4},{t:'국제 우주 기금 — 모두 +40',all:40},{t:'우주 쓰레기 청소비 -50',cash:-50},
+{t:'달 기지 전력난 -60',cash:-60},{t:'달 헬륨-3 채굴 성공 +95',cash:95},{t:'화성 돔 균열 -75',cash:-75},
+{t:'핵 군축 서명 — 긴장도 ▼',g:['t',-1]},{t:'사이버 공격 — 긴장도 ▲',g:['t',1]},{t:'유엔 중재 — 긴장도 ▼ +20',cash:20,g:['t',-1]},
+{t:'우주함대 열병식 — 긴장도 ▲',g:['t',1]},{t:'소행성 채굴 계약 +110',cash:110},{t:'태양 폭풍 — 모두 -35',all:-35},
+{t:'위성 통신 상용화 +70',cash:70},{t:'궤도 정거장 증설 — 앞으로 3칸',move:3},{t:'스카이넷 오작동 — 긴장도 ▲ -30',cash:-30,g:['t',1]},
+{t:'기상 위성 오보 -40',cash:-40},{t:'달 관광 붐 +85',cash:85},{t:'화성 식량 자급 달성 +80',cash:80},
+{t:'외교 만찬 성공 — 긴장도 ▼',g:['t',-1]},{t:'발사 지연 — 뒤로 2칸',move:-2},{t:'공동 우주 탐사 — 모두 +30',all:30},
+{t:'핵 관련 의혹 보도 — 긴장도 ▲',g:['t',1]},{t:'로봇군 정비 완료 +60',cash:60},{t:'우주 보험 지급 +50',cash:50},
+{t:'궤도 충돌 사고 -85',cash:-85},{t:'반물질 연구 돌파 +100',cash:100},{t:'비상 외교 채널 개설 — 긴장도 ▼',g:['t',-1]},
+{t:'식량 수송선 도착 +45',cash:45},{t:'우주 군비 경쟁 — 모두 -20',all:-20},{t:'타임머신 시제품 소문 +55',cash:55}]};
 
 </script>
 <script src="cw-play.js?v=1"></script></body></html>

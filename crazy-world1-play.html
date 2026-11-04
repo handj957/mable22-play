@@ -16,18 +16,28 @@ cells:[{"no": 0, "type": "corner", "name": "신항 개항식 출발"}, {"no": 1,
 cat:{'항만·물류':{ico:'🚢',base:70},'에너지·전력':{ico:'⚡',base:80},'피지컬AI·산업':{ico:'🤖',base:90},'도시·주거':{ico:'🏙',base:60},'돌봄·배움':{ico:'🎓',base:55},'콘텐츠·소비':{ico:'🎬',base:65},'재난·안전':{ico:'🛟',base:50},'이벤트':{ico:'🎴',base:0},'corner':{ico:'🚩',base:0}},
 GN:{rate:'금리',price:'물가',fx:'환율',trend:'유행'},
 initGauge:function(){var t=['콘텐츠·소비','에너지·전력','도시·주거','돌봄·배움','항만·물류'];return {rate:2,price:2,fx:2,trendCat:t[Math.floor(Math.random()*t.length)],trend:2};},
+start:function(G,lg,d,o){var s=(o&&o.scenario)||'std',g=G.gauge;if(s==='rate'){g.rate=4;lg('📈 시나리오: 금리 급등 시즌');}if(s==='supply'){g.price=4;g.fx=1;lg('📦 시나리오: 공급망 병목');}if(s==='boom'){g.trendCat='콘텐츠·소비';g.fx=3;g.trend=3;lg('🚀 시나리오: 청년 창업 붐');}if(s==='hurricane'){lg('🌀 시나리오: 허리케인 시즌 — 재난 카드가 잦아집니다');G.stormy=true;}},
 priceMul:function(G,c){return [0.85,0.92,1,1.1,1.2][G.gauge.rate];},
 rentMul:function(G,c){var m=[0.8,0.9,1,1.15,1.3][G.gauge.price];if(c.type==='항만·물류')m*=[0.8,0.9,1,1.15,1.3][G.gauge.fx];if(c.type===G.gauge.trendCat)m*=1.4;return m;},
 applyGauge:function(G,g,lg){var k=g[0],v=G.gauge[k]+g[1];v=Math.max(0,Math.min(4,v));G.gauge[k]=v;lg('📊 '+window.CWP.GN[k]+(g[1]>0?' ▲':' ▼')+' ('+v+'/4)');},
 gaugeHtml:function(G){var o='<div class="gauges">';['rate','price','fx'].forEach(function(k){o+='<div class="g"><span>'+window.CWP.GN[k]+'</span><span class="bar">'+[0,1,2,3,4].map(function(i){return '<i class="'+(i<=G.gauge[k]?'on':'')+'"></i>'}).join('')+'</span></div>';});o+='<div class="g"><span>유행</span><b>'+G.gauge.trendCat+' ×1.4</b></div></div>';return o;},
-onTurn:function(G,lg){if(G.turn===0&&Math.random()<0.4){var t=['콘텐츠·소비','에너지·전력','도시·주거','돌봄·배움','항만·물류','피지컬AI·산업'];G.gauge.trendCat=t[Math.floor(Math.random()*t.length)];lg('✨ 유행 변경: '+G.gauge.trendCat);}},
+onTurn:function(G,lg,o){var cy=(o&&o.cycle)||'fixed';if(cy==='off')return;if(G.turn===0&&Math.random()<(cy==='random'?0.7:0.35)){var t=['콘텐츠·소비','에너지·전력','도시·주거','돌봄·배움','항만·물류','피지컬AI·산업'];G.gauge.trendCat=t[Math.floor(Math.random()*t.length)];lg('✨ 유행 변경: '+G.gauge.trendCat);}},
 cards:[
 {t:'기준금리 인상 — 금리 ▲',g:['rate',1]},{t:'기준금리 인하 — 금리 ▼',g:['rate',-1]},
 {t:'체감물가 급등 — 물가 ▲',g:['price',1]},{t:'물가 안정 대책 — 물가 ▼',g:['price',-1]},
 {t:'원화 약세 — 환율 ▲ (수출 호조)',g:['fx',1]},{t:'원화 강세 — 환율 ▼',g:['fx',-1]},
 {t:'허리케인 상륙! 복구비 -70',cash:-70},{t:'태평양 항로 특수 +90',cash:90},
 {t:'로봇 도입 지원금 +60',cash:60},{t:'콘텐츠 IP 대박 +120',cash:120},
-{t:'공급망 병목 — 앞으로 3칸',move:3},{t:'시민 총회 보너스 — 모두 +30',all:30},{t:'공공요금 정산 -40',cash:-40}]};
+{t:'공급망 병목 — 앞으로 3칸',move:3},{t:'시민 총회 보너스 — 모두 +30',all:30},{t:'공공요금 정산 -40',cash:-40},
+{t:'해저케이블 장애 — 콘텐츠 매출 -50',cash:-50},{t:'수소 스테이션 보조금 +70',cash:70},{t:'AI 재교육 캠퍼스 졸업식 +50',cash:50},
+{t:'항만 파업 — 물가 ▲',g:['price',1]},{t:'수입 원자재 안정 — 물가 ▼',g:['price',-1]},{t:'기준금리 동결 — 금리 ▼',g:['rate',-1]},
+{t:'대출 연체 증가 — 금리 ▲',g:['rate',1]},{t:'수출 박람회 계약 +100',cash:100},{t:'환율 급락 — 환율 ▼',g:['fx',-1]},
+{t:'정전 사고 복구 -60',cash:-60},{t:'재택돌봄 로봇 보급 +55',cash:55},{t:'숏폼 챌린지 유행 +80',cash:80},
+{t:'지진 해일 경보 — 복구 -90',cash:-90},{t:'스마트 항만 준공 — 앞으로 2칸',move:2},{t:'폭염 특보 — 전력 수요 급증 -35',cash:-35},
+{t:'시민 만족도 조사 우수 — 모두 +20',all:20},{t:'탄소세 신설 — 모두 -25',all:-25},{t:'관세 인하 +65',cash:65},
+{t:'드론 배송 사고 -45',cash:-45},{t:'청년 창업 지원금 +75',cash:75},{t:'공급 과잉 — 뒤로 2칸',move:-2},
+{t:'태풍 예보 적중 — 대비 보너스 +60',cash:60},{t:'해운 운임 폭등 — 환율 ▲',g:['fx',1]},{t:'주택 가격 급등 — 물가 ▲ +30',cash:30,g:['price',1]},
+{t:'로봇 일자리 논쟁 — 모두 -15',all:-15},{t:'IP 굿즈 완판 +95',cash:95},{t:'방조제 보강 공사 -55',cash:-55}]};
 
 </script>
 <script src="cw-play.js?v=1"></script></body></html>

@@ -15,6 +15,8 @@
   var setup = {}; try { setup = JSON.parse(lsGet(K + '_setup') || '{}'); } catch (e) {}
   var diff = setup.diff || 'std', speed = setup.speed || 'normal', humans = Math.max(1, Math.min(4, setup.humans || 1));
   var opts = setup.opts || {};
+  var DM = { easy: { cash: 1.25, rent: 0.85 }, std: { cash: 1, rent: 1 }, pro: { cash: 0.9, rent: 1.1 } }[diff] || { cash: 1, rent: 1 };
+  var INT = { calm: 0.6, normal: 1, wild: 1.5 }[opts.intensity || 'normal'] || 1;
   var DELAY = { slow: 1100, normal: 650, fast: 250 }[speed] || 650;
   var COLORS = ['#e5484d', '#2f80ed', '#16a34a', '#d97706'];
   var NAMES = ['빨강', '파랑', '초록', '주황'];
@@ -26,7 +28,7 @@
 
   var G; // game state
   function fresh() {
-    var ps = []; for (var i = 0; i < 4; i++) ps.push({ id: i, name: (i < humans ? '플레이어 ' : 'AI ') + NAMES[i], human: i < humans, cash: C.startCash, pos: 0, alive: true });
+    var ps = []; for (var i = 0; i < 4; i++) ps.push({ id: i, name: (i < humans ? '플레이어 ' : 'AI ') + NAMES[i], human: i < humans, cash: Math.round(C.startCash * DM.cash), pos: 0, alive: true });
     var g = { players: ps, owner: {}, level: {}, turn: 0, round: 1, gauge: C.initGauge(), pending: null, phase: 'roll', log: [], busy: false, countdown: 0, over: false };
     return g;
   }
@@ -35,7 +37,7 @@
   function cur() { return G.players[G.turn]; }
   function price(c) { var b = CAT[c.type]; var p = b.base + Math.round(c.no * 1.5); return Math.round(p * C.priceMul(G, c)); }
   function owned(pid, type) { var n = 0; CELLS.forEach(function (c) { if (G.owner[c.no] === pid && (!type || c.type === type)) n++; }); return n; }
-  function rent(c) { var o = G.owner[c.no]; var p = CAT[c.type].base + Math.round(c.no * 1.5); var r = p * 0.22 * (1 + 0.8 * (G.level[c.no] || 0)); if (owned(o, c.type) >= 3) r *= 1.5; r *= C.rentMul(G, c); return Math.max(5, Math.round(r)); }
+  function rent(c) { var o = G.owner[c.no]; var p = CAT[c.type].base + Math.round(c.no * 1.5); var r = p * 0.22 * (1 + 0.8 * (G.level[c.no] || 0)); if (owned(o, c.type) >= 3) r *= 1.5; r *= C.rentMul(G, c) * DM.rent; return Math.max(5, Math.round(r)); }
   function worth(p) { var w = p.cash; CELLS.forEach(function (c) { if (G.owner[c.no] === p.id) w += Math.round((CAT[c.type].base + c.no * 1.5) * (1 + 0.6 * (G.level[c.no] || 0))); }); return w; }
   function canBuy(c) { return CAT[c.type] && !CAT[c.type].noBuy && c.type !== '이벤트' && c.type !== 'corner'; }
 
@@ -47,6 +49,7 @@
     return paid;
   }
 
+  function salaryFor(p) { var s = C.salary; if (opts.comeback && opts.comeback !== 'weak') { var al = G.players.filter(function (q) { return q.alive; }); var low = al.every(function (q) { return worth(p) <= worth(q); }); if (low) s = Math.round(s * (opts.comeback === 'strong' ? 1.5 : 1.25)); } return s; }
   function alive() { return G.players.filter(function (p) { return p.alive; }); }
   function checkEnd() {
     var al = alive(); var win = null;
@@ -57,19 +60,19 @@
   }
 
   function drawCard(p) {
-    var d = C.cards[rnd(C.cards.length)];
+    var d = C.cards[rnd(C.cards.length)]; if (G.stormy && Math.random() < 0.25) d = { t: '🌀 허리케인 상륙! 복구비 -70', cash: -70 };
     logp('🃏 ' + d.t);
-    if (d.cash) { if (d.cash > 0) p.cash += d.cash; else pay(p, null, -d.cash); }
-    if (d.all) G.players.forEach(function (q) { if (q.alive) { if (d.all > 0) q.cash += d.all; else pay(q, null, -d.all); } });
+    if (d.cash) { if (d.cash > 0) p.cash += d.cash; else pay(p, null, Math.round(-d.cash * INT)); }
+    if (d.all) G.players.forEach(function (q) { if (q.alive) { if (d.all > 0) q.cash += d.all; else pay(q, null, Math.round(-d.all * INT)); } });
     if (d.g) C.applyGauge(G, d.g, logp);
-    if (d.move != null) { var np = (p.pos + d.move + 40) % 40; if (d.move > 0 && np < p.pos) { p.cash += C.salary; logp('💰 출발 통과 +' + C.salary); } p.pos = np; return 'move'; }
+    if (d.move != null) { var np = (p.pos + d.move + 40) % 40; if (d.move > 0 && np < p.pos) { p.cash += salaryFor(p); logp('💰 출발 통과 +' + salaryFor(p)); } p.pos = np; return 'move'; }
     return null;
   }
 
   function landed(p, chain) {
     var c = CELLS[p.pos]; logp('📍 ' + p.name + ' → ' + c.name, true);
     if (c.type === 'corner') {
-      if (c.no === 0) { p.cash += C.salary; logp('💰 출발 칸 +' + C.salary); }
+      if (c.no === 0) { p.cash += salaryFor(p); logp('💰 출발 칸 +' + salaryFor(p)); }
       else { var r = drawCard(p); if (r === 'move' && !chain) { return landed(p, true); } }
     } else if (c.type === '이벤트') {
       var r2 = drawCard(p); if (r2 === 'move' && !chain) return landed(p, true);
@@ -90,13 +93,13 @@
     var p = cur(); var d1 = 1 + rnd(6), d2 = 1 + rnd(6); var steps = d1 + d2;
     if (C.diceChoice) steps = C.diceChoice(G, p, d1, d2, logp);
     G.dice = [d1, d2]; logp('🎲 ' + p.name + ' ' + d1 + '+' + d2 + (steps !== d1 + d2 ? ' → ' + steps : ''));
-    var np = p.pos + steps; if (np >= 40) { p.cash += C.salary; logp('💰 출발 통과 +' + C.salary); } p.pos = np % 40;
+    var np = p.pos + steps; if (np >= 40) { p.cash += salaryFor(p); logp('💰 출발 통과 +' + salaryFor(p)); } p.pos = np % 40;
     G.phase = 'landed'; landed(p, false);
   }
   function endTurn() {
     if (checkEnd()) return;
     var n = G.turn; do { n = (n + 1) % 4; if (n === 0) G.round++; } while (!G.players[n].alive);
-    G.turn = n; G.phase = 'roll'; G.pending = null; C.onTurn && C.onTurn(G, logp, function () { return checkEnd(); });
+    G.turn = n; G.phase = 'roll'; G.pending = null; C.onTurn && C.onTurn(G, logp, opts, function () { return checkEnd(); });
     save(); render(); schedule();
   }
   function decide(yes) {
@@ -154,7 +157,7 @@
   function start() {
     var resume = /resume=1/.test(location.search), loaded = false;
     if (resume) { try { var s = JSON.parse(lsGet(K + '_save') || 'null'); if (s && s.G) { G = s.G; loaded = true; } } catch (e) {} }
-    if (!loaded) { G = fresh(); logp('게임 시작! 목표 총 자산 ' + C.winWorth, true); C.start && C.start(G, logp, diff); }
+    if (!loaded) { G = fresh(); logp('게임 시작! 목표 총 자산 ' + C.winWorth, true); G.opts = opts; C.start && C.start(G, logp, diff, opts); }
     build(); render(); save(); schedule();
   }
   window.__cwp = { get G() { return G; }, roll: roll, endTurn: endTurn };
