@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+<script src="orient-guard.js?v=1"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crazy World 2">
+<meta name="theme-color" content="#03060f">
+<link rel="icon" href="data:,">
+<title>Crazy World 2 · 오비탈 프런티어</title>
+<meta name="description" content="Crazy World 2 — 궤도·달·화성 × 함대 × 위기">
+<style>:root{--bg-img:url("bg/cw2-bg.svg")}</style>
+<link rel="stylesheet" href="cw-intro.css?v=1">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="stage" id="app"></div>
+<div class="modal" id="modal" hidden></div>
+<noscript><p style="position:relative;z-index:2;padding:24px;color:#fff">이 게임은 JavaScript가 필요합니다. / This game requires JavaScript.</p></noscript>
+<script>
+window.CW = {
+  theme: 'w2', key: 'cw2', logo: 'CW2', brand: 'Crazy World 2',
+  next: 'crazy-world2-play.html',
+  title: { ko: '오비탈 프런티어', en: 'Orbital Frontier' },
+  tagline: {
+    ko: '궤도·달·화성으로 뻗어 가는 패권 전략전 — 하지만 긴장도는 모두의 몫',
+    en: 'Expand to orbit, the Moon and Mars — but the tension gauge belongs to everyone'
+  },
+  meta: [
+    { ko: '🧭 11×11 · 40칸', en: '🧭 11×11 · 40 tiles' },
+    { ko: '👥 1~4인', en: '👥 1–4 players' },
+    { ko: '🚀 Level 3 + 4', en: '🚀 Level 3 + 4' }
+  ],
+  feats: [
+    { ico: '☢️', ko: '공동 긴장도 게이지 — 3턴 카운트다운', en: 'Shared tension gauge — a 3-turn countdown' },
+    { ico: '🌪️', ko: '기상무기 의혹 — 뒷면 카드로 범인을 추리', en: 'Weather-weapon suspicion — deduce the culprit' },
+    { ico: '🌙', ko: '달을 거치면 화성 보급비가 줄어요', en: 'Route via the Moon to cut Mars supply costs' },
+    { ico: '🎲', ko: '지구/우주 주사위 중 하나를 고르는 전략', en: 'Choose between an Earth die and a Space die' }
+  ],
+  diffs: [
+    { id: 'easy', ico: '🌍', name: { ko: '입문', en: 'Starter' }, sub: { ko: '지구 중심 · 우주 제외', en: 'Earth only · no space' } },
+    { id: 'std', ico: '🌙', name: { ko: '표준', en: 'Standard' }, sub: { ko: '+ 궤도·달 개척', en: '+ Orbit · Moon' } },
+    { id: 'pro', ico: '🪐', name: { ko: '전문', en: 'Expert' }, sub: { ko: '+ 화성·타임머신·스카이넷', en: '+ Mars · Time machine · Skynet' } }
+  ],
+  moods: [
+    { id: 'classic', ico: '🎲', name: { ko: '클래식', en: 'Classic' }, opts: { scenario: 'open', win: 'multi', cycle: 'fixed', intensity: 'normal', comeback: 'mid', gamble: false, secret: true, concept: false } },
+    { id: 'wild', ico: '⚡', name: { ko: '격동', en: 'Wild' }, opts: { scenario: 'nuke', win: 'multi', cycle: 'random', intensity: 'wild', comeback: 'strong', gamble: true, secret: true, concept: false } },
+    { id: 'calm', ico: '🕊️', name: { ko: '평화', en: 'Calm' }, opts: { scenario: 'lunar', win: 'econ', cycle: 'off', intensity: 'calm', comeback: 'mid', gamble: false, secret: false, concept: false } },
+    { id: 'study', ico: '📘', name: { ko: '학습', en: 'Study' }, opts: { scenario: 'open', win: 'multi', cycle: 'fixed', intensity: 'calm', comeback: 'strong', gamble: false, secret: false, concept: true } }
+  ],
+  scenarios: [
+    { v: 'open', ko: '자유 시작', en: 'Open start' },
+    { v: 'lunar', ko: '달 개척 경쟁', en: 'Lunar land rush' },
+    { v: 'nuke', ko: '핵 위기 시계', en: 'Nuclear doomsday clock' },
+    { v: 'mars', ko: '화성 이주 붐', en: 'Mars migration boom' },
+    { v: 'weather', ko: '기상무기 의혹', en: 'Weather-weapon suspicion' },
+    { v: 'sky', ko: '스카이넷 각성', en: 'Skynet awakening' }
+  ],
+  wins: [
+    { v: 'multi', ko: '다중 승리', en: 'Multiple victories' },
+    { v: 'econ', ko: '경제 패권', en: 'Economic supremacy' },
+    { v: 'mil', ko: '군사 패권', en: 'Military supremacy' },
+    { v: 'dip', ko: '외교 패권', en: 'Diplomatic supremacy' },
+    { v: 'space', ko: '우주 패권', en: 'Space supremacy' },
+    { v: 'time', ko: '타임머신 완성', en: 'Time machine complete' }
+  ],
+  bgm: { bpm: 88, swing: 0, key: 57,
+    prog: [[0, 'min7'], [8, 'maj7'], [3, 'maj7'], [10, 'dom']],
+    pad: { type: 'sawtooth', gain: 0.032, lp: 900 },
+    bass: { type: 'sawtooth', gain: 0.09, lp: 420, pat: '1010001010100010' },
+    arp: { type: 'square', gain: 0.03, lp: 2200, oct: 1, pat: '1011101110111011' },
+    kick: '1000000110000010', hat: '0010001000100011' }
+};
+</script>
+<script src="cw-intro.js?v=1"></script>
+</body>
+</html>

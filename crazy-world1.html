@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+<script src="orient-guard.js?v=1"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crazy World 1">
+<meta name="theme-color" content="#13244a">
+<link rel="icon" href="data:,">
+<title>Crazy World 1 · 블루 하버</title>
+<meta name="description" content="Crazy World 1 — 현재 경제 × 항구 도시 × 태평양">
+<style>:root{--bg-img:url("bg/cw1-bg.svg")}</style>
+<link rel="stylesheet" href="cw-intro.css?v=1">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="stage" id="app"></div>
+<div class="modal" id="modal" hidden></div>
+<noscript><p style="position:relative;z-index:2;padding:24px;color:#fff">이 게임은 JavaScript가 필요합니다. / This game requires JavaScript.</p></noscript>
+<script>
+window.CW = {
+  theme: 'w1', key: 'cw1', logo: 'CW1', brand: 'Crazy World 1',
+  next: 'crazy-world1-play.html',
+  title: { ko: '블루 하버', en: 'Blue Harbor' },
+  tagline: {
+    ko: '금리·물가·태풍이 몰아치는 항구 도시를 키우는 경제 타이쿤',
+    en: 'An economy tycoon — grow a harbor city through rate hikes, inflation and hurricanes'
+  },
+  meta: [
+    { ko: '🧭 11×11 · 40칸', en: '🧭 11×11 · 40 tiles' },
+    { ko: '👥 1~4인', en: '👥 1–4 players' },
+    { ko: '🏙 Level 1 + 2', en: '🏙 Level 1 + 2' }
+  ],
+  feats: [
+    { ico: '📊', ko: '금리·물가·환율·유행 계기판이 항상 보여요', en: 'Live rate · price · FX · trend gauges' },
+    { ico: '🌀', ko: '허리케인 트래커 — 진로를 읽는 사람이 이겨요', en: 'Hurricane tracker — read the storm path to win' },
+    { ico: '🤖', ko: '로봇 vs 일자리 딜레마', en: 'The robots vs jobs dilemma' },
+    { ico: '🎬', ko: '콘텐츠 IP 콤보 ×3', en: 'Content IP combo ×3' }
+  ],
+  diffs: [
+    { id: 'easy', ico: '🌱', name: { ko: '입문', en: 'Starter' }, sub: { ko: '부동산·기업·금융', en: 'Property · Biz · Finance' } },
+    { id: 'std', ico: '🏙️', name: { ko: '표준', en: 'Standard' }, sub: { ko: '+ 시민·문화·인프라', en: '+ Citizens · Culture · Infra' } },
+    { id: 'pro', ico: '🏛️', name: { ko: '전문', en: 'Expert' }, sub: { ko: '+ 정책 5~7개·민심', en: '+ 5–7 policies · Public mood' } }
+  ],
+  moods: [
+    { id: 'classic', ico: '🎲', name: { ko: '클래식', en: 'Classic' }, opts: { scenario: 'std', win: 'score', cycle: 'fixed', intensity: 'normal', comeback: 'mid', gamble: false, secret: true, concept: false } },
+    { id: 'wild', ico: '⚡', name: { ko: '격동', en: 'Wild' }, opts: { scenario: 'hurricane', win: 'score', cycle: 'random', intensity: 'wild', comeback: 'strong', gamble: true, secret: true, concept: false } },
+    { id: 'calm', ico: '🕊️', name: { ko: '평화', en: 'Calm' }, opts: { scenario: 'std', win: 'happy', cycle: 'off', intensity: 'calm', comeback: 'mid', gamble: false, secret: false, concept: false } },
+    { id: 'study', ico: '📘', name: { ko: '학습', en: 'Study' }, opts: { scenario: 'std', win: 'score', cycle: 'fixed', intensity: 'calm', comeback: 'strong', gamble: false, secret: false, concept: true } }
+  ],
+  scenarios: [
+    { v: 'std', ko: '평범한 한 해', en: 'An ordinary year' },
+    { v: 'rate', ko: '금리 급등 시즌', en: 'Rate-hike season' },
+    { v: 'hurricane', ko: '허리케인 시즌', en: 'Hurricane season' },
+    { v: 'supply', ko: '공급망 병목', en: 'Supply-chain jam' },
+    { v: 'boom', ko: '청년 창업 붐', en: 'Startup boom' }
+  ],
+  wins: [
+    { v: 'score', ko: '종합 점수 (부·만족·랜드마크)', en: 'Total score (wealth · happiness · landmarks)' },
+    { v: 'wealth', ko: '부 우선', en: 'Wealth first' },
+    { v: 'happy', ko: '시민 만족 우선', en: 'Citizen happiness first' }
+  ],
+  bgm: { bpm: 108, swing: 0.14, key: 60,
+    prog: [[0, 'maj7'], [9, 'min7'], [5, 'maj7'], [7, 'dom']],
+    pad: { type: 'triangle', gain: 0.05, lp: 1800 },
+    bass: { type: 'triangle', gain: 0.13, lp: 700, pat: '1000100110001010' },
+    arp: { type: 'triangle', gain: 0.055, lp: 3000, oct: 1, pat: '0010010100100101' },
+    kick: '1000100010001000', hat: '0010001000100010' }
+};
+</script>
+<script src="cw-intro.js?v=1"></script>
+</body>
+</html>

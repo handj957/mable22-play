@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko"><head>
+<script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+<script src="orient-guard.js?v=1"></script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:,"><title>Crazy World 1 · 블루 하버</title>
+<style>:root{--bg-img:url("bg/cw1-bg.svg")}</style>
+<link rel="stylesheet" href="cw-play.css?v=1"></head>
+<body><div class="bg" aria-hidden="true"></div><div id="app"></div>
+<noscript><p style="position:relative;z-index:2;padding:24px">JavaScript가 필요합니다.</p></noscript>
+<script>
+window.CWP={key:'cw1',theme:'w1',intro:'crazy-world1.html',title:'Crazy World 1 · 블루 하버',startCash:600,salary:60,winWorth:2200,
+cells:[{"no": 0, "type": "corner", "name": "신항 개항식 출발"}, {"no": 1, "type": "도시·주거", "name": "지역 재설계 특구"}, {"no": 2, "type": "콘텐츠·소비", "name": "숏폼 크리에이터 허브"}, {"no": 3, "type": "항만·물류", "name": "해저케이블 육양국"}, {"no": 4, "type": "피지컬AI·산업", "name": "디지털 트윈 관제센터"}, {"no": 5, "type": "항만·물류", "name": "태평양 컨테이너 항로"}, {"no": 6, "type": "에너지·전력", "name": "수소 스테이션 허브"}, {"no": 7, "type": "돌봄·배움", "name": "AI 재교육 캠퍼스"}, {"no": 8, "type": "이벤트", "name": "체감물가 속보"}, {"no": 9, "type": "재난·안전", "name": "재난 로봇 출동센터"}, {"no": 10, "type": "corner", "name": "관세 협상 데스크"}, {"no": 11, "type": "도시·주거", "name": "1인 가구 소형 주거"}, {"no": 12, "type": "돌봄·배움", "name": "재택의료 네트워크"}, {"no": 13, "type": "항만·물류", "name": "크루즈 터미널"}, {"no": 14, "type": "피지컬AI·산업", "name": "피지컬 AI 공장"}, {"no": 15, "type": "항만·물류", "name": "스마트 자동항만"}, {"no": 16, "type": "피지컬AI·산업", "name": "HBM 반도체 팹"}, {"no": 17, "type": "이벤트", "name": "해저케이블 단절"}, {"no": 18, "type": "에너지·전력", "name": "ESS 에너지저장 단지"}, {"no": 19, "type": "콘텐츠·소비", "name": "수리·리셀 마켓"}, {"no": 20, "type": "corner", "name": "수출입 박람회"}, {"no": 21, "type": "콘텐츠·소비", "name": "팬덤 굿즈 공방"}, {"no": 22, "type": "도시·주거", "name": "노후단지 개보수"}, {"no": 23, "type": "피지컬AI·산업", "name": "드론 배송 거점"}, {"no": 24, "type": "돌봄·배움", "name": "재택돌봄 로봇 스테이션"}, {"no": 25, "type": "도시·주거", "name": "어촌 스마트 마을"}, {"no": 26, "type": "재난·안전", "name": "해양구조 기지"}, {"no": 27, "type": "콘텐츠·소비", "name": "팝업 체험 거리"}, {"no": 28, "type": "에너지·전력", "name": "연안 해상풍력단지"}, {"no": 29, "type": "항만·물류", "name": "무인 트럭 터미널"}, {"no": 30, "type": "corner", "name": "시민 총회"}, {"no": 31, "type": "피지컬AI·산업", "name": "협동로봇 조립라인"}, {"no": 32, "type": "항만·물류", "name": "콜드체인 허브"}, {"no": 33, "type": "재난·안전", "name": "해양기상관측소"}, {"no": 34, "type": "이벤트", "name": "허리케인 접근"}, {"no": 35, "type": "에너지·전력", "name": "데이터센터 전력망"}, {"no": 36, "type": "돌봄·배움", "name": "평생학습 도서관"}, {"no": 37, "type": "피지컬AI·산업", "name": "배터리 순환 공장"}, {"no": 38, "type": "콘텐츠·소비", "name": "웰니스 리조트"}, {"no": 39, "type": "도시·주거", "name": "광역환승센터"}],
+cat:{'항만·물류':{ico:'🚢',base:70},'에너지·전력':{ico:'⚡',base:80},'피지컬AI·산업':{ico:'🤖',base:90},'도시·주거':{ico:'🏙',base:60},'돌봄·배움':{ico:'🎓',base:55},'콘텐츠·소비':{ico:'🎬',base:65},'재난·안전':{ico:'🛟',base:50},'이벤트':{ico:'🎴',base:0},'corner':{ico:'🚩',base:0}},
+GN:{rate:'금리',price:'물가',fx:'환율',trend:'유행'},
+initGauge:function(){var t=['콘텐츠·소비','에너지·전력','도시·주거','돌봄·배움','항만·물류'];return {rate:2,price:2,fx:2,trendCat:t[Math.floor(Math.random()*t.length)],trend:2};},
+priceMul:function(G,c){return [0.85,0.92,1,1.1,1.2][G.gauge.rate];},
+rentMul:function(G,c){var m=[0.8,0.9,1,1.15,1.3][G.gauge.price];if(c.type==='항만·물류')m*=[0.8,0.9,1,1.15,1.3][G.gauge.fx];if(c.type===G.gauge.trendCat)m*=1.4;return m;},
+applyGauge:function(G,g,lg){var k=g[0],v=G.gauge[k]+g[1];v=Math.max(0,Math.min(4,v));G.gauge[k]=v;lg('📊 '+window.CWP.GN[k]+(g[1]>0?' ▲':' ▼')+' ('+v+'/4)');},
+gaugeHtml:function(G){var o='<div class="gauges">';['rate','price','fx'].forEach(function(k){o+='<div class="g"><span>'+window.CWP.GN[k]+'</span><span class="bar">'+[0,1,2,3,4].map(function(i){return '<i class="'+(i<=G.gauge[k]?'on':'')+'"></i>'}).join('')+'</span></div>';});o+='<div class="g"><span>유행</span><b>'+G.gauge.trendCat+' ×1.4</b></div></div>';return o;},
+onTurn:function(G,lg){if(G.turn===0&&Math.random()<0.4){var t=['콘텐츠·소비','에너지·전력','도시·주거','돌봄·배움','항만·물류','피지컬AI·산업'];G.gauge.trendCat=t[Math.floor(Math.random()*t.length)];lg('✨ 유행 변경: '+G.gauge.trendCat);}},
+cards:[
+{t:'기준금리 인상 — 금리 ▲',g:['rate',1]},{t:'기준금리 인하 — 금리 ▼',g:['rate',-1]},
+{t:'체감물가 급등 — 물가 ▲',g:['price',1]},{t:'물가 안정 대책 — 물가 ▼',g:['price',-1]},
+{t:'원화 약세 — 환율 ▲ (수출 호조)',g:['fx',1]},{t:'원화 강세 — 환율 ▼',g:['fx',-1]},
+{t:'허리케인 상륙! 복구비 -70',cash:-70},{t:'태평양 항로 특수 +90',cash:90},
+{t:'로봇 도입 지원금 +60',cash:60},{t:'콘텐츠 IP 대박 +120',cash:120},
+{t:'공급망 병목 — 앞으로 3칸',move:3},{t:'시민 총회 보너스 — 모두 +30',all:30},{t:'공공요금 정산 -40',cash:-40}]};
+
+</script>
+<script src="cw-play.js?v=1"></script></body></html>
