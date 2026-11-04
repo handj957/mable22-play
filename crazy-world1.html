@@ -13,11 +13,12 @@
 <link rel="icon" href="data:,">
 <title>Crazy World 1 · 블루 하버</title>
 <meta name="description" content="Crazy World 1 — 현재 경제 × 항구 도시 × 태평양">
-<style>:root{--bg-img:url("bg/cw1-bg.svg")}</style>
+<style>:root{--board-img:url("bg/cw1-board.svg")}</style>
 <link rel="stylesheet" href="cw-intro.css?v=1">
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
+<div class="veil" aria-hidden="true"></div>
 <div class="stage" id="app"></div>
 <div class="modal" id="modal" hidden></div>
 <noscript><p style="position:relative;z-index:2;padding:24px;color:#fff">이 게임은 JavaScript가 필요합니다. / This game requires JavaScript.</p></noscript>
@@ -30,6 +31,7 @@ window.CW = {
     ko: '금리·물가·태풍이 몰아치는 항구 도시를 키우는 경제 타이쿤',
     en: 'An economy tycoon — grow a harbor city through rate hikes, inflation and hurricanes'
   },
+  stats: [{ n: '40', ko: '보드 칸', en: 'Tiles' }, { n: '4', ko: '경제 지표', en: 'Gauges' }, { n: '2', ko: '주사위', en: 'Dice' }, { n: '40', ko: '이벤트 카드', en: 'Event cards' }],
   meta: [
     { ko: '🧭 11×11 · 40칸', en: '🧭 11×11 · 40 tiles' },
     { ko: '👥 1~4인', en: '👥 1–4 players' },

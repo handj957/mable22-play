@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1100" preserveAspectRatio="xMidYMid slice">
+<defs><filter id="b" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="7"/></filter></defs>
+<rect width="1100" height="1100" fill="#f4ead8"/><g filter="url(#b)">
+<rect x="1003" y="1003" width="94" height="94" rx="8" fill="#ff6b3d"/>
+<rect x="1003" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">신항 개항식 </text>
+<rect x="903" y="1003" width="94" height="94" rx="8" fill="#4ea66a"/>
+<rect x="903" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="950" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">지역 재설계 </text>
+<rect x="803" y="1003" width="94" height="94" rx="8" fill="#f08a3c"/>
+<rect x="803" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="850" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">숏폼 크리에이</text>
+<rect x="703" y="1003" width="94" height="94" rx="8" fill="#2f7fd1"/>
+<rect x="703" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="750" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">해저케이블 육</text>
+<rect x="603" y="1003" width="94" height="94" rx="8" fill="#7a5cd6"/>
+<rect x="603" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="650" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">디지털 트윈 </text>
+<rect x="503" y="1003" width="94" height="94" rx="8" fill="#2f7fd1"/>
+<rect x="503" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="550" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">태평양 컨테이</text>
+<rect x="403" y="1003" width="94" height="94" rx="8" fill="#e8b23a"/>
+<rect x="403" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="450" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">수소 스테이션</text>
+<rect x="303" y="1003" width="94" height="94" rx="8" fill="#e46a8c"/>
+<rect x="303" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="350" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">AI 재교육 </text>
+<rect x="203" y="1003" width="94" height="94" rx="8" fill="#8a97a8"/>
+<rect x="203" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="250" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">체감물가 속보</text>
+<rect x="103" y="1003" width="94" height="94" rx="8" fill="#d84a4a"/>
+<rect x="103" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="150" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">재난 로봇 출</text>
+<rect x="3" y="1003" width="94" height="94" rx="8" fill="#ff6b3d"/>
+<rect x="3" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">관세 협상 데</text>
+<rect x="3" y="903" width="94" height="94" rx="8" fill="#4ea66a"/>
+<rect x="3" y="903" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="962" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">1인 가구 소</text>
+<rect x="3" y="803" width="94" height="94" rx="8" fill="#e46a8c"/>
+<rect x="3" y="803" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="862" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">재택의료 네트</text>
+<rect x="3" y="703" width="94" height="94" rx="8" fill="#2f7fd1"/>
+<rect x="3" y="703" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="762" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">크루즈 터미널</text>
+<rect x="3" y="603" width="94" height="94" rx="8" fill="#7a5cd6"/>
+<rect x="3" y="603" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="662" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">피지컬 AI </text>
+<rect x="3" y="503" width="94" height="94" rx="8" fill="#2f7fd1"/>
+<rect x="3" y="503" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="562" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">스마트 자동항</text>
+<rect x="3" y="403" width="94" height="94" rx="8" fill="#7a5cd6"/>
+<rect x="3" y="403" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="462" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">HBM 반도체</text>
+<rect x="3" y="303" width="94" height="94" rx="8" fill="#8a97a8"/>
+<rect x="3" y="303" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="362" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">해저케이블 단</text>
+<rect x="3" y="203" width="94" height="94" rx="8" fill="#e8b23a"/>
+<rect x="3" y="203" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="262" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">ESS 에너지</text>
+<rect x="3" y="103" width="94" height="94" rx="8" fill="#f08a3c"/>
+<rect x="3" y="103" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="162" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">수리·리셀 마</text>
+<rect x="3" y="3" width="94" height="94" rx="8" fill="#ff6b3d"/>
+<rect x="3" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">수출입 박람회</text>
+<rect x="103" y="3" width="94" height="94" rx="8" fill="#f08a3c"/>
+<rect x="103" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="150" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">팬덤 굿즈 공</text>
+<rect x="203" y="3" width="94" height="94" rx="8" fill="#4ea66a"/>
+<rect x="203" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="250" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">노후단지 개보</text>
+<rect x="303" y="3" width="94" height="94" rx="8" fill="#7a5cd6"/>
+<rect x="303" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="350" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">드론 배송 거</text>
+<rect x="403" y="3" width="94" height="94" rx="8" fill="#e46a8c"/>
+<rect x="403" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="450" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">재택돌봄 로봇</text>
+<rect x="503" y="3" width="94" height="94" rx="8" fill="#4ea66a"/>
+<rect x="503" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="550" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">어촌 스마트 </text>
+<rect x="603" y="3" width="94" height="94" rx="8" fill="#d84a4a"/>
+<rect x="603" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="650" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">해양구조 기지</text>
+<rect x="703" y="3" width="94" height="94" rx="8" fill="#f08a3c"/>
+<rect x="703" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="750" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">팝업 체험 거</text>
+<rect x="803" y="3" width="94" height="94" rx="8" fill="#e8b23a"/>
+<rect x="803" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="850" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">연안 해상풍력</text>
+<rect x="903" y="3" width="94" height="94" rx="8" fill="#2f7fd1"/>
+<rect x="903" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="950" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">무인 트럭 터</text>
+<rect x="1003" y="3" width="94" height="94" rx="8" fill="#ff6b3d"/>
+<rect x="1003" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">시민 총회</text>
+<rect x="1003" y="103" width="94" height="94" rx="8" fill="#7a5cd6"/>
+<rect x="1003" y="103" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="162" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">협동로봇 조립</text>
+<rect x="1003" y="203" width="94" height="94" rx="8" fill="#2f7fd1"/>
+<rect x="1003" y="203" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="262" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">콜드체인 허브</text>
+<rect x="1003" y="303" width="94" height="94" rx="8" fill="#d84a4a"/>
+<rect x="1003" y="303" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="362" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">해양기상관측소</text>
+<rect x="1003" y="403" width="94" height="94" rx="8" fill="#8a97a8"/>
+<rect x="1003" y="403" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="462" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">허리케인 접근</text>
+<rect x="1003" y="503" width="94" height="94" rx="8" fill="#e8b23a"/>
+<rect x="1003" y="503" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="562" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">데이터센터 전</text>
+<rect x="1003" y="603" width="94" height="94" rx="8" fill="#e46a8c"/>
+<rect x="1003" y="603" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="662" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">평생학습 도서</text>
+<rect x="1003" y="703" width="94" height="94" rx="8" fill="#7a5cd6"/>
+<rect x="1003" y="703" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="762" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">배터리 순환 </text>
+<rect x="1003" y="803" width="94" height="94" rx="8" fill="#f08a3c"/>
+<rect x="1003" y="803" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="862" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">웰니스 리조트</text>
+<rect x="1003" y="903" width="94" height="94" rx="8" fill="#4ea66a"/>
+<rect x="1003" y="903" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="962" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">광역환승센터</text>
+</g></svg>

@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1100" preserveAspectRatio="xMidYMid slice">
+<defs><filter id="b" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="7"/></filter></defs>
+<rect width="1100" height="1100" fill="#070d22"/><g filter="url(#b)">
+<rect x="1003" y="1003" width="94" height="94" rx="8" fill="#ff9a3d"/>
+<rect x="1003" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">지구 관제 출</text>
+<rect x="903" y="1003" width="94" height="94" rx="8" fill="#7a86a8"/>
+<rect x="903" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="950" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">심해 잠수함 </text>
+<rect x="803" y="1003" width="94" height="94" rx="8" fill="#c9c4a8"/>
+<rect x="803" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="850" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">달 뒷면 전파</text>
+<rect x="703" y="1003" width="94" height="94" rx="8" fill="#4fd1a0"/>
+<rect x="703" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="750" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">군비통제 회담</text>
+<rect x="603" y="1003" width="94" height="94" rx="8" fill="#b07cff"/>
+<rect x="603" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="650" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">범용 AI 에</text>
+<rect x="503" y="1003" width="94" height="94" rx="8" fill="#e0603c"/>
+<rect x="503" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="550" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">화성 정착 본</text>
+<rect x="403" y="1003" width="94" height="94" rx="8" fill="#4fb4ff"/>
+<rect x="403" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="450" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">궤도 청소선 </text>
+<rect x="303" y="1003" width="94" height="94" rx="8" fill="#7a86a8"/>
+<rect x="303" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="350" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">우주함대 조선</text>
+<rect x="203" y="1003" width="94" height="94" rx="8" fill="#6a8cff"/>
+<rect x="203" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="250" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">허리케인 추적</text>
+<rect x="103" y="1003" width="94" height="94" rx="8" fill="#4fb4ff"/>
+<rect x="103" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="150" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">재사용 발사장</text>
+<rect x="3" y="1003" width="94" height="94" rx="8" fill="#ff9a3d"/>
+<rect x="3" y="1003" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="1062" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">핵 위기 시계</text>
+<rect x="3" y="903" width="94" height="94" rx="8" fill="#c9c4a8"/>
+<rect x="3" y="903" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="962" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">달여행 터미널</text>
+<rect x="3" y="803" width="94" height="94" rx="8" fill="#8a97a8"/>
+<rect x="3" y="803" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="862" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">기상무기 의혹</text>
+<rect x="3" y="703" width="94" height="94" rx="8" fill="#b07cff"/>
+<rect x="3" y="703" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="762" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">양자내성 암호</text>
+<rect x="3" y="603" width="94" height="94" rx="8" fill="#c9c4a8"/>
+<rect x="3" y="603" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="662" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">달 남극 물 </text>
+<rect x="3" y="503" width="94" height="94" rx="8" fill="#6a8cff"/>
+<rect x="3" y="503" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="562" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">폭염 대응 냉</text>
+<rect x="3" y="403" width="94" height="94" rx="8" fill="#4fb4ff"/>
+<rect x="3" y="403" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="462" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">궤도정거장</text>
+<rect x="3" y="303" width="94" height="94" rx="8" fill="#e0603c"/>
+<rect x="3" y="303" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="362" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">화성 자원순환</text>
+<rect x="3" y="203" width="94" height="94" rx="8" fill="#4fd1a0"/>
+<rect x="3" y="203" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="262" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">국제위기협의회</text>
+<rect x="3" y="103" width="94" height="94" rx="8" fill="#7a86a8"/>
+<rect x="3" y="103" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="162" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">로봇군대 통제</text>
+<rect x="3" y="3" width="94" height="94" rx="8" fill="#ff9a3d"/>
+<rect x="3" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="50" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">달 궤도 정상</text>
+<rect x="103" y="3" width="94" height="94" rx="8" fill="#7a86a8"/>
+<rect x="103" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="150" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">극초음속 요격</text>
+<rect x="203" y="3" width="94" height="94" rx="8" fill="#4fd1a0"/>
+<rect x="203" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="250" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">기상 검증 위</text>
+<rect x="303" y="3" width="94" height="94" rx="8" fill="#e0603c"/>
+<rect x="303" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="350" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">화성 착륙 허</text>
+<rect x="403" y="3" width="94" height="94" rx="8" fill="#c9c4a8"/>
+<rect x="403" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="450" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">달 헬륨-3 </text>
+<rect x="503" y="3" width="94" height="94" rx="8" fill="#8a97a8"/>
+<rect x="503" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="550" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">핵전쟁 위기</text>
+<rect x="603" y="3" width="94" height="94" rx="8" fill="#6a8cff"/>
+<rect x="603" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="650" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">해일 방벽 도</text>
+<rect x="703" y="3" width="94" height="94" rx="8" fill="#e0603c"/>
+<rect x="703" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="750" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">화성 모듈 거</text>
+<rect x="803" y="3" width="94" height="94" rx="8" fill="#4fd1a0"/>
+<rect x="803" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="850" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">핵 비상 벙커</text>
+<rect x="903" y="3" width="94" height="94" rx="8" fill="#4fb4ff"/>
+<rect x="903" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="950" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">위성군 관제센</text>
+<rect x="1003" y="3" width="94" height="94" rx="8" fill="#ff9a3d"/>
+<rect x="1003" y="3" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">화성 개척 관</text>
+<rect x="1003" y="103" width="94" height="94" rx="8" fill="#4fb4ff"/>
+<rect x="1003" y="103" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="162" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">궤도 태양광 </text>
+<rect x="1003" y="203" width="94" height="94" rx="8" fill="#b07cff"/>
+<rect x="1003" y="203" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="262" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">우주 자원 거</text>
+<rect x="1003" y="303" width="94" height="94" rx="8" fill="#8a97a8"/>
+<rect x="1003" y="303" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="362" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">화성 보급 지</text>
+<rect x="1003" y="403" width="94" height="94" rx="8" fill="#7a86a8"/>
+<rect x="1003" y="403" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="462" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">태평양함대 사</text>
+<rect x="1003" y="503" width="94" height="94" rx="8" fill="#6a8cff"/>
+<rect x="1003" y="503" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="562" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">기상제어 연구</text>
+<rect x="1003" y="603" width="94" height="94" rx="8" fill="#c9c4a8"/>
+<rect x="1003" y="603" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="662" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">달 중계 도시</text>
+<rect x="1003" y="703" width="94" height="94" rx="8" fill="#7a86a8"/>
+<rect x="1003" y="703" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="762" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">무인 드론 모</text>
+<rect x="1003" y="803" width="94" height="94" rx="8" fill="#4fd1a0"/>
+<rect x="1003" y="803" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="862" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">조기경보 위성</text>
+<rect x="1003" y="903" width="94" height="94" rx="8" fill="#e0603c"/>
+<rect x="1003" y="903" width="94" height="22" rx="8" fill="rgba(0,0,0,.18)"/>
+<text x="1050" y="962" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="sans-serif">화성 폐쇄형 </text>
+</g></svg>

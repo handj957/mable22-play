@@ -23,7 +23,7 @@
       sec_humans: '사람 플레이어', ai_fill: 'AI {n}명 자동 참가', ai_none: '전원 사람',
       sec_speed: '진행 속도', speed_hint: '원인→결과 연출',
       slow: '느림', normal: '보통', fast: '빠름',
-      more: '세부 옵션', start: '게임 시작', resume: '이어하기', resume_sub: '{r}라운드 저장됨',
+      more: '세부 옵션', rule_h: '이 게임의 핵심 규칙', start: '게임 시작', resume: '이어하기', resume_sub: '{r}라운드 저장됨',
       spec: 'PC · 패드 · 폰 지원 — 가로·세로 모두', now: '현재 화면',
       phone: '폰', tablet: '패드', pc: 'PC', port: '세로', land: '가로',
       o_scenario: '시나리오', o_win: '승리 조건', o_cycle: '경기 사이클', o_intensity: '이벤트 강도', o_comeback: '역전 장치',
@@ -41,7 +41,7 @@
       sec_humans: 'Human players', ai_fill: '{n} AI join automatically', ai_none: 'All human',
       sec_speed: 'Game speed', speed_hint: 'Cause → effect animation',
       slow: 'Slow', normal: 'Normal', fast: 'Fast',
-      more: 'Advanced options', start: 'Start Game', resume: 'Continue', resume_sub: 'Round {r} saved',
+      more: 'Advanced options', rule_h: 'Key rules', start: 'Start Game', resume: 'Continue', resume_sub: 'Round {r} saved',
       spec: 'PC · Tablet · Phone — portrait & landscape', now: 'Now',
       phone: 'Phone', tablet: 'Tablet', pc: 'PC', port: 'Portrait', land: 'Landscape',
       o_scenario: 'Scenario', o_win: 'Win condition', o_cycle: 'Economic cycle', o_intensity: 'Event intensity', o_comeback: 'Comeback aid',
@@ -139,39 +139,36 @@
     var saved = jget(RK);
     var hasResume = !!(saved && typeof saved === 'object');
     var h = '';
-    h += '<header class="top"><div class="brand"><div class="logo" aria-hidden="true">' + esc(CW.logo) + '</div><div class="brand-name">' + esc(CW.brand) + '</div></div>' +
+    h += '<section class="panel' + (firstRender ? ' enter' : '') + '" aria-label="' + esc(L(CW.title)) + '">';
+    h += '<header class="chead"><div class="brand"><div class="logo" aria-hidden="true">' + esc(CW.logo) + '</div><div class="brand-name">' + esc(CW.brand) + '</div></div>' +
       '<div class="ctl"><div class="lang" role="group" aria-label="Language">' +
       '<button type="button" data-act="lang" data-v="ko" aria-pressed="' + (LANG === 'ko') + '">KO</button>' +
       '<button type="button" data-act="lang" data-v="en" aria-pressed="' + (LANG === 'en') + '">EN</button></div>' +
       '<button type="button" class="pill" id="cwsnd" data-act="snd" title="' + esc(T('sound_title')) + '"></button></div></header>';
-
-    h += '<main class="main"><section class="hero"><span class="badge">' + esc(CW.brand) + '</span>' +
-      '<h1 class="title">' + esc(L(CW.title)) + '</h1><p class="tagline">' + esc(L(CW.tagline)) + '</p>' +
-      '<div class="meta">' + CW.meta.map(function (m) { return '<span class="chip">' + esc(L(m)) + '</span>'; }).join('') + '</div>' +
-      '<ul class="feat">' + CW.feats.map(function (f) { return '<li><span class="fi" aria-hidden="true">' + f.ico + '</span><span>' + esc(L(f)) + '</span></li>'; }).join('') + '</ul></section>';
-
-    h += '<section class="panel' + (firstRender ? ' enter' : '') + '" aria-label="' + esc(T('sec_diff')) + '"><div class="panel-body">';
-    h += '<div class="sec"><div class="lab"><span>' + esc(T('sec_diff')) + '</span><small>' + esc(T('sec_diff_hint')) + '</small></div>' +
+    h += '<div class="panel-body">';
+    h += '<div class="banner"><div class="bn-in"><span class="badge">' + esc(CW.brand) + '</span><h1 class="title">' + esc(L(CW.title)) + '</h1><p class="tagline">' + esc(L(CW.tagline)) + '</p></div>' +
+      '<div class="stats">' + CW.stats.map(function (s) { return '<div><b>' + esc(s.n) + '</b><span>' + esc(L(s)) + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="rule"><h3><span aria-hidden="true">🏆</span><span>' + esc(T('rule_h')) + '</span></h3><div class="chips">' +
+      CW.meta.map(function (m) { return '<span class="chip">' + esc(L(m)) + '</span>'; }).join('') + '</div><ul>' +
+      CW.feats.map(function (f) { return '<li><span class="fi" aria-hidden="true">' + f.ico + '</span><span>' + esc(L(f)) + '</span></li>'; }).join('') + '</ul></div>';
+    h += '<div class="sec"><div class="lab"><span><i class="no">1</i>' + esc(T('sec_diff')) + '</span><small>' + esc(T('sec_diff_hint')) + '</small></div>' +
       '<div class="opts d3" role="radiogroup" aria-label="' + esc(T('sec_diff')) + '">' +
       CW.diffs.map(function (d) { return optBtn('diff', d.id, d.ico, L(d.name), L(d.sub), S.diff === d.id); }).join('') + '</div></div>';
-
-    h += '<div class="sec"><div class="lab"><span>' + esc(T('sec_mood')) + '</span><small>' + (S.mood === 'custom' ? esc(T('custom')) : '') + '</small></div>' +
+    h += '<div class="sec"><div class="lab"><span><i class="no">2</i>' + esc(T('sec_mood')) + '</span><small>' + (S.mood === 'custom' ? esc(T('custom')) : '') + '</small></div>' +
       '<div class="opts m4" role="radiogroup" aria-label="' + esc(T('sec_mood')) + '">' +
       CW.moods.map(function (m) { return optBtn('mood', m.id, m.ico, L(m.name), '', S.mood === m.id, 'mini'); }).join('') + '</div></div>';
-
     var ai = 4 - S.humans;
-    h += '<div class="pair"><div class="sec"><div class="lab"><span>' + esc(T('sec_humans')) + '</span></div>' +
+    h += '<div class="pair"><div class="sec"><div class="lab"><span><i class="no">3</i>' + esc(T('sec_humans')) + '</span></div>' +
       '<div class="row"><div class="step" role="group" aria-label="' + esc(T('sec_humans')) + '">' +
       '<button type="button" data-act="hm" data-v="-1" aria-label="-"' + (S.humans <= 1 ? ' disabled' : '') + '>−</button>' +
       '<output id="cwhm" aria-live="polite">' + S.humans + '</output>' +
       '<button type="button" data-act="hm" data-v="1" aria-label="+"' + (S.humans >= 4 ? ' disabled' : '') + '>+</button></div>' +
       '<div class="seats" id="cwseats">' + seatsHTML() + '</div></div>' +
       '<div class="hint" id="cwai">' + esc(ai > 0 ? T('ai_fill', { n: ai }) : T('ai_none')) + '</div></div>' +
-      '<div class="sec"><div class="lab"><span>' + esc(T('sec_speed')) + '</span></div>' +
+      '<div class="sec"><div class="lab"><span><i class="no">4</i>' + esc(T('sec_speed')) + '</span></div>' +
       '<div class="opts s3" role="radiogroup" aria-label="' + esc(T('sec_speed')) + '">' +
       SPEEDS.map(function (s) { return optBtn('speed', s, '', T(s), '', S.speed === s, 'seg'); }).join('') + '</div>' +
       '<div class="hint">' + esc(T('speed_hint')) + '</div></div></div>';
-
     h += '<details class="more" id="cwmore"' + (S.moreOpen ? ' open' : '') + '><summary><span>' + esc(T('more')) + '</span><span class="arrow" aria-hidden="true">▼</span></summary><div class="more-grid">';
     selects().forEach(function (f) {
       h += '<div class="fld"><label for="cw_' + f.id + '">' + esc(T(f.label)) + '</label><select id="cw_' + f.id + '" data-act="sel" data-id="' + f.id + '">' +
@@ -181,12 +178,11 @@
       var on = !!S.opts[t.id];
       h += '<div class="fld"><button type="button" class="tog" role="switch" aria-checked="' + on + '" data-act="tog" data-id="' + t.id + '"><span class="t">' + esc(T(t.label)) + '</span><span class="sw" aria-hidden="true"></span></button></div>';
     });
-    h += '</div></details></div></section></main>';
-
+    h += '</div></details></div>';
     h += '<footer class="foot' + (hasResume ? ' has-resume' : '') + '">' +
       (hasResume ? '<button type="button" class="btn btn-sub" data-act="resume"><span>' + esc(T('resume')) + '</span><small>' + esc(T('resume_sub', { r: (saved.round != null ? saved.round : '?') })) + '</small></button>' : '') +
       '<button type="button" class="btn btn-go" data-act="start" id="cwgo"><span aria-hidden="true">▶</span><span>' + esc(T('start')) + '</span></button>' +
-      '<div class="spec"><span class="full">' + esc(T('spec')) + '</span><span>' + esc(T('now')) + ': <b id="cwnow">' + esc(nowText()) + '</b></span></div></footer>';
+      '<div class="spec"><span class="full">' + esc(T('spec')) + '</span><span>' + esc(T('now')) + ': <b id="cwnow">' + esc(nowText()) + '</b></span></div></footer></section>';
     app.innerHTML = h;
     firstRender = false;
     var pb = document.querySelector('.panel-body'); if (pb && keepTop) pb.scrollTop = keepTop;
