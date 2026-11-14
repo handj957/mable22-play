@@ -1,4 +1,5 @@
 <!doctype html><html lang="ko"><head>
+<link rel="manifest" href="./manifest.webmanifest?v=1">
 <script src="orient-guard.js?v=1"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
@@ -865,7 +866,9 @@ function rankOf(p){return alive().slice().sort((a,b)=>netWorth(b)-netWorth(a)).i
 function safeVH(){var d=document,e=d.documentElement;function pr(id,css){var p=d.getElementById(id);if(!p){p=d.createElement('div');p.id=id;p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;'+css;e.appendChild(p)}return p.getBoundingClientRect().height||1e5}var vv=window.visualViewport,h=[innerHeight||1e5,(vv&&vv.height)||1e5,e.clientHeight||1e5,pr('__dvh','height:100vh;height:100dvh')];return Math.min.apply(null,h)}
 function fitBoard(){const b=document.getElementById('board');if(!b)return;
  const top=b.getBoundingClientRect().top;const vh=safeVH();
- const h=Math.max(360, vh - top - 10);b.style.height=h+'px';}
+ /* 하단 잘림 방지: 홈 화면 앱(전체화면)에서는 :root의 안전영역 여백(상단 상태바·하단 홈 표시줄) 때문에 body가 화면보다 짧아지고, body가 넘치는 부분을 잘라냄. 보드 아래 끝을 body 안쪽 끝(아래 여백 제외)에 맞춤. 안전영역이 0인 일반 브라우저·PC는 기존 값과 같음 */
+ let bot=vh-10;try{const bd=document.body,r=bd.getBoundingClientRect(),pb=parseFloat(getComputedStyle(bd).paddingBottom)||0;if(r.height>0)bot=Math.min(bot,r.bottom-pb)}catch(e){}
+ const h=Math.max(360, bot - top);b.style.height=h+'px';}
 function isWide(){try{return matchMedia('(min-width:820px) and (orientation:landscape)').matches}catch(e){return false}}
 function advisor(){const p=S.players[0],c=CELLS[p.pos],a=S.ask;const L=S._hl;const cidx={land:{B:'edu',C:'com',D:'rate',E:'com',G:'rate',H:'cycle'}[c.d],hq:'prod',bank:'loan',edu:'edu',stock:'div',ins:'ins',xch:'com',news:'rate',quiz:null,util:'com',tax:null,auction:'mono'}[c.t];
  const D=DEX.find(x=>x.id===cidx);const opts=(a?a.opts:[]).filter(o=>o.id!=='ok');const strip=s=>String(s).replace(/<[^>]+>/g,'');

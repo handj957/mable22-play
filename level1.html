@@ -878,7 +878,9 @@ function rankOf(p){return alive().slice().sort((a,b)=>netWorth(b)-netWorth(a)).i
 function safeVH(){var d=document,e=d.documentElement;function pr(id,css){var p=d.getElementById(id);if(!p){p=d.createElement('div');p.id=id;p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;'+css;e.appendChild(p)}return p.getBoundingClientRect().height||1e5}var vv=window.visualViewport,h=[innerHeight||1e5,(vv&&vv.height)||1e5,e.clientHeight||1e5,pr('__dvh','height:100vh;height:100dvh')];return Math.min.apply(null,h)}
 function fitBoard(){const b=document.getElementById('board');if(!b)return;
  const top=b.getBoundingClientRect().top;const vh=safeVH();
- const h=Math.max(360, vh - top - 10);b.style.height=h+'px';}
+ /* 하단 잘림 방지: 홈 화면 앱(전체화면)에서는 :root의 안전영역 여백(상단 상태바·하단 홈 표시줄) 때문에 body가 화면보다 짧아지고, body가 넘치는 부분을 잘라냄. 보드 아래 끝을 body 안쪽 끝(아래 여백 제외)에 맞춤. 안전영역이 0인 일반 브라우저·PC는 기존 값과 같음 */
+ let bot=vh-10;try{const bd=document.body,r=bd.getBoundingClientRect(),pb=parseFloat(getComputedStyle(bd).paddingBottom)||0;if(r.height>0)bot=Math.min(bot,r.bottom-pb)}catch(e){}
+ const h=Math.max(360, bot - top);b.style.height=h+'px';}
 function isWide(){try{return matchMedia('(min-width:820px) and (orientation:landscape)').matches}catch(e){return false}}
 function conAction(){const a=S.ask,p=cur();const mains=a?a.opts.filter(o=>!o.g):[],subs=a?a.opts.filter(o=>o.g):[];
  const bt=o=>`<button class="btn${o.g?' ghost':' main'}" data-ask="${o.id}" ${o.dis?'disabled':''}>${o.l}</button>`;
