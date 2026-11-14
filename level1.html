@@ -874,8 +874,8 @@ function render(){if(!S)return;document.body.classList.add('playing');const rn=M
  const nw=$('#newsbox');if(nw)nw.onclick=()=>{newsOpen=!newsOpen;render()};
  if(S.over)showResult()}
 function rankOf(p){return alive().slice().sort((a,b)=>netWorth(b)-netWorth(a)).indexOf(p)+1}
-/* 보드 높이 실측 맞춤 — iPhone Safari는 innerHeight가 실제 보이는 높이(툴바·홈 표시줄 제외)보다 클 수 있어 100svh·body 높이까지 함께 재서 가장 작은 값 사용 */
-function safeVH(){var d=document,e=d.documentElement,p=d.getElementById('__svh');if(!p){p=d.createElement('div');p.id='__svh';p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;height:100vh;height:calc(100svh - env(safe-area-inset-bottom,0px))';e.appendChild(p)}var vv=window.visualViewport,h=[innerHeight||1e5,(vv&&vv.height)||1e5,e.clientHeight||1e5,p.getBoundingClientRect().height||1e5];var b=d.body;if(b){var o=getComputedStyle(b).overflowY;if(o!=='visible'&&b.clientHeight>200)h.push(b.clientHeight)}return Math.min.apply(null,h)}
+/* 보드 높이 실측 맞춤 — iPhone Safari는 innerHeight가 실제 보이는 높이(툴바·홈 표시줄 제외)보다 클 수 있어 기존 기준(innerHeight·visualViewport·문서 높이)에 현재 보이는 높이(100dvh)를 더해 가장 작은 값 사용 */
+function safeVH(){var d=document,e=d.documentElement;function pr(id,css){var p=d.getElementById(id);if(!p){p=d.createElement('div');p.id=id;p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;'+css;e.appendChild(p)}return p.getBoundingClientRect().height||1e5}var vv=window.visualViewport,h=[innerHeight||1e5,(vv&&vv.height)||1e5,e.clientHeight||1e5,pr('__dvh','height:100vh;height:100dvh')];return Math.min.apply(null,h)}
 function fitBoard(){const b=document.getElementById('board');if(!b)return;
  const top=b.getBoundingClientRect().top;const vh=safeVH();
  const h=Math.max(360, vh - top - 10);b.style.height=h+'px';}

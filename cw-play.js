@@ -7,9 +7,9 @@
   function $(s) { return document.querySelector(s); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function rnd(n) { return Math.floor(Math.random() * n); }
-  // iPhone Safari(iOS 26)는 innerHeight 등이 하단 툴바 밑까지 포함할 수 있어, 실제 보이는 100svh(하단 안전영역 제외)와 비교해 최소값 사용
-  function svhPx() { var p = document.getElementById('__svh'); if (!p) { p = document.createElement('div'); p.id = '__svh'; p.setAttribute('aria-hidden', 'true'); p.style.cssText = 'position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;height:100vh;height:calc(100svh - env(safe-area-inset-bottom,0px))'; document.documentElement.appendChild(p); } return p.getBoundingClientRect().height || 1e5; }
-  function setAppH() { var h = Math.min(innerHeight, (window.visualViewport && visualViewport.height) || 1e5, document.documentElement.clientHeight || 1e5, svhPx()); document.documentElement.style.setProperty('--app-h', Math.round(h) + 'px'); }
+  // iPhone Safari(iOS 26)는 innerHeight 등이 하단 툴바 밑까지 포함할 수 있어, 현재 보이는 높이(100dvh)와 비교해 최소값 사용
+  function safeVH(){var d=document,e=d.documentElement;function pr(id,css){var p=d.getElementById(id);if(!p){p=d.createElement('div');p.id=id;p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;'+css;e.appendChild(p)}return p.getBoundingClientRect().height||1e5}var vv=window.visualViewport,h=[innerHeight||1e5,(vv&&vv.height)||1e5,e.clientHeight||1e5,pr('__dvh','height:100vh;height:100dvh')];return Math.min.apply(null,h)}
+  function setAppH() { var h = Math.min(innerHeight, (window.visualViewport && visualViewport.height) || 1e5, document.documentElement.clientHeight || 1e5, safeVH()); document.documentElement.style.setProperty('--app-h', Math.round(h) + 'px'); }
   setAppH(); addEventListener('resize', setAppH); addEventListener('orientationchange', function () { setTimeout(setAppH, 250); });
   if (window.visualViewport) visualViewport.addEventListener('resize', setAppH);
   document.documentElement.setAttribute('data-game', C.theme);

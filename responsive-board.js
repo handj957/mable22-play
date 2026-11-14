@@ -163,8 +163,8 @@
     gcache.set(sig, {f, row, icons});
   }
 
-  // iPhone Safari: innerHeight/visualViewport가 실제 보이는 높이보다 클 수 있어 100svh·body 높이와 비교해 최소값 사용
-  function safeVH(){var d=document,e=d.documentElement,p=d.getElementById('__svh');if(!p){p=d.createElement('div');p.id='__svh';p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;height:100vh;height:calc(100svh - env(safe-area-inset-bottom,0px))';e.appendChild(p)}var vv=window.visualViewport,h=[innerHeight||1e5,(vv&&vv.height)||1e5,e.clientHeight||1e5,p.getBoundingClientRect().height||1e5];var b=d.body;if(b){var o=getComputedStyle(b).overflowY;if(o!=='visible'&&b.clientHeight>200)h.push(b.clientHeight)}return Math.min.apply(null,h)}
+  // iPhone Safari: innerHeight/visualViewport가 실제 보이는 높이보다 클 수 있어 현재 보이는 높이(100dvh)와 비교해 최소값 사용
+  function safeVH(){var d=document,e=d.documentElement;function pr(id,css){var p=d.getElementById(id);if(!p){p=d.createElement('div');p.id=id;p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9px;top:0;width:1px;visibility:hidden;pointer-events:none;'+css;e.appendChild(p)}return p.getBoundingClientRect().height||1e5}var vv=window.visualViewport,h=[innerHeight||1e5,(vv&&vv.height)||1e5,e.clientHeight||1e5,pr('__dvh','height:100vh;height:100dvh')];return Math.min.apply(null,h)}
   function fit() {
     frame = 0;
     const app = document.querySelector('.app');
