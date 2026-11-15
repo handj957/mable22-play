@@ -68,6 +68,7 @@
     '.mp-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:max(6px,env(safe-area-inset-bottom));z-index:2147482000;background:rgba(20,24,40,.88);color:#fff;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;max-width:92vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:auto;cursor:pointer}' +
     '.mp-pill.mine{background:#12b76a;animation:mpPulse 1.2s ease-in-out infinite}@keyframes mpPulse{50%{transform:translateX(-50%) scale(1.06)}}' +
     '.mp-toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:2147483100;background:#1d2433;color:#fff;border-radius:12px;padding:9px 14px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:92vw;text-align:center;transition:opacity .3s}' +
+    '.mp-modes{display:grid;gap:10px;margin:14px 0 4px}.mp-mode{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid #e4e7ec;background:#fff;border-radius:14px;padding:14px;min-height:72px;font:inherit;color:#1d2433;cursor:pointer}.mp-mode:hover,.mp-mode:focus-visible{border-color:#6d5dfc;background:#f6f4ff}.mp-mode i{font-style:normal;font-size:32px;flex:none}.mp-mode b{display:block;font-size:17px}.mp-mode span{display:block;color:#667085;font-size:12.5px;margin-top:2px}' +
     '.mp-sent{outline:3px solid #12b76a!important;outline-offset:2px}' +
     '@media (prefers-reduced-motion:reduce){.mp-pill.mine{animation:none}}';
   function css() { if (document.getElementById('mp-css')) return; var s = el('style'); s.id = 'mp-css'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); }
@@ -274,12 +275,27 @@
     };
   }
 
+  /* 접속하면 먼저: 1인 플레이 / 멀티플레이 고르기 (페이지를 열 때 한 번) */
+  var asked = false;
+  function chooseMode() {
+    asked = true; css();
+    var ov = el('div', 'mp-ov'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.id = 'mp-mode';
+    ov.innerHTML = '<div class="mp-card"><h3>어떻게 플레이할까요?</h3><p class="mp-sub">언제든 설정 화면 오른쪽 위 👥 버튼으로 바꿀 수 있습니다.</p><div class="mp-modes">' +
+      '<button type="button" class="mp-mode" data-mp-solo><i>🎮</i><div><b>1인 플레이</b><span>나 + AI 상대 · 바로 시작</span></div></button>' +
+      '<button type="button" class="mp-mode" data-mp-multi><i>👥</i><div><b>멀티플레이</b><span>온라인 방 · 최대 4명 · 각자 폰·패드로</span></div></button></div></div>';
+    document.body.appendChild(ov);
+    var s = ov.querySelector('[data-mp-solo]'); try { s.focus(); } catch (e) {}
+    s.onclick = function () { ov.remove(); };
+    ov.querySelector('[data-mp-multi]').onclick = function () { ov.remove(); openLobby(); };
+  }
+
   /* 설정 화면에서만 보이는 ‘온라인 방’ 버튼 */
   function fab() {
     var f = document.getElementById('mp-fab'), show = false;
     try { show = !!A && !MP.started && A.setupVisible(); } catch (e) {}
     if (show && !f) { css(); f = el('button', 'mp-fab', '👥 온라인 방'); f.id = 'mp-fab'; f.type = 'button'; f.onclick = openLobby; document.body.appendChild(f); }
     if (f) f.hidden = !show;
+    if (show && !asked && !MP.pendingCode && !MP.isOnline() && !lob && !document.querySelector('.mp-ov')) chooseMode();
   }
 
   /* 호스트가 새 게임을 만들 때 — 방 인원을 자리에 앉힘 */

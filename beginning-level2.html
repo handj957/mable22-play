@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head>
-<script src="orient-guard.js?v=1"></script>
+<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=1"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
 <script src="./i18n.js?v=12" data-dict="./i18n/level2.en.js?v=2,./i18n/beginning.en.js?v=1,./i18n/common.en.js?v=8"></script>
@@ -1478,6 +1478,7 @@ function miniBoard(){
 }
 function showSetup(){
   const el=$('#setup');el.hidden=false;const saved=loadSaved();
+  if(!(window.MP&&MP.mode==='host'))SETUP.seats.forEach((s,i)=>{if(i)s.human=false});
   const humans=SETUP.seats.filter(s=>s.human).length;
   const ratio={easy:[6,4],normal:[5,5],hard:[4,6]};
   const fxOnList=['A','B','C','D'].filter(k=>OPT.fx[k]).join('');
@@ -1486,10 +1487,10 @@ function showSetup(){
   <section class="hero">${miniBoard()}
     <div class="stats"><div><b>48</b><span>보드 칸</span></div><div><b>9</b><span>지표</span></div><div><b>3</b><span>주사위</span></div><div><b>48</b><span>사건 카드</span></div></div>
   </section>
-  <section><div class="sh"><h2>지도자</h2><span>사람 ${humans} · AI ${4-humans} · 한 기기를 돌려 가며</span></div>
+  <section><div class="sh"><h2>지도자</h2><span>${humans>1?`온라인 방 ${humans}명 · AI ${4-humans}`:'나 + AI 3 · 친구와 하려면 👥 온라인 방'}</span></div>
     <div class="seats">${SETUP.seats.map((s,i)=>`<div class="st ${s.human?'me':''}" style="--pc:${PCOL[i]}">
       <div class="top"><span class="av">${SYM[i]}</span><input id="nm${i}" value="${s.name}" maxlength="8" aria-label="지도자 ${i+1} 이름"></div>
-      <div class="tg" role="group" aria-label="지도자 ${i+1} 조작"><button data-s="${i}" data-h="1" class="${s.human?'on':''}" aria-pressed="${s.human}">사람</button><button data-s="${i}" data-h="0" class="${s.human?'':'on'}" aria-pressed="${!s.human}">AI</button></div>
+      <div class="tg"><button class="on" disabled>${i===0?'나':s.human?'온라인':'AI'}</button></div>
     </div>`).join('')}</div>
   </section>
   <section><div class="sh"><h2>난이도</h2><span>규칙은 같고 사건 카드 비율만 다릅니다</span></div>
@@ -1507,7 +1508,6 @@ function showSetup(){
   const sync=()=>SETUP.seats.forEach((s,i)=>{const v=$('#nm'+i);if(v)s.name=v.value.trim()||s.name;});
   const adv=el.querySelector('details.adv');adv.ontoggle=()=>{VIEW.advOpen=adv.open;};
   const keep=()=>{const y=el.scrollTop;sync();showSetup();el.scrollTop=y;};
-  el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{SETUP.seats[+b.dataset.s].human=b.dataset.h==='1';keep();});
   el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{SETUP.diff=b.dataset.d;keep();});
   el.querySelectorAll('[data-rounds]').forEach(b=>b.onclick=()=>{SETUP.rounds=+b.dataset.rounds;keep();});
   el.querySelectorAll('[data-eo]').forEach(b=>b.onclick=()=>{SETUP.opt[b.dataset.eo]=+b.dataset.v;keep();});
@@ -1838,4 +1838,22 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
 </script>
 <script src="cell-fit.js?v=5"></script>
 <script src="choice-chain.js?v=4"></script><script src="result-dice.js?v=1"></script>
+<script>/* ── 다중 플레이 연결 (mp-core.js) ── */
+(function(){if(!window.MP)return;
+ const _ng=newGame;newGame=function(cfg){_ng(cfg);MP.onNewState(G)};
+ focusP=function(){return MP.me()||cur()};
+ const chooser=()=>{if(!G)return null;if(G.choices&&G.choices[0]&&G.choices[0].who!=null)return G.players[G.choices[0].who];return null};
+ setInterval(()=>{if(MP.mode==='host')MP.flush()},400);
+ MP.bind({level:'beginning-level2',
+  players:()=>G?G.players:[],turn:()=>G?G.turn:0,asker:chooser,
+  askOpen:()=>!!G&&(G.phase==='roll'||G.phase==='hsr'||G.phase==='choice'),
+  state:()=>G,setState:s=>{G=s},render:()=>render(),
+  setupVisible:()=>{const s=document.getElementById('setup');return !!s&&!s.hidden},
+  actionEl:t=>{const r=t.closest('#roll,#center .btns .btn[data-i]');if(r)return r;const c=t.closest('#board .cell');return c&&G&&G.phase==='hsr'?c:null},
+  enterGame:()=>{const s=document.getElementById('setup');if(s)s.hidden=true;VIEW={tab:'act',info:null,badge:{}};try{clearPawns()}catch(e){}},
+  clientMode:()=>{save=function(){};startTurn=async function(){}},
+  prepareForm:(n,names)=>{SETUP.seats.forEach((s,k)=>{s.human=k<n;if(k<n&&names[k])s.name=names[k]});showSetup()},
+  applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;p.human=true;p.strat='균형';p.name=m.name})
+ })})();
+</script>
 </body></html>
