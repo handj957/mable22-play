@@ -254,6 +254,10 @@ html.land,html.land body{height:100%;overflow:hidden}
 html.land body{display:block;padding:max(4px,env(safe-area-inset-top,0px)) max(6px,env(safe-area-inset-right,0px)) max(4px,env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
 html.land body:not(.playing){overflow-y:auto;-webkit-overflow-scrolling:touch}
 html.land body:not(.playing) .wrap{max-width:640px}
+/* 시작 화면은 body 안쪽 스크롤이 아니라 문서 전체 스크롤 — iPhone·iPad Safari(iOS 26)의 떠 있는 툴바 위로 '게임 시작' 버튼을 올려 누를 수 있게 (안쪽 스크롤 상자는 툴바 밑에 버튼이 갇힘). Beginning·edu 1과 같은 방식 */
+html:has(> body:not(.playing)){height:auto!important;min-height:100%;overflow-y:auto!important}
+body:not(.playing){height:auto!important;min-height:100%;overflow:visible!important;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px)!important}
+
 html.land body.playing .wrap{max-width:none;height:100%;display:grid;grid-template-columns:clamp(150px,19vw,210px) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);column-gap:6px;align-content:start}
 html.land body.playing header{grid-column:1;grid-row:1;margin:0 0 4px;gap:3px 5px}
 html.land body.playing #who{grid-column:1;grid-row:2;margin-bottom:4px}
@@ -979,7 +983,7 @@ function renderSetup(){document.body.classList.remove('playing');const saved=loa
  <p class="sub">시작 패키지: 현금 ₵1,500 + 대학가·전통시장 필지 1곳 + 교육 기초. 승리: 라운드 종료 시 순자산 1위, 상대 전원 파산, 구역 2개 독점.</p>
  <p class="disc">※ 게임의 수치는 설계값이며 현실에서 측정한 상관관계가 아닙니다.</p>
  <button class="btn" type="submit" style="width:100%;font-size:15px;min-height:44px">🎲 게임 시작</button></form></div>`;
- if(saved)$('#btnResume').onclick=()=>{S=saved;S.ask=null;gen++;render();gameLoop()};
+ if(saved)$('#btnResume').onclick=()=>{S=saved;S.ask=null;try{scrollTo(0,0)}catch(_){};gen++;render();gameLoop()};
  document.querySelectorAll('#setupForm input[name=frame]').forEach(r=>r.onchange=()=>applyFrame(r.value));
  $('#setupForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);applyFrame(f.get('frame'));S=newState(f.get('nm').trim()||'나',+f.get('nai'),f.get('diff'),+f.get('len'),f.get('speed'),{dex:!!f.get('o_dex'),why:!!f.get('o_why'),hint:!!f.get('o_hint'),bail:!!f.get('o_bail'),adv:!!f.get('o_adv')});S.v=1;syncCycle();gen++;selected=S.players[0].pos;render();gameLoop()}}
 (function(){const nj=$('#nojs');if(nj)nj.remove();applyOrient();applyFrame(getFrame());renderSetup()})();
