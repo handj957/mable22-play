@@ -314,7 +314,8 @@ html.land .acts .btn.main{min-height:36px;font-size:1.1em}
 .rr-why{margin:10px 0;padding:8px 10px;background:var(--panel2);border-radius:8px;font-size:.92em}.rr-why ul{margin:4px 0 0;padding-left:1.1em}.rr-why li{margin:2px 0}
 .rr-box .btn{width:100%;min-height:44px;font-size:1.02em}
 @media (max-height:480px){.rr-box{padding:8px 12px}.rr-row{padding:3px 4px}.rr-why{margin:6px 0;padding:5px 8px}}
-</style><link rel="stylesheet" href="./mobile-screen.css?v=4"><link rel="stylesheet" href="./intro-skin.css?v=2"></head><body>
+</style><link rel="stylesheet" href="./mobile-screen.css?v=4"><link rel="stylesheet" href="./intro-skin.css?v=2"><script src="device-spec.js?v=1"></script>
+</head><body>
 <div class="wrap">
 <header><h1>네오 아틀라스 <b>부자 경영</b></h1><div id="hdr"></div></header><div id="who"></div>
 <main id="stage"><div class="nojs" id="nojs">⚠️ 이 미리보기에서는 게임이 실행되지 않습니다. 파일을 <b>Safari나 Chrome 브라우저로 열어</b> 주세요.</div></main>
@@ -970,14 +971,7 @@ function devCheck(){const w=innerWidth,h=innerHeight,sh=Math.min(w,h),lg=Math.ma
  else if(miss.length){lv='warn';msg='브라우저가 오래되어 일부 화면이 어긋날 수 있어요 ('+miss.join(', ')+' 미지원). 최신 버전으로 업데이트하세요.'}
  else if(sh<360){lv='warn';msg='작은 화면입니다. 글자가 작게 보일 수 있어 가로 모드를 권장합니다.'}
  return{w,h,kind,ori,lv,msg}}
-function specBox(){const d=devCheck(),ic={ok:'✅',warn:'⚠️',bad:'❌'}[d.lv];
- return`<div class="spec ${d.lv}" role="note"><div class="spec-now"><span class="spec-ic">${ic}</span><span><b>현재 기기</b> ${d.kind} · ${d.ori} · ${d.w}×${d.h}<small>${esc(d.msg)}</small></span></div>
- <details><summary>권장 사양 보기</summary><ul>
- <li><b>📱 폰</b> iPhone iOS 15+ (Safari) · Android 9+ (Chrome 100+) · 화면 폭 360px 이상 권장</li>
- <li><b>📲 태블릿</b> iPadOS 15+ (Safari) · Android 태블릿 Chrome 100+ · 세로·가로 모두 지원</li>
- <li><b>💻 PC</b> Chrome · Edge · Safari · Firefox 최신 2개 버전 · 해상도 1024×600 이상</li>
- <li><b>공통</b> JavaScript 켜짐 · 저장소(쿠키/사이트 데이터) 허용 · 인터넷 연결 (글꼴 로딩)</li>
- <li><b>화면이 어긋나면</b> 상단 📐 프레임 버튼으로 기기 모양을 바꾸거나, 가로/세로를 돌려 보세요.</li></ul></details></div>`}
+function specBox(){/* 최소사양 안내는 공용 device-spec.js가 그림(모든 레벨 동일) */return window.DeviceSpec?DeviceSpec.html():''}
 
 /* ═════════ 시작 화면 ═════════ */
 function renderSetup(){document.body.classList.remove('playing');const saved=load();$('#hdr').innerHTML='';$('#who').innerHTML='';
