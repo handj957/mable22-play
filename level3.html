@@ -1115,7 +1115,7 @@ html{height:100%}
         <label><input type="radio" name="mode" id="modeLong" value="long"><span>⏳ 장기전<small>상대 3명 · 45라운드</small></span></label>
       </div></div>
     <div class="field"><label class="t"><em>2</em>플레이어 <span class="sxtot" id="sxTot">총 4개국</span></label>
-      <div class="sxrow"><span class="sxlab">사람</span><div class="seg" id="hSeg">
+      <div class="sxrow" style="display:none"><span class="sxlab">사람</span><div class="seg" id="hSeg">
         <label><input type="radio" name="hum" id="hum1" value="1" checked><span>1명</span></label>
         <label><input type="radio" name="hum" id="hum2" value="2"><span>2명</span></label>
         <label><input type="radio" name="hum" id="hum3" value="3"><span>3명</span></label>
@@ -3796,11 +3796,11 @@ const GOVSW={dem:{s:'생산성 +5% · 민주국끼리 외교 +2 · 선거로 지
 $('#blocOpts').innerHTML=['A','P','E','S'].map((b,k)=>`<label style="--bk:${BLOCS[b].k}"><input type="radio" name="bloc" id="bloc${b}" value="${b}" ${k===1?'checked':''}><span><b class="bn"><i></i>${BLOCS[b].n}</b><small>군사 ${BLOCS[b].m} · ${BLOCS[b].d}</small></span></label>`).join('');
 $('#govOpts').innerHTML=['dem','dict','mon','com'].map((g,k)=>`<label><input type="radio" name="gov" id="gov${g}" value="${g}" ${k===0?'checked':''}><span><b class="gn"><i>${GOV[g].e}</i>${GOV[g].n}</b><small class="gs">▲ ${GOVSW[g].s}</small><small class="gw">▼ ${GOVSW[g].w}</small></span></label>`).join('');
 function syncPlayers(){const h=+((document.querySelector('input[name=hum]:checked')||{}).value||1);
-  [2,3,4].forEach(k=>{const el=$('#pname'+k);if(el)el.hidden=k>h});
+  [2,3,4].forEach(k=>{const el=$('#pname'+k);if(el)el.hidden=true});
   let a=+((document.querySelector('input[name=ai]:checked')||{}).value||0);
   document.querySelectorAll('input[name=ai]').forEach(r=>{const v=+r.value;r.disabled=h+v>4||h+v<2;r.closest('label').classList.toggle('off',r.disabled)});
   if(h+a>4||h+a<2){a=Math.max(2-h,Math.min(4-h,a));const r=$('#ai'+a);if(r)r.checked=true}
-  $('#sxTot').textContent=`총 ${h+a}개국 · 사람 ${h} · AI ${a}`}
+  $('#sxTot').textContent=h>1?`온라인 방 ${h}명 + AI ${a}`:`총 ${h+a}개국 · 나 + AI ${a}`}
 document.querySelectorAll('input[name=hum],input[name=ai],input[name=mode]').forEach(r=>r.addEventListener('change',()=>setTimeout(syncPlayers,0)));syncPlayers();
 const _nsH=newState;newState=function(name,bloc,nai,rounds,gov){
   const setup=!$('#setup').hidden,h=setup?+((document.querySelector('input[name=hum]:checked')||{}).value||1):1;
@@ -3819,7 +3819,7 @@ const _reR=roundEnd;roundEnd=function(){_reR();if(!S||!S.relB)return;Object.keys
   (S.treaties||[]).forEach(t=>{const a=S.players[t.a],b=S.players[t.b];if(a&&b)relShift(a.bloc,b.bloc,-.2)})};
 /* 여러 사람: 사람이 모두 부도나야 패배, 차례 알림 */
 checkOver=function(){if(alive().length<=1||S.players.every(p=>!p.human||p.bankrupt)||S.round>S.maxRounds)S.over=true};
-const _ttH=takeTurn;takeTurn=async function(p){if(p&&p.human&&window.MP)await MP.handoffFor(p);return _ttH(p)};
+
 
 /* ═════════ v19: 도시 자산(호텔·전략자산·군사기지 + 도시별 특화 2종) · 군사 압박 판정 통일 · 영역 표시 ═════════ */
 const ASSET={

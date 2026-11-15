@@ -1428,6 +1428,7 @@ function miniBoard(){
 }
 function showSetup(){
   const el=$('#setup');el.hidden=false;const saved=loadSaved();
+  if(!(window.MP&&MP.mode==='host'))SETUP.seats.forEach((s,i)=>{if(i)s.human=false});
   const humans=SETUP.seats.filter(s=>s.human).length;
   const ratio={easy:[6,4],normal:[5,5],hard:[4,6]};
   const fxOnList=['A','B','C','D'].filter(k=>OPT.fx[k]).join('');
@@ -1436,10 +1437,10 @@ function showSetup(){
   <section class="hero">${miniBoard()}
     <div class="stats"><div><b>62</b><span>보드 칸</span></div><div><b>9</b><span>지표</span></div><div><b>3</b><span>주사위</span></div><div><b>70</b><span>사건 카드</span></div></div>
   </section>
-  <section><div class="sh"><h2>지도자</h2><span>사람 ${humans} · AI ${4-humans} · 한 기기를 돌려 가며 · 각자 폰은 👥 함께 플레이</span></div>
+  <section><div class="sh"><h2>지도자</h2><span>${humans>1?`온라인 방 ${humans}명 · AI ${4-humans}`:'나 + AI 3 · 친구와 하려면 👥 온라인 방'}</span></div>
     <div class="seats">${SETUP.seats.map((s,i)=>`<div class="st ${s.human?'me':''}" style="--pc:${PCOL[i]}">
       <div class="top"><span class="av">${SYM[i]}</span><input id="nm${i}" value="${s.name}" maxlength="8" aria-label="지도자 ${i+1} 이름"></div>
-      <div class="tg" role="group" aria-label="지도자 ${i+1} 조작"><button data-s="${i}" data-h="1" class="${s.human?'on':''}" aria-pressed="${s.human}">사람</button><button data-s="${i}" data-h="0" class="${s.human?'':'on'}" aria-pressed="${!s.human}">AI</button></div>
+      <div class="tg"><button class="on" disabled>${i===0?'나':s.human?'온라인':'AI'}</button></div>
     </div>`).join('')}</div>
   </section>
   <section><div class="sh"><h2>난이도</h2><span>규칙은 같고 사건 카드 비율만 다릅니다</span></div>
@@ -1452,7 +1453,6 @@ function showSetup(){
   const sync=()=>SETUP.seats.forEach((s,i)=>{const v=$('#nm'+i);if(v)s.name=v.value.trim()||s.name;});
   const adv=el.querySelector('details.adv');adv.ontoggle=()=>{VIEW.advOpen=adv.open;};
   const keep=()=>{const y=el.scrollTop;sync();showSetup();el.scrollTop=y;};
-  el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{SETUP.seats[+b.dataset.s].human=b.dataset.h==='1';keep();});
   el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{SETUP.diff=b.dataset.d;keep();});
   wireSettings(el,keep);
   const stopAnim=()=>{if(SU_TIMER){clearInterval(SU_TIMER);SU_TIMER=null;}};
@@ -1765,7 +1765,6 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
 <script>/* ── 다중 플레이 연결 (mp-core.js) ── */
 (function(){if(!window.MP)return;
  const _ng=newGame;newGame=function(cfg){_ng(cfg);MP.onNewState(G)};
- const _st=startTurn;startTurn=async function(){const p=G&&!G.winner&&cur();if(p&&p.human&&!p.out&&!(p.skip>0))await MP.handoffFor(p);return _st()};
  focusP=function(){return MP.me()||cur()};
  const chooser=()=>{if(!G)return null;if(G.choices&&G.choices[0]&&G.choices[0].who!=null)return G.players[G.choices[0].who];return null};
  setInterval(()=>{if(MP.mode==='host')MP.flush()},400);

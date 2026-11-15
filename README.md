@@ -16,7 +16,7 @@ Beginning 버전
 - Level 4 · 글로벌패권 리더: https://handj957.github.io/mable22-play/beginning-level4.html
 
 함께 플레이 (Level 1~4)
-- 사람 최대 4명. 설정 화면 오른쪽 위 👥 함께 플레이 → 한 기기에서 돌려하기 / 온라인 방(방 코드 4자리)
+- 사람 최대 4명이 각자 폰으로. 설정 화면 오른쪽 위 👥 온라인 방 → 방 만들기 / 코드 4자리로 참여
 - 설계·배포 안내: docs/MULTIPLAYER_PLAN.md (온라인 서버는 server/ 폴더, Cloudflare Workers)
 
 피드백은 레벨 · 기기(아이폰/갤럭시/PC) · 장면을 함께 적어 주세요.
