@@ -46,6 +46,8 @@ document.addEventListener('fullscreenchange',rearm);document.addEventListener('w
 *{box-sizing:border-box}
 html,body{margin:0}
 html,body{height:100%}
+/* iPhone·iPad Safari: 100%는 툴바가 펼쳐진 높이라 툴바가 접히면 아래가 비고 잘림 → 실제 보이는 높이(100dvh) 사용 (Level 2와 같은 방식) */
+@supports (height:100dvh){html,body{height:100dvh}}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5;
   padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-block:6px 10px;
   background-image:radial-gradient(900px 400px at 85% -10%,rgba(46,139,139,.10),transparent 60%),radial-gradient(700px 400px at -10% 100%,rgba(224,112,46,.10),transparent 60%)}
@@ -253,6 +255,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 /* ═════════ 가로 화면(폰 눕힘) — 보드를 90° 돌려 가로로 긴 판, 정보 띠는 왼쪽, 콘솔은 보드 가운데 2단 ═════════ */
 html.land,html.land body{height:100%;overflow:hidden}
+@supports (height:100dvh){html.land,html.land body{height:100dvh}}
 html.land body{display:block;padding:max(4px,env(safe-area-inset-top,0px)) max(6px,env(safe-area-inset-right,0px)) max(4px,env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
 html.land body:not(.playing){overflow-y:auto;-webkit-overflow-scrolling:touch}
 html.land body:not(.playing) .wrap{max-width:640px}
