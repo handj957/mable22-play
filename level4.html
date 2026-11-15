@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko" data-skin="pearl" data-light><head><script src="orient-guard.js?v=1"></script>
+<!doctype html><html lang="ko" data-skin="pearl" data-light><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=1"></script>
 <script src="scroll-hint.js?v=1"></script>
 <link rel="manifest" href="./manifest.webmanifest?v=1"><meta name="apple-mobile-web-app-title" content="브르마블"><meta name="theme-color" content="#6040bd">
 <link rel="stylesheet" href="dual-dice.css?v=6">
@@ -2320,7 +2320,7 @@ function pickEvent(){const pool=EVENTS.filter(e=>!e.ok||e.ok());const wars=Objec
 /* ═════════ 자금 ═════════ */
 function led(f,t,a,w){a=Math.round(a);if(!a)return;if(!S.ledger)S.ledger=[];S.ledger.push({r:S.round,f:f?f.id:-1,t:t?t.id:-1,a,w:w||S._why||'거래',n:(S._seq=(S._seq||0)+1)});if(S.ledger.length>240)S.ledger.shift();
   if(typeof coinFly==='function'&&a>=20)coinFly(f?f.id:-1,t?t.id:-1,a,w||S._why||'');
-  const me=S.players[0];if(t===me&&a>=50&&f!==me)toast(`💰 <span class="good">+${won(a)}</span> ← ${f?esc(f.name):'은행·시장'} · ${esc(w||S._why||'수입')}`);
+  const me=ME();if(t===me&&a>=50&&f!==me)toast(`💰 <span class="good">+${won(a)}</span> ← ${f?esc(f.name):'은행·시장'} · ${esc(w||S._why||'수입')}`);
   else if(f===me&&a>=150&&t!==me)toast(`💸 <span class="bad">−${won(a)}</span> → ${t?esc(t.name):'은행·시장'} · ${esc(w||S._why||'지출')}`)}
 function gain(p,n,why){if(n<=0)return;p.cash+=n;led(null,p,n,why);log(`${pn(p)} +${won(n)}`)}
 function borrow(p,amt){amt=Math.min(amt,borrowCap(p));if(amt<=0)return 0;p.debt+=amt;p.cash+=amt;led(null,p,amt,'국채 발행(대출)');log(`${pn(p)} 국채 발행 ${won(amt)}`);return amt}
@@ -2610,7 +2610,7 @@ async function takeTurn(p){
     if(p.jail>0)again=false;
   }
 }
-function checkOver(){if(alive().length<=1||S.players[0].bankrupt||S.round>S.maxRounds)S.over=true}
+function checkOver(){if(alive().length<=1||ME().bankrupt||S.round>S.maxRounds)S.over=true}
 function advance(){let t=S.turn;do{t=(t+1)%S.players.length;if(t===(S.roundStart||0)){S.round++;if(S.round<=S.maxRounds)roundEnd()}}while(S.players[t].bankrupt&&alive().length>0);S.turn=t}
 async function gameLoop(){const g=gen;while(!S.over){if(S.phase==='done'){advance();checkOver();if(S.over)break}S.phase='move';S.dest=null;save();const p=cur();if(!p.bankrupt)await takeTurn(p);if(g!==gen)return;S.phase='done';save();checkOver();if(S.over)break}S.ask=null;S.phase=null;save();render();showResult()}
 function save(){try{localStorage.setItem('bm22L4',JSON.stringify(Object.assign({},S,{ask:null})))}catch(e){}}
@@ -2704,7 +2704,7 @@ function alerts(me){
   return out;
 }
 function renderDash(){
-  const me=S.players[0],D=k=>DOM[k].c;
+  const me=ME(),D=k=>DOM[k].c;
   const tags={};ownedCities(me).forEach(c=>tags[c.tag]=(tags[c.tag]||0)+1);
   const topT=Object.entries(tags).sort((a,b)=>b[1]-a[1]).slice(0,2);
   const tr=S.treaties.filter(t=>t.a===me.id||t.b===me.id).map(t=>S.players[t.a===me.id?t.b:t.a].name);
@@ -2733,7 +2733,7 @@ function renderPlayers(){
    <span class="m"><span class="bl" style="--bc:${BLOCS[p.bloc].c}">${BLOCS[p.bloc].n}</span>${STRAT[p.strategy].n} · ${ownedIdx(p).length}곳 · ${verdict(p)[0]} · 군 ${p.M} · 생산 ${prod(p)}% · 혼란 ${p.un}</span><span class="w">${won(netWorth(p))}</span></div>`).join('');
 }
 function renderDetail(){
-  const c=CELLS[selected],pr=S.props[selected],o=ownerOf(selected),me=S.players[0];
+  const c=CELLS[selected],pr=S.props[selected],o=ownerOf(selected),me=ME();
   let h=`<h2>${esc(c.name)} <span>${c.country?esc(c.country):''}</span></h2>${c.g?`<div class="gbar" style="--g:${GCOL[c.g]}"></div>`:''}<p class="note">${esc(c.note||'')}</p><dl>`;
   if(c.t==='city'){
     const w=wxOf(c);
@@ -3091,12 +3091,12 @@ function renderRules(){$('#rules').innerHTML=rulesHTML()}
 /* ═════════ 입력 ═════════ */
 document.addEventListener('click',e=>{
   const ab=e.target.closest('[data-ask]');if(ab&&askResolve&&!ab.disabled){const r=askResolve;askResolve=null;S.ask=null;r(ab.dataset.ask);return}
-  const bd=e.target.closest('[data-bid]');if(bd&&S){S.players[0].bid=S.players[0].bid?0:1;render();return}
-  const bq=e.target.closest('[data-bond]');if(bq&&S){if(!cur().human){toast('⏳ 대출·상환은 내 차례에만');return}const me=S.players[0];if(bq.dataset.bond==='b')borrow(me,Math.min(300,borrowCap(me)));else if(bq.dataset.bond==='r')repayBond(me,300);else repayBond(me,me.debt);render();return}
-  const pp=e.target.closest('[data-prop]');if(pp&&S){if(!cur().human){toast('⏳ 담보·매각은 내 차례에만');return}const me=S.players[0],i=+pp.dataset.i,k=pp.dataset.prop;if(k==='mort')mortgageProp(me,i);else if(k==='redeem')redeemProp(me,i);else{if(pp.dataset.sure){sellProp(me,i)}else{pp.dataset.sure='1';pp.textContent='정말 매각?';return}}render();return}
-  const tr=e.target.closest('[data-tar]');if(tr&&S){if(!cur().human){toast('⏳ 관세는 내 차례에만 바꿀 수 있습니다');return}const me=S.players[0];const v=+tr.dataset.tar;if(me.gov==='com'&&v<15){log('공산주의 체제는 자유무역을 선택할 수 없습니다');render();return}me.tariff=v;log(`${pn(me)} 관세 정책: ${TARIFF[v]}`);render();return}
-  const cxb=e.target.closest('[data-cx]');if(cxb&&S&&!cxb.disabled){if(!cur().human){toast('⏳ 크립토 매매는 내 차례에만 할 수 있습니다');return}const me=S.players[0];if(cxb.dataset.cx==='buy')buyCx(me,pl(100));else sellCx(me);render();return}
-  const tx=e.target.closest('[data-tax]');if(tx&&S){if(!cur().human){toast('⏳ 세금 정책은 내 차례에만 바꿀 수 있습니다');return}S.players[0].tax=tx.dataset.tax;log(`${pn(S.players[0])} 세금 정책: ${TAX[tx.dataset.tax].n}`);render();return}
+  const bd=e.target.closest('[data-bid]');if(bd&&S){ME().bid=ME().bid?0:1;render();return}
+  const bq=e.target.closest('[data-bond]');if(bq&&S){if(!cur().human){toast('⏳ 대출·상환은 내 차례에만');return}const me=ME();if(bq.dataset.bond==='b')borrow(me,Math.min(300,borrowCap(me)));else if(bq.dataset.bond==='r')repayBond(me,300);else repayBond(me,me.debt);render();return}
+  const pp=e.target.closest('[data-prop]');if(pp&&S){if(!cur().human){toast('⏳ 담보·매각은 내 차례에만');return}const me=ME(),i=+pp.dataset.i,k=pp.dataset.prop;if(k==='mort')mortgageProp(me,i);else if(k==='redeem')redeemProp(me,i);else{if(pp.dataset.sure){sellProp(me,i)}else{pp.dataset.sure='1';pp.textContent='정말 매각?';return}}render();return}
+  const tr=e.target.closest('[data-tar]');if(tr&&S){if(!cur().human){toast('⏳ 관세는 내 차례에만 바꿀 수 있습니다');return}const me=ME();const v=+tr.dataset.tar;if(me.gov==='com'&&v<15){log('공산주의 체제는 자유무역을 선택할 수 없습니다');render();return}me.tariff=v;log(`${pn(me)} 관세 정책: ${TARIFF[v]}`);render();return}
+  const cxb=e.target.closest('[data-cx]');if(cxb&&S&&!cxb.disabled){if(!cur().human){toast('⏳ 크립토 매매는 내 차례에만 할 수 있습니다');return}const me=ME();if(cxb.dataset.cx==='buy')buyCx(me,pl(100));else sellCx(me);render();return}
+  const tx=e.target.closest('[data-tax]');if(tx&&S){if(!cur().human){toast('⏳ 세금 정책은 내 차례에만 바꿀 수 있습니다');return}ME().tax=tx.dataset.tax;log(`${pn(ME())} 세금 정책: ${TAX[tx.dataset.tax].n}`);render();return}
   const cb=e.target.closest('[data-cell]');if(cb){selected=+cb.dataset.cell;render();return}
   const sb=e.target.closest('[data-sim]');if(sb){simKey=sb.dataset.sim;renderMarket();return}
   const tb=e.target.closest('[data-tab]');
@@ -3111,7 +3111,7 @@ $('#govOpts').innerHTML=['dem','dict','mon','com'].map((g,k)=>`<label><input typ
 function openSetup(){$('#resumeBtn').hidden=!loadSave();$('#setup').hidden=false}
 $('#setupForm').addEventListener('submit',e=>{
   e.preventDefault();const f=new FormData(e.target);gen++;askResolve=null;
-  S=newState($('#pname').value.trim()||'지도자',f.get('bloc'),+f.get('ai'),+f.get('len'),f.get('gov')||'dem');
+  S=MP.onNewState(newState($('#pname').value.trim()||'지도자',f.get('bloc'),+f.get('ai'),+f.get('len'),f.get('gov')||'dem'));
   selected=0;$('#setup').hidden=true;$('#result').hidden=true;$('#speedBtn').textContent='속도: '+(S.speed==='fast'?'빠름':'보통');
   log('새 게임 시작. 동유럽은 전쟁 중입니다.');render();gameLoop();
 });
@@ -3122,7 +3122,7 @@ $('#resumeBtn').onclick=()=>{const s=loadSave();if(!s)return;gen++;askResolve=nu
 DOM.me={n:'내 영향',c:'#f2b35b'};
 const STEP=['move','arrive','choose','result'],STEPN={move:'이동',arrive:'도착',choose:'선택',result:'결과',done:'결과'};
 function pct(need,bonus){const k=need-bonus;return Math.round(clamp(k<=1?12:k>12?0:13-k,0,12)/12*100)}
-function myRank(){const al=S.players.filter(p=>!p.bankrupt).sort((a,b)=>netWorth(b)-netWorth(a));return al.indexOf(S.players[0])+1}
+function myRank(){const al=S.players.filter(p=>!p.bankrupt).sort((a,b)=>netWorth(b)-netWorth(a));return al.indexOf(ME())+1}
 function dummyPayer(){return{id:-1,bloc:'N',sanct:0,M:0,nuke:0}}
 
 /* ── 토스트(중요한 순간 연출) ── */
@@ -3198,11 +3198,11 @@ function jailPV(p,fee){const pr=pct(10,Math.floor(p.M/2)+p.sf+termB(p));return{r
 function myTolls(p){const o={},d=dummyPayer();ownedIdx(p).forEach(i=>{o[i]=CELLS[i].t==='city'?cityToll(i,null):toll(i,d,7)});return o}
 function allTolls(){const o={},d=dummyPayer();CELLS.forEach(c=>{if(c.t==='city')o[c.i]=cityToll(c.i,null);else if(c.t==='cp'||c.t==='util'){if(S.props[c.i])o[c.i]=toll(c.i,d,7)}});return o}
 function tollDelta(b4,af){const d={};Object.keys(af).forEach(i=>{const a=b4[i];if(a&&af[i]!==a)d[i]=Math.round((af[i]/a-1)*100)});return d}
-function arrowFor(i){const d=(S.hitD&&S.hitD[i])??(S.rdelta&&S.rdelta[i]);if(d==null||Math.abs(d)<3)return'';const o=ownerOf(i),me=S.players[0];
+function arrowFor(i){const d=(S.hitD&&S.hitD[i])??(S.rdelta&&S.rdelta[i]);if(d==null||Math.abs(d)<3)return'';const o=ownerOf(i),me=ME();
   const good=o===me?d>0:o?d<0:null;const cls=good===null?'neu':good?'up':'dn';return`<span class="arw ${cls}" title="통행료 ${sg(d)}%">${d>0?'▲':'▼'}</span>`}
 const _runEvent=runEvent;
 runEvent=function(e,kind,pre){
-  const me=S.players[0],b4=myTolls(me),all0=allTolls();_runEvent(e,kind,pre);const af=myTolls(me);S.hitD=tollDelta(all0,allTolls());S.hitAt=Date.now();
+  const me=ME(),b4=myTolls(me),all0=allTolls();_runEvent(e,kind,pre);const af=myTolls(me);S.hitD=tollDelta(all0,allTolls());S.hitAt=Date.now();
   const diff=[];Object.keys(af).forEach(i=>{const a=b4[i]??af[i],b=af[i];if(a!==b)diff.push([+i,a,b])});
   diff.sort((x,y)=>Math.abs(y[2]-y[1])-Math.abs(x[2]-x[1]));S.hit=diff.map(d=>d[0]);
   if(!S.news.chain)S.news.chain=[];
@@ -3211,7 +3211,7 @@ runEvent=function(e,kind,pre){
 };
 const _roundEnd=roundEnd;
 roundEnd=function(){
-  const me=S.players[0],nw0=netWorth(me),rk0=myRank(),all0=allTolls();S.hitD=null;S.hit=null;_roundEnd();S.rdelta=tollDelta(all0,allTolls());alive().forEach(checkGoals);
+  const me=ME(),nw0=netWorth(me),rk0=myRank(),all0=allTolls();S.hitD=null;S.hit=null;_roundEnd();S.rdelta=tollDelta(all0,allTolls());alive().forEach(checkGoals);
   const nw1=netWorth(me),rk1=myRank();
   S.recap={r:S.round-1,nw0,nw1,chain:(S.lastSum||[]).slice(0,5),risk:advice(me),rk1};
   if(rk1<rk0)toast(`📈 순위 상승! ${rk0}위 → <span class="good">${rk1}위</span>`);else if(rk1>rk0)toast(`📉 순위 하락 ${rk0}위 → <span class="bad">${rk1}위</span>`);
@@ -3223,7 +3223,7 @@ async function moveSteps(p,n){S.phase='move';S.dest=(p.pos+n)%N;S.trail=[];rende
 
 /* ── 렌더 ── */
 function tokHTML(i){const c=cur();return S.players.filter(p=>!p.bankrupt&&p.pos===i).map(p=>`<span class="tok${p.human?' me':''}${p===c&&S.phase==='move'?' hop':''}" style="--pc:${p.color}" title="${esc(p.name)}"></span>`).join('')}
-function renderTop(){const me=S.players[0],p=cur(),v=verdict(me);
+function renderTop(){const me=ME(),p=cur(),v=verdict(me);
   $('#topbar').innerHTML=`<span>R <b>${Math.min(S.round,S.maxRounds)}/${S.maxRounds}</b></span><span class="turn">${p.human?'🟡 내 차례':esc(p.name)+' 차례'}</span><span>현금 <b>${won(me.cash)}</b></span><span>순자산 <b>${won(netWorth(me))}</b></span><span>순위 <b>${myRank()}/${alive().length}</b></span><span style="color:${v[2]}">${v[0]} ${v[1]}</span>${S.intro?'<span>🎓 입문</span>':''}`}
 function renderAct(){
   const p=cur(),a=S.ask,dk=S.hot||'move',d=DICE.find(x=>x.k===dk),ph=S.phase==='done'?'result':(S.phase||'move');
@@ -3243,7 +3243,7 @@ function renderStrip(){
   $('#strip').innerHTML=h;
 }
 function renderBoard(){
-  const tp=cur(),me=S.players[0];let h='';
+  const tp=cur(),me=ME();let h='';
   CELLS.forEach((c,i)=>{const[r,col]=rc(i),corner=CORNER.includes(i),pr=S.props[i],o=pr?S.players[pr.owner]:null;
     const cls=['cell','side-'+side(i)];if(corner)cls.push('corner');else if(c.t!=='city')cls.push('special');
     if(o)cls.push('owned');if(o===me)cls.push('mine');if(o&&o===tp&&!tp.human)cls.push('turnown');if(i===tp.pos)cls.push('cur');if(S.dest===i&&S.phase==='move')cls.push('dest');if(i===selected)cls.push('sel');if(S.hitAt&&Date.now()-S.hitAt<2600){const hc=hitCls(i);if(hc)cls.push('hit',hc)}
@@ -3297,7 +3297,7 @@ const ICON={start:'🚀',jail:'⛓️',fund:'💰',cyber:'🕵️',event:'🌍',
 function cellIcon(c){if(c.t==='city')return FLAG[c.country]||'🏙️';if(c.t==='util'&&c.kind==='space')return'🛰️';return ICON[c.t]||''}
 function ghostsHTML(){const pv=S.ask&&S.ask.pv;if(!pv||!pv.cells)return'';
   return`<div class="ghosts">${pv.cells.filter(x=>x.label).map(x=>{const[r,c]=rc(x.i);const top=r<=1?(r+1)/22*100:r/22*100,flip=r<=1;return`<span class="gh ${x.cls}${flip?' below':''}" style="left:${(c+.5)/11*100}%;top:${top}%">${x.label}</span>`}).join('')}</div>`}
-function hitCls(i){const d=(S.hitD&&S.hitD[i]);if(d==null||Math.abs(d)<3)return'';const o=ownerOf(i),me=S.players[0];const good=o===me?d>0:o?d<0:null;return good===null?'hit-n':good?'hit-g':'hit-b'}
+function hitCls(i){const d=(S.hitD&&S.hitD[i]);if(d==null||Math.abs(d)<3)return'';const o=ownerOf(i),me=ME();const good=o===me?d>0:o?d<0:null;return good===null?'hit-n':good?'hit-g':'hit-b'}
 function fliesHTML(){const d=S.hitD||{};if(!S.hitAt||Date.now()-S.hitAt>3600)return'';
   const b=$('#board'),W=b?b.clientWidth:440,H=b?b.clientHeight:880;
   const ids=Object.keys(d).filter(i=>Math.abs(d[i])>=3).sort((x,y)=>Math.abs(d[y])-Math.abs(d[x])).slice(0,10);if(!ids.length)return'';
@@ -3312,7 +3312,7 @@ function renderNews(){
   $('#news').innerHTML=`<h2>이번 턴 결과 · 뉴스 <span>${esc(n.k||'')}</span></h2>${recap}<h3>${esc(n.t)}</h3><p>${esc(n.d)}</p>${chainHTML(n.chain)}`;
 }
 const _renderDash=renderDash;
-renderDash=function(){_renderDash();const me=S.players[0];const h2=$('#dash h2');if(h2)h2.innerHTML=`내 국가 · ${esc(me.name)} <span>${BLOCS[me.bloc].n} · ${GOV[me.gov].e} ${GOV[me.gov].n}${me.empire?' 👑':''}</span>`;$('#dash').insertAdjacentHTML('beforeend',goalsHTML(me))};
+renderDash=function(){_renderDash();const me=ME();const h2=$('#dash h2');if(h2)h2.innerHTML=`내 국가 · ${esc(me.name)} <span>${BLOCS[me.bloc].n} · ${GOV[me.gov].e} ${GOV[me.gov].n}${me.empire?' 👑':''}</span>`;$('#dash').insertAdjacentHTML('beforeend',goalsHTML(me))};
 function rankTable(){const al=S.players;
   return`<div class="scroll"><table class="tbl" style="min-width:0;width:100%"><tr><th>분야</th><th>1위</th><th>2위</th><th>3위</th>${al.length>3?'<th>4위</th>':''}</tr>${Object.keys(RANK).map(k=>{const sorted=al.filter(p=>!p.bankrupt).sort((a,b)=>RANK[k].f(b)-RANK[k].f(a));
     return`<tr><td style="color:${DOM[k].c};white-space:nowrap">${DOM[k].n}</td>${sorted.map((p,j)=>`<td style="white-space:nowrap">${MEDAL[j]} <b style="color:${p.color}">${esc(p.name)}</b><br><span style="color:var(--muted);font-size:11px">${RANK[k].v(p)}</span></td>`).join('')}</tr>`}).join('')}</table></div>`}
@@ -3425,7 +3425,7 @@ renderBoard=function(){_renderBoard2();const c=$('#board .center');if(!c)return;
   if(charOpen){const d=document.createElement('div');d.innerHTML=charboxHTML(cur());row.after(d.firstElementChild)}};
 document.addEventListener('click',e=>{if(e.target.closest('#cchar')){charOpen=!charOpen;try{localStorage.setItem('bm22char',charOpen?'1':'0')}catch(x){}renderBoard()}});
 const _roundEnd2=roundEnd;
-roundEnd=function(){const me=S.players[0],k0=stageOf(me);_roundEnd2();const k1=stageOf(me);if(k1>k0)toast(`🎉 국가 성장! ${STAGES[k0].e} ${STAGES[k0].n} → <span class="good">${STAGES[k1].e} ${STAGES[k1].n}</span>`)};
+roundEnd=function(){const me=ME(),k0=stageOf(me);_roundEnd2();const k1=stageOf(me);if(k1>k0)toast(`🎉 국가 성장! ${STAGES[k0].e} ${STAGES[k0].n} → <span class="good">${STAGES[k1].e} ${STAGES[k1].n}</span>`)};
 
 /* ── 자금 흐름 패널: 나라별 유입/유출 + 명목 ── */
 function nameOf(id){return id<0?'은행·시장':(S.players[id]?S.players[id].name:'?')}
@@ -3444,7 +3444,7 @@ let flowOpen=false;try{flowOpen=localStorage.getItem('bm22flow')==='1'}catch(e){
 const _renderBoard3=renderBoard;
 renderBoard=function(){_renderBoard3();const c=$('#board .center');if(!c)return;const row=c.querySelector('.ctabs');if(!row)return;
   const fb=document.createElement('button');fb.className='cfold';fb.id='cflow';fb.setAttribute('aria-pressed',String(flowOpen));fb.textContent=(flowOpen?'▲ ':'')+'💸 자금 흐름';row.appendChild(fb);
-  if(flowOpen){const d=document.createElement('div');d.innerHTML=flowHTML(S.players[0]);const box=d.firstElementChild;const ch=c.querySelector('.charbox');(ch||row).after(box)}};
+  if(flowOpen){const d=document.createElement('div');d.innerHTML=flowHTML(ME());const box=d.firstElementChild;const ch=c.querySelector('.charbox');(ch||row).after(box)}};
 document.addEventListener('click',e=>{if(e.target.closest('#cflow')){flowOpen=!flowOpen;try{localStorage.setItem('bm22flow',flowOpen?'1':'0')}catch(x){}renderBoard()}});
 
 /* ── 돈 이동 연출: 코인이 지불자 → 수령자로 날아감 ── */
@@ -3656,7 +3656,7 @@ const _alertsT=alerts;alerts=function(me){const out=_alertsT(me);
   if(S.sky){const mine=S.sky.owner===me.id;out.unshift([mine?`☠️ 내 스카이넷 ${S.sky.dom?`세계 장악 ${S.sky.domR}/5R — 유지하면 승리`:`가동 · 장악까지 ${S.sky.cd}R`}`:`☠️ ${skyOwnerName()} 스카이넷 ${S.sky.dom?`장악 ${S.sky.domR}/5R: 사용료·군사력 −1/R${(me.term||0)>=3?' (침투형 면역)':(me.term||0)>=2?' (양산형 절반)':''}`:`장악까지 ${S.sky.cd}R`} → 터미네이터+타임머신으로 시간여행`,'mil'])}
   else{const q=alive().filter(x=>x!==me&&(x.sky||0)>=3).sort((a,b)=>b.sky-a.sky)[0];if(q)out.unshift([`🧠 ${q.name} 스카이넷 ${SKY[q.sky].n}(${q.sky}/5): 양자 3 + 타임머신 + 터미네이터로 선제 파괴 가능`,'mil']);if((me.sky||0)>=4)out.unshift(['👁️ 내 스카이넷 자각 단계: 매R 10% 통제 이탈 위험','mil'])}
   const i=out.findIndex(x=>x[0]==='특이 위험 없음');if(i>=0&&out.length>1)out.splice(i,1);return out};
-const _dashT=renderDash;renderDash=function(){_dashT();const me=S.players[0],doms=$('#dash .doms');if(!doms)return;const d=document.createElement('div');d.className='dom';d.style.setProperty('--dc',TC.qt);
+const _dashT=renderDash;renderDash=function(){_dashT();const me=ME(),doms=$('#dash .doms');if(!doms)return;const d=document.createElement('div');d.className='dom';d.style.setProperty('--dc',TC.qt);
   const st=S.sky?`${S.sky.dom?'장악 '+S.sky.domR+'/5R':'등장 '+S.sky.cd+'R'}`:(skyStageOf()?`최고 ${skyStageOf()}/5`:'없음');
   d.innerHTML=`<h4>첨단기술<span>🧬 이동 전 1회</span></h4><div class="r">양자·스카이넷<b>${me.qt||0}/3 · ${me.sky||0}/5</b></div><div class="r">터미네이터·타임머신<b>${me.term||0}/3 · ${me.tm?'⏳ 보유':me.tmUsed?'사용':'없음'}</b></div><div class="r">세계 스카이넷<b style="color:${S.sky?TC.sky:'inherit'}">${st}</b></div>${S.sky?`<div class="r">소유<b>${esc(skyOwnerName())}</b></div>`:''}`;doms.appendChild(d)};
 const _topT=renderTop;renderTop=function(){_topT();if(!S.sky)return;const t=$('#topbar');if(t)t.insertAdjacentHTML('beforeend',`<span style="color:${TC.sky}">☠️ <b>${S.sky.dom?'장악 '+S.sky.domR+'/5R':S.sky.cd+'R'}</b></span>`)};
@@ -3790,7 +3790,7 @@ renderBoard=function(){
   if(cview==='dash'&&cd){cd.querySelectorAll('.tile2[title]').forEach(t=>{if(!t.querySelector('.lb'))t.insertAdjacentHTML('beforeend',`<div class="lb">${esc(t.title.split(' ·')[0])}</div>`)});panel.append(cd)}
   else if(cview==='mkt'){const box=document.createElement('div');box.className='vbox';box.innerHTML='<h5>🛢️ 원자재 · 금리 · 자산 지수</h5>';if(mr)box.append(mr);box.insertAdjacentHTML('beforeend','<h5>🏁 순자산 경주</h5>');if(rc)box.append(rc);panel.append(box)}
   else if(cview==='char'){panel.innerHTML=charboxHTML(cur())}
-  else if(cview==='flow'){panel.innerHTML=flowHTML(S.players[0])}
+  else if(cview==='flow'){panel.innerHTML=flowHTML(ME())}
   if(fresh)panel.querySelectorAll('.tile2,.oc,.fr,.mi,.rb').forEach((t,k)=>{t.style.setProperty('--k',k);t.style.animationDelay=`${k*25+120-el}ms`});
   [cd,mr,rc].forEach(x=>{if(x&&!panel.contains(x))x.remove()});
   c.append(...[am,od,ws,seg].filter(Boolean));
@@ -3844,7 +3844,7 @@ roundEnd=function(){_roundEndA();const d=S.rdelta||{};const ids=Object.keys(d).f
 /* 분야 주사위(군사·외교·경제 등): 결과가 칸을 바꾸지 않았다면 굴린 나라의 칸에 꽂힘 */
 const _rollAA=rollA;
 rollA=async function(k){const p=cur(),v=await _rollAA(k);if(k!=='move'){const tok={};_afxRolled=tok;const d=DICE.find(x=>x.k===k)||DICE[0];setTimeout(()=>{if(_afxRolled!==tok||!S)return;const l=[{i:p.pos,c:d.c,label:`${d.n} 🎲${v}`,pow:'✨'}];markStruck(l);shootArrows(l)},700)}return v};
-renderTop=function(){if(!S)return;const p=cur(),me=p.human?p:S.players[0],v=verdict(me);
+renderTop=function(){if(!S)return;const p=cur(),me=ME(),v=verdict(me);
   const ht=$('#hturn');if(ht)ht.innerHTML=`<span class="rnd">R <b>${Math.min(S.round,S.maxRounds)}</b>/${S.maxRounds}</span><span class="tp${p.human?' me':''}" style="--pc:${p.color}"><i></i>${p.human?'내 차례':esc(p.name)+' 차례'}</span>`;
   const sky=S.sky?`<div class="st" style="--sc:${TC.sky}"><small>☠️</small><b>${S.sky.dom?'장악 '+S.sky.domR+'/5':S.sky.cd+'R'}</b></div>`:'';
   $('#topbar').innerHTML=`<div class="st"><small>현금</small><b>${won(me.cash)}</b></div><div class="st"><small>순자산</small><b>${won(netWorth(me))}</b></div>${(()=>{try{const n=nextSettle(me).net;return`<div class="st" style="--sc:${n>=0?'#63d59d':'#ff7070'}" title="다음 결산 예상(라운드 끝 결산 + 기대 통행료)"><small>결산</small><b style="color:${n>=0?'#9ff0c4':'#ffb3a8'}!important">${n>=0?'+':'−'}${won(Math.abs(n))}</b></div>`}catch(e){return''}})()}<div class="st"><small>순위</small><b>${myRank()}<em>/${alive().length}</em></b></div><div class="st" style="--sc:${v[2]}"><small>${S.intro?'🎓':'국정'}</small><b class="vd">${v[0]} ${esc(v[1])}</b></div>${sky}`;
@@ -4020,7 +4020,7 @@ const _rulesN=rulesHTML;rulesHTML=function(){return _rulesN()+`<h2>새 산업: �
 /* v14: 상단 무대 — 주사위를 던지면 트랙 카드가 순서대로 켜지고 말이 카드 위를 이동 */
 const _rollAH=rollA;rollA=async function(k){S._rollT=Date.now();S._rollK=k;return _rollAH(k)};
 const _moveStepsH=moveSteps;moveSteps=async function(p,n){S._mv={from:p.pos,n,t:Date.now(),id:p.id};await _moveStepsH(p,n);S._mv.end=Date.now();renderHStage();setTimeout(()=>{if(S._mv&&S._mv.end&&Date.now()-S._mv.end>=2400){S._mv=null;renderHStage()}},2500)};
-function renderHStage(){if(!S)return;const st=$('#hstage');if(!st)return;const p=cur(),me=S.players[0],hdr=$('.hdr');
+function renderHStage(){if(!S)return;const st=$('#hstage');if(!st)return;const p=cur(),me=ME(),hdr=$('.hdr');
   if(hdr)hdr.style.setProperty('--tc',p.color);
   const rp=Math.min(100,(Math.min(S.round,S.maxRounds)-1)/Math.max(1,S.maxRounds-1)*100);const rail=$('#hrail');
   if(rail){rail.style.setProperty('--rp',rp+'%');if(!rail.dataset.m){rail.dataset.m=1;let s='<i></i>';for(let r=5;r<S.maxRounds;r+=5)s+=`<s style="left:${(r-1)/(S.maxRounds-1)*100}%"></s>`;rail.innerHTML=s+'<b></b>'}rail.querySelector('b').textContent=`R${Math.min(S.round,S.maxRounds)}`;rail.title=`라운드 ${Math.min(S.round,S.maxRounds)} / ${S.maxRounds}`}
@@ -4139,7 +4139,7 @@ async function playCard(p,k,q){const c=card(k);p.cards.splice(p.cards.indexOf(k)
   if(k==='cdef'){const A=allyOf(p);(A?A.m.map(id=>S.players[id]):[p]).forEach(x=>x.cdef=S.round+4);S.wwT=Math.max(0,S.wwT-5);ch.push(['4라운드 방어 +3 · 전선 +2','mil'])}
   if(k==='sanc'){q.sanct=Math.max(q.sanct||0,3);q.M=Math.max(0,q.M-1);S.wwT=Math.min(100,S.wwT+4);ch.push([`${q.name} 제재 3R · 군사력 −1`,'dip'])}
   if(k==='secret'){makeAlly(p,q,'비밀 동맹');return}
-  if(k==='ult'){let pay;if(q.human)pay=(await ask(`🔥 ${esc(p.name)}의 최후통첩: ₵150을 내지 않으면 국지전을 겁니다.`,[{id:'y',l:`₵150 지불`,dis:q.cash<pl(150)},{id:'n',l:'거절',g:1}]))==='y';else pay=q.cash>pl(400)&&(q.M+3<p.M||Math.random()<.4);
+  if(k==='ult'){let pay;if(q.human)pay=(MP.who(q),await ask(`🔥 ${esc(p.name)}의 최후통첩: ₵150을 내지 않으면 국지전을 겁니다.`,[{id:'y',l:`₵150 지불`,dis:q.cash<pl(150)},{id:'n',l:'거절',g:1}]))==='y';else pay=q.cash>pl(400)&&(q.M+3<p.M||Math.random()<.4);
     S.wwT=Math.min(100,S.wwT+6);if(pay){payTo(q,pl(150),p,'최후통첩 굴복');apc(q,-4);ch.push([`${q.name} 굴복 · ₵150 지불`,'eco'])}else{log(`${pn(q)} 최후통첩 거절`);p.cash+=pl(200);await strike(p,q);return}}
   S.news={k:'🃏 협상 카드',t:`${p.name}: ${c.e} ${c.n}`,d:c.d,chain:ch};log(`🃏 ${pn(p)} ${c.e} ${c.n}${q?' → '+pn(q):''}`)}
 /* ── 라운드 결산 ── */
@@ -4176,7 +4176,7 @@ aiTech=async function(p){wwInit();if(p.gov!=='ana'){
   if(S.ww&&wwSide(p)&&!p.mob&&canPay(p,pl(150),100)&&Math.random()<.5){payBank(p,pl(150),'총력전 동원');p.mob=1;log(`${pn(p)} 📣 총력전 동원`);return true}
   if(!allyOf(p)||allyOf(p).m.length<3){const cand=alive().filter(q=>canAlly(p,q)).sort((a,b)=>rel(p.bloc,a.bloc)-rel(p.bloc,b.bloc));const q=cand[0];
     if(q&&false){await sleep(delay());
-      const dm=aiPickDemand(p,q);if(q.human){const a=await ask(`🤝 ${esc(p.name)}이(가) 동맹을 제안합니다.<small>${demandText(p,q,dm)}동맹국끼리 통행료 −30%, 공격받으면 방위 지원${S.ww&&wwSide(p)?', 수락하면 세계대전에 함께 참전':''}.</small>`,[{id:'y',l:'수락'},{id:'n',l:'거절',g:1}]);if(a==='y')makeAlly(p,q,null,dm);else log(`${pn(q)} 동맹 거절`)}
+      const dm=aiPickDemand(p,q);if(q.human){MP.who(q);const a=await ask(`🤝 ${esc(p.name)}이(가) 동맹을 제안합니다.<small>${demandText(p,q,dm)}동맹국끼리 통행료 −30%, 공격받으면 방위 지원${S.ww&&wwSide(p)?', 수락하면 세계대전에 함께 참전':''}.</small>`,[{id:'y',l:'수락'},{id:'n',l:'거절',g:1}]);if(a==='y')makeAlly(p,q,null,dm);else log(`${pn(q)} 동맹 거절`)}
       else if(aiAcceptD(p,q,dm))makeAlly(p,q,null,dm);return true}}
   const tg=strikeTargets(p);if(tg.length&&p.M>=6&&canPay(p,pl(200),150)&&Math.random()<(p.strategy==='military'?.22:p.strategy==='contra'?.12:.04)){const q=tg.sort((a,b)=>a.M-b.M)[0];await sleep(delay());await strike(p,q);return true}}
   return _aiTechW(p)};
@@ -4339,7 +4339,7 @@ const _reR=roundEnd;roundEnd=function(){_reR();if(!S||!S.relB)return;Object.keys
   (S.treaties||[]).forEach(t=>{const a=S.players[t.a],b=S.players[t.b];if(a&&b)relShift(a.bloc,b.bloc,-.2)})};
 /* 여러 사람: 사람이 모두 부도나야 패배, 차례 알림 */
 checkOver=function(){if(alive().length<=1||S.players.every(p=>!p.human||p.bankrupt)||S.round>S.maxRounds)S.over=true};
-const _ttH=takeTurn;takeTurn=async function(p){if(p.human&&S.players.filter(q=>q.human&&!q.bankrupt).length>1){const o=document.createElement('div');o.className='tcard peace';o.innerHTML=`<div class="tc"><div class="tb"><small>PASS THE DEVICE</small><b><i>📱</i>${esc(p.name)}님 차례</b><p>기기를 ${esc(p.name)}님에게 넘겨 주세요.</p></div></div>`;tcShow(o,1500,1950);await sleep(1200)}return _ttH(p)};
+const _ttH=takeTurn;takeTurn=async function(p){if(p&&p.human&&window.MP)await MP.handoffFor(p);return _ttH(p)};
 
 /* ═════════ v19: 도시 자산(호텔·전략자산·군사기지 + 도시별 특화 2종) · 군사 압박 판정 통일 · 영역 표시 ═════════ */
 const ASSET={
@@ -4435,7 +4435,7 @@ const _rbA=renderBoard;renderBoard=function(){_rbA();if(!S)return;const b=$('#bo
     const lv=el.querySelector('.lv');if(lv)lv.remove();const bs=syncB(i);el.insertAdjacentHTML('beforeend',`<span class="ast">${bs.map(k=>ASSET[k].e).join('')}</span><span class="osym" style="--pc:${o.color}">${PSHAPE[o.id]}</span>`);el.classList.add('own'+o.id)});
   b.querySelectorAll('.cell.inf').forEach(el=>{const pr=null;el.style.setProperty('--hatch','1')});
   const od=b.querySelector('.center .order');if(od)[...od.children].forEach((sp,k)=>{const q=S.players[k];if(q)sp.insertAdjacentHTML('afterbegin',`<b class="psym" style="--pc:${q.color}">${pemo(q)}</b>`)})};
-const _rdA=renderDetail;renderDetail=function(){_rdA();const i=selected;if(i==null||!CELLS[i]||CELLS[i].t!=='city')return;const pr=S.props[i],bs=pr?syncB(i):[],me=cur().human?cur():S.players[0];
+const _rdA=renderDetail;renderDetail=function(){_rdA();const i=selected;if(i==null||!CELLS[i]||CELLS[i].t!=='city')return;const pr=S.props[i],bs=pr?syncB(i):[],me=ME();
   const h=`<div class="aopts"><h4>🏗️ 건설 가능 자산 <span>${pr?pr.level:0}/3동</span></h4>${optsOf(i).map((k,j)=>`<div class="ao${bs.includes(k)?' on':''}${j>2?' sp':''}"><i>${ASSET[k].e}</i><div><b>${ASSET[k].n}${bs.includes(k)?' ✓ 건설됨':''}${j>2?' <em>특화</em>':''}</b><small>${ASSET[k].d}</small></div></div>`).join('')}</div>`;
   const d=$('#detail');if(d)d.insertAdjacentHTML('beforeend',h)};
 
@@ -4630,7 +4630,7 @@ const QV={dash:'나는 지금 괜찮은가?',mkt:'세계는 어떻게 변하나?
 /* 자동 넘김: 기본은 끔(관전 모드에서만 켬) */
 try{vAuto=localStorage.getItem('bm22auto')==='1'}catch(e){vAuto=false}
 
-const meP=()=>S.players.find(p=>p.human)||S.players[0];
+const meP=()=>ME();
 const VC={g:'#63d59d',y:'#f2c56b',r:'#ff7070'};
 const sgw=n=>(n>=0?'+':'−')+won(Math.abs(n)).replace('₵','₵');
 const RESTAGS=['oil','gas','food','steel','rare','gold','coffee'];
@@ -6285,7 +6285,7 @@ async function negotiate(p,q,deal,mode){v32Init();const press=mode==='press';let
       S.news={k:'🤝 자산 협상',t:`${p.name}의 군사 압박 실패`,d:`${q.name}이(가) 버텼습니다.`,chain:ch};log(`🪖 ${pn(p)} → ${pn(q)} 압박 실패 (${deal.l})`);setAct(p,'🪖 압박 실패');return false}
     relShift(p.bloc,q.bloc,.8);unc(q,2)}
   const amt=rTerms(deal,press&&prOK);let yes;
-  if(q.human){const r=await ask(`🤝 ${esc(p.name)}의 제안${press?' (🪖 군사 압박 — 거절하면 관계 악화·혼란 +4)':''}<small style="text-align:left">${deal.e} <b>${esc(deal.l)}</b><br>${deal.k==='treaty'?'6R 통상 협약':deal.pay?`${esc(p.name)}이(가) 나에게 로열티 ${won(amt)}/R × ${RYR}R 지급`:`내가 ${esc(p.name)}에게 로열티 ${won(amt)}/R × ${RYR}R 지급`}</small>`,[{id:'y',l:'수락'},{id:'n',l:'거절',g:1}]);yes=r==='y';if(!yes&&press){unc(q,4)}}
+  if(q.human){MP.who(q);const r=await ask(`🤝 ${esc(p.name)}의 제안${press?' (🪖 군사 압박 — 거절하면 관계 악화·혼란 +4)':''}<small style="text-align:left">${deal.e} <b>${esc(deal.l)}</b><br>${deal.k==='treaty'?'6R 통상 협약':deal.pay?`${esc(p.name)}이(가) 나에게 로열티 ${won(amt)}/R × ${RYR}R 지급`:`내가 ${esc(p.name)}에게 로열티 ${won(amt)}/R × ${RYR}R 지급`}</small>`,[{id:'y',l:'수락'},{id:'n',l:'거절',g:1}]);yes=r==='y';if(!yes&&press){unc(q,4)}}
   else yes=Math.random()<rAccept(p,q,deal,press);
   if(yes){const t=rApply(p,q,deal,amt);ch.push([t,'eco']);if(press)ch.push([`압박으로 조건 유리: ${deal.pay?'로열티 50% 할인':'로열티 1.5배'}`,'mil']);
     S.news={k:'🤝 자산 협상',t:`${p.name}↔${q.name} ${deal.l} 타결`,d:deal.k==='treaty'?'협약이 체결됐습니다.':'로열티 계약이 맺어졌습니다.',chain:ch};log(`🤝 ${pn(p)}↔${pn(q)} ${deal.l} 타결${deal.amt?` (${won(amt)}/R)`:''}`);setAct(p,`🤝 ${deal.l} 타결`)}
@@ -6626,7 +6626,7 @@ function v34Elbow(A,B,col,label){if(!A||!B||!v34Motion())return;const L=v34Layer
   const lb=document.createElement('span');lb.className='ell';lb.style.cssText=`left:${A.x}px;top:${B.y}px;--ec:${col}`;lb.textContent=label;L.appendChild(lb);
   setTimeout(()=>{pa.remove();hd.remove();lb.remove()},2600)}
 const v34Head=id=>v34Rel(document.querySelector(`#board .v28mx th[data-v28p="${id}"]`));
-const _ledV34=led;led=function(f,t,a,w){_ledV34(f,t,a,w);try{if(!S||Math.abs(a)<20)return;const why=w||S._why||'',me=S.players[0];
+const _ledV34=led;led=function(f,t,a,w){_ledV34(f,t,a,w);try{if(!S||Math.abs(a)<20)return;const why=w||S._why||'',me=ME();
   const col=t===me?'#3fe08a':f===me?'#ff6b6b':'var(--sk-acc,#5ce6ff)';
   if(f&&t&&/통행료/.test(why))v34Elbow(v34Cell(f.pos),v34Head(t.id)||v34Cell(t.pos),col,`${won(a)} 통행료`);
   else if(f&&!t&&/^매입|건설|인수/.test(why))v34Elbow(v34Head(f.id),v34Cell(f.pos),f===me?'#ffb35f':'var(--sk-acc,#5ce6ff)',`${won(a)} ${why.split(' ')[0]}`)}catch(e){}};
@@ -6655,7 +6655,7 @@ function v341Col(c){const m=/^#([0-9a-f]{6})$/i.exec(String(c||'').trim());if(!m
   let h;if(mx===r)h=((g-b)/(mx-mn))%6;else if(mx===g)h=(b-r)/(mx-mn)+2;else h=(r-g)/(mx-mn)+4;h=(h*60+360)%360;return(h>=85&&h<=170)||h<=18||h>=335?c:'var(--sk-acc)'}
 const v341Svg=c=>`<svg width="1" height="1"><g class="wob"><line x1="-30" y1="0" x2="-6" y2="0" stroke-width="2" stroke-linecap="round" style="stroke:${c}" opacity=".85"/><path d="M1 0 L-8 -4.5 L-6 0 L-8 4.5 Z" style="fill:${c}"/></g></svg>`;
 const _saV341=shootArrows;shootArrows=function(list){if(!document.documentElement.dataset.skin||!list||!list.length)return _saV341(list);
-  const me=S&&S.players[0],mag=t=>{const m=/([0-9]+(?:\.[0-9]+)?)/.exec(String(t.label||''));return m?+m[1]:0},mine=t=>{const pr=S&&S.props[t.i];return pr&&me&&pr.owner===me.id?1:0};
+  const me=S&&ME(),mag=t=>{const m=/([0-9]+(?:\.[0-9]+)?)/.exec(String(t.label||''));return m?+m[1]:0},mine=t=>{const pr=S&&S.props[t.i];return pr&&me&&pr.owner===me.id?1:0};
   const sorted=list.slice().sort((a,b)=>(mine(b)-mine(a))||(mag(b)-mag(a))),top=sorted.slice(0,3),rest=sorted.slice(3,10);
   const L=document.querySelector('#stage .afx'),before=L?new Set(L.querySelectorAll('.ar')):new Set();
   _saV341(top.map(t=>({...t,c:v341Col(t.c),pow:''})));
@@ -7217,4 +7217,20 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
 <script src="quick-acts.js?v=2"></script>
 <script src="choice-chain.js?v=4"></script><script src="result-dice.js?v=1"></script>
 <script src="./intro-skin.js?v=2"></script>
+<script>/* ── 다중 플레이 연결 (mp-core.js) ── */
+(function(){if(!window.MP)return;
+ const _ask=ask;ask=function(){const r=_ask.apply(this,arguments);r.then(MP.clearWho,MP.clearWho);MP.flush();return r};
+ const SEL='[data-ask],[data-bid],[data-bond],[data-prop],[data-tar],[data-cx],[data-tax]';
+ MP.bind({level:'level4',
+  players:()=>S?S.players:[],turn:()=>S?S.turn:0,askOpen:()=>!!(S&&S.ask),
+  state:()=>S,setState:s=>{S=s},render:()=>render(),
+  setupVisible:()=>{const s=document.getElementById('setup');return !!s&&!s.hidden},
+  actionEl:t=>t.closest(SEL),
+  canAct:(seat,d)=>{const p=S&&S.players[seat];if(!p||!p.human||p.bankrupt)return false;if(d.data&&d.data.bid!=null)return true;const a=MP.asker();return !!a&&a.id===seat},
+  enterGame:()=>{gen++;selected=0;const s=document.getElementById('setup');if(s)s.hidden=true;const r=document.getElementById('result');if(r)r.hidden=true},
+  clientMode:()=>{save=function(){};gameLoop=async function(){}},
+  prepareForm:(n,names)=>{const r=document.getElementById('hum'+n);if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))}names.forEach((nm,k)=>{const el=document.getElementById('pname'+(k?k+1:''));if(el&&nm)el.value=nm});if(typeof syncPlayers==='function')syncPlayers()},
+  applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;if(!p.human){p.human=true;p.strategy='human';p.M=BLOCS[p.bloc].m}p.name=m.name})
+ })})();
+</script>
 </body></html>

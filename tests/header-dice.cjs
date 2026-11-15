@@ -16,7 +16,7 @@ for (const level of [3, 4]) {
     const S = {players: [p], round: 1, maxRounds: 30, props: {}, ask: mode === 'asking', dicePair: {move: {value: 9}, judge: {value: 4}}, dv: {move: 9, world: 4}, _rollK: 'world', _rollT: Date.now()};
     if (mode === 'moving' || mode === 'arrived') S._mv = {id: 0, from: 0, n: 9, t: Date.now(), end: mode === 'arrived' ? Date.now() : null};
     const before = JSON.stringify(S);
-    const context = {S, cur: () => p, $: selector => nodes[selector] || null, N: 64,
+    const context = {S, cur: () => p, ME: () => p, $: selector => nodes[selector] || null, N: 64,
       CELLS: Array.from({length: 64}, () => ({name: 'City', short: 'City'})), cellIcon: () => 'X',
       esc: value => String(value).replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
       DualDice: {roll() {throw Error('Header must never roll dice');}},

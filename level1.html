@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script>
+<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=1"></script>
 <link rel="manifest" href="./manifest.webmanifest?v=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -215,6 +215,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .field{margin:10px 0}.field>label{display:block;font-weight:700;font-size:13px;margin-bottom:4px}
 .field input[type=text],.field select{width:100%;padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--fg);font:14px var(--f-body)}
 .opts{display:flex;gap:6px;flex-wrap:wrap}
+.hnames{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}.hnames input[hidden]{display:none}.opts label.off{opacity:.4;pointer-events:none}
 .opts label{flex:1;min-width:90px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px;font-size:12.5px;display:flex;gap:6px;align-items:flex-start;cursor:pointer}
 .opts label small{display:block;color:var(--muted);font-size:11px}
 .opts input{margin-top:2px}
@@ -448,9 +449,11 @@ const STRATN={estate:'부동산형',company:'기업형',finance:'분산 투자�
 const STRATD={estate:'땅을 많이 사서 통행료로 번다',company:'기업을 키워 라운드 이익으로 번다',finance:'금리와 원자재를 보며 나누어 투자한다'};
 function makePlayer(id,name,color,emoji,human,strat){return{id,name,color,emoji,human,strat,cash:1500,pos:0,edu:1,debt:0,ins:0,rest:0,hyper:0,bankrupt:false,
  comp:{mfg:0,it:0,food:0,energy:0,tour:0},compLoss:{mfg:0,it:0,food:0,energy:0,tour:0},shares:{},com:{oil:0,food:0,steel:0,chip:0},coHist:[],coTotal:0,coEvents:[]}}
+const HUMAN=[['#e8452c','🧑‍💼'],['#ea8a00','👩‍💼'],['#0e9aa7','🧑‍🔧'],['#d6337f','👨‍🎨']];
 function newState(name,nai,diff,rounds,speed){
- const ps=[makePlayer(0,name||'나','#e8452c','🧑‍💼',true,'human')];
- AINAME.slice(0,nai).forEach((a,k)=>ps.push(makePlayer(k+1,a[0],a[1],a[2],false,a[3])));
+ const names=Array.isArray(name)?name:[name||'나'];nai=Math.max(Math.max(0,2-names.length),Math.min(nai,4-names.length));
+ const ps=names.map((nm,k)=>makePlayer(k,nm||('플레이어'+(k+1)),HUMAN[k][0],HUMAN[k][1],true,'human'));
+ AINAME.slice(0,nai).forEach((a,k)=>ps.push(makePlayer(ps.length,a[0],a[1],a[2],false,a[3])));
  const s={round:1,maxRounds:rounds,turn:0,players:ps,props:{},rate:3+Math.floor(Math.random()*5)*.5,boom:0,infl:2.5,mkt:{oil:85+Math.floor(Math.random()*31),food:85+Math.floor(Math.random()*31),steel:85+Math.floor(Math.random()*31),chip:85+Math.floor(Math.random()*31)},prev:null,fund:0,
   redev:0,bi:44+Math.floor(Math.random()*13),tourOff:0,mfgCost:1,fMod:1,dMod:1,eduDisc:0,eduUp:0,profitMod:1,deck:[],diff,speed:speed||'normal',dv:{move:'–',econ:'–'},hot:null,
   demand:{mfg:1,it:1,food:1,energy:1,tour:1},ipo:{},stag:false,depr:false,shockDeck:[],rank:{},
@@ -566,7 +569,7 @@ function fxLabel(x,y,t,col){if(!fxOn())return;const e=document.createElement('di
 function fxPop(el,t,col){if(!fxOn()||!el)return;const[x,y]=fxCenter(el);const e=document.createElement('div');e.className='pop';e.style.cssText=`left:${x}px;top:${y}px;--lc:${col||'var(--ok)'}`;e.textContent=t;FXROOT.appendChild(e);setTimeout(()=>e.remove(),1300)}
 function fxPulse(el){if(!fxOn()||!el)return;el.classList.remove('pulse');void el.offsetWidth;el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),1900)}
 function fxDist(d){return CELLS.map((c,i)=>i).filter(i=>CELLS[i].d===d)}
-function fxMoney(p,a,from){const ch=$chip(p);fxPop(ch,(a>=0?'+':'−')+won(Math.abs(a)),a>=0?'var(--ok)':'var(--danger)');fxPulse(ch);if(p.human){const t=$('#t-cash');if(from&&t)fxArrow(from,t,{labelTo:(a>=0?'+':'−')+won(Math.abs(a)),colorTo:a>=0?'var(--ok)':'var(--danger)'});else fxPulse(t)}}
+function fxMoney(p,a,from){const ch=$chip(p);fxPop(ch,(a>=0?'+':'−')+won(Math.abs(a)),a>=0?'var(--ok)':'var(--danger)');fxPulse(ch);if(p===ME()){const t=$('#t-cash');if(from&&t)fxArrow(from,t,{labelTo:(a>=0?'+':'−')+won(Math.abs(a)),colorTo:a>=0?'var(--ok)':'var(--danger)'});else fxPulse(t)}}
 /* 점선 포물선: 주사위·뉴스가 실제로 움직인 원인→결과 줄에만 */
 function fxCurve(from,to,o={}){if(!fxOn()||!from||!to)return;const[x1,y1]=fxCenter(from),[x2,y2]=fxCenter(to);const col=o.color||'var(--accent2)';
  const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,bend=Math.min(90,L*.35),cx=(x1+x2)/2-dy/L*bend,cy=(y1+y2)/2+dx/L*bend;
@@ -589,7 +592,7 @@ function fxNews(card,good){if(!fxOn())return;const nb=$('#newsbox');const tg=NEW
   els.filter(Boolean).forEach((el,k)=>{fxArrow(nb,el,{dot:true,color:col});fxPulse(el)})})}
 
 /* 행동 → 내회사/순위 자동 반영: 해당 탭을 잠시 띄우고 점선 직선 화살표로 연결 */
-async function autoPeek(toTab,fromEl,rowSel,label){if(!S||!S.players[0]||S.players[0].bankrupt)return;
+async function autoPeek(toTab,fromEl,rowSel,label){if(!S||!ME()||ME().bankrupt)return;
  if(!fxOn()||S.ask||tab===toTab){const b=document.getElementById('tabbtn-'+toTab);if(b)b.classList.add('chg');return}
  const prev=tab;tab=toTab;render();await sleep(80);
  const btn=document.getElementById('tabbtn-'+toTab);if(btn){btn.classList.remove('chg');fxPulse(btn);btn.classList.add('peek');setTimeout(()=>btn.classList.remove('peek'),1900)}
@@ -598,7 +601,7 @@ async function autoPeek(toTab,fromEl,rowSel,label){if(!S||!S.players[0]||S.playe
  await sleep(1500);if(tab===toTab){tab=prev;render()}}
 function rankOrder(){return alive().slice().sort((a,b)=>netWorth(b)-netWorth(a)).map(p=>p.id).join(',')}
 async function peekRankIfChanged(fromEl){const o=rankOrder();if(S._rankOrd===undefined){S._rankOrd=o;return}if(o===S._rankOrd)return;S._rankOrd=o;
- const me=S.players[0];await autoPeek('rank',fromEl,`#rk-${me.id}`,`순위 ${rankOf(me)}위`)}
+ const me=ME();await autoPeek('rank',fromEl,`#rk-${me.id}`,`순위 ${rankOf(me)}위`)}
 
 /* ═════════ 진행 ═════════ */
 function ask(prompt,opts){return new Promise(res=>{S.ask={prompt,opts};askResolve=res;render()})}
@@ -623,6 +626,7 @@ function nextTurn(){const n=S.players.length;let k=S.turn;for(let s=0;s<n;s++){k
  const wrapped=k<=S.turn;S.turn=k;if(wrapped)S._endRound=true}
 async function playTurn(p){
  if(S._endRound){S._endRound=false;await roundEnd();if(S.over)return}
+ if(p.human&&window.MP)await MP.handoffFor(p);
  S.ask=null;S._built=0;render();
  if(p.human&&S.tut<3){S.tut++}
  // 휴가섬
@@ -767,7 +771,7 @@ async function auctionAct(p,i){const free=CELLS.map((c,k)=>k).filter(k=>CELLS[k]
  const order=S.players.slice(S.turn).concat(S.players.slice(0,S.turn)).filter(q=>!q.bankrupt);const active=new Set(order.map(q=>q.id));
  log(`🔨 경매: ${esc(c.name)} 시작가 ${won(bid)}`);let rounds=0;
  while(active.size>1&&rounds++<40){for(const q of order){if(!active.has(q.id)||q===leader)continue;const next=leader?bid+step:bid;
-   let raise=false;if(q.human){const id=await ask(`🔨 경매 <b>${esc(c.name)}</b>(${DIST[c.d].n}, 시세 ${won(base)}) · 현재 ${leader?`${esc(leader.name)} ${won(bid)}`:'입찰 없음 '+won(bid)}<small>입찰하면 ${won(next)}. 시세보다 싸게 살 기회지만, 과열되면 손해입니다.</small>`,[{id:'y',l:`입찰 ${won(next)}`,dis:q.cash<next},{id:'n',l:'포기',g:1}]);raise=id==='y'}
+   let raise=false;if(q.human){MP.who(q);const id=await ask(`🔨 경매 <b>${esc(c.name)}</b>(${DIST[c.d].n}, 시세 ${won(base)}) · 현재 ${leader?`${esc(leader.name)} ${won(bid)}`:'입찰 없음 '+won(bid)}<small>입찰하면 ${won(next)}. 시세보다 싸게 살 기회지만, 과열되면 손해입니다.</small>`,[{id:'y',l:`입찰 ${won(next)}`,dis:q.cash<next},{id:'n',l:'포기',g:1}]);raise=id==='y'}
    else{const val=base*(q.strat==='estate'?1.05:q.strat==='company'?(SECT[Object.keys(SECT).find(s=>SECT[s].d===c.d)||'it'].d===c.d&&q.comp[Object.keys(SECT).find(s=>SECT[s].d===c.d)]?1.1:.85):.95)*(landOf(q,c.d)?1.15:1);raise=next<=val&&q.cash-next>aiReserve(q)}
    if(raise){bid=next;leader=q;log(`🔨 ${pn(q)} ${won(bid)} 입찰`)}else active.delete(q.id)}}
  if(leader){leader.cash-=bid;S.props[tgt]={owner:leader.id,level:0};log(`🔨 ${pn(leader)} ${esc(c.name)} 낙찰 ${won(bid)}`);toast(`🔨 ${esc(leader.name)} ${esc(c.name)} 낙찰 ${won(bid)}`);if(ownsAll(leader,c.d))log(`🏆 ${pn(leader)} ${DIST[c.d].n} 독점!`)}
@@ -839,7 +843,7 @@ async function roundEnd(){const chain=[];S.prev={...S.mkt};
  S.rank=S.rank||{};S.rank[S.round]=S.players.slice().sort((a,b)=>(a.bankrupt?-1e9:netWorth(a))<(b.bankrupt?-1e9:netWorth(b))?1:-1).map(p=>({e:p.emoji,n:p.name,c:p.color,nw:Math.round(netWorth(p)),bk:p.bankrupt}));
  S.news={k:`📊 R${S.round} 결산`,t:`경기 ${boomN()} · 금리 ${S.rate.toFixed(2)}%`,d:alive().map(p=>`${p.emoji}${p.name} ${won(netWorth(p))}`).join(' · '),chain};
  log(`📊 R${S.round} 결산 — ${chain.join(' / ')}`);
- S.round++;if(S.round>S.maxRounds){finish('rounds')}else{checkWin();await roundReport(S.round-1,chain);if(S.players[0].human&&!S.over)await peekRankIfChanged($('#c-fund'))}
+ S.round++;if(S.round>S.maxRounds){finish('rounds')}else{checkWin();await roundReport(S.round-1,chain);if(ME().human&&!S.over)await peekRankIfChanged($('#c-fund'))}
  save()}
 /* 라운드 결과 보고 팝업 — 화면 중앙 오버레이(내부 스크롤, dvh·safe-area 안전) */
 function roundReport(r,chain){
@@ -855,8 +859,8 @@ function roundReport(r,chain){
  return new Promise(res=>{const done=()=>{ov.remove();res()};ov.querySelector('#rrOk').onclick=done;ov.querySelector('#rrOk').focus({preventScroll:true})})}
 function checkWin(){if(S.over)return;const al=alive();if(al.length===1){S.winner=al[0];S.why='다른 사업가 전원 파산';S.over=true;return}
  const m=al.find(p=>monopolies(p).length>=2);if(m){S.winner=m;S.why=`${monopolies(m).map(d=>DIST[d].n).join('·')} 2개 구역 독점`;S.over=true;return}
- if(S.players[0].bankrupt){finish('me')}}
-function finish(k){const al=alive().sort((a,b)=>netWorth(b)-netWorth(a));S.winner=al[0]||S.players[0];S.why=k==='me'?'플레이어 파산 — 순자산 1위가 승리':`${S.maxRounds}라운드 종료 · 순자산 1위`;S.over=true}
+ if(S.players.filter(p=>p.human).every(p=>p.bankrupt)){finish('me')}}
+function finish(k){const al=alive().sort((a,b)=>netWorth(b)-netWorth(a));S.winner=al[0]||S.players[0];S.why=k==='me'?(S.players.filter(p=>p.human).length>1?'사람 플레이어 전원 파산':'플레이어 파산')+' — 순자산 1위가 승리':`${S.maxRounds}라운드 종료 · 순자산 1위`;S.over=true}
 
 /* ═════════ 화면 ═════════ */
 function render(){if(!S)return;document.body.classList.add('playing');const rn=Math.min(S.round,S.maxRounds);
@@ -866,7 +870,7 @@ function render(){if(!S)return;document.body.classList.add('playing');const rn=M
  const bf=$('#btnFrame');if(bf)bf.onclick=()=>{const ids=FRAMES.map(x=>x[0]);const cur=getFrame();const nx=ids[(ids.indexOf(cur)+1)%ids.length];applyFrame(nx);toast('프레임: '+FRAMES.find(x=>x[0]===nx)[1]);render()};
  $('#btnSpd').onclick=()=>{const ids=SPEEDS.map(x=>x[0]);S.speed=ids[(ids.indexOf(S.speed)+1)%ids.length];const n=spN();toast(`${n[1]} 속도: <b>${n[2]}</b> — ${n[3]}`);save();render()};
  $('#btnNew').onclick=()=>{if(S.over||window._confirmNew){gen++;S=null;try{localStorage.removeItem(SAVE)}catch(e){}renderSetup()}else{window._confirmNew=1;toast('한 번 더 누르면 새 게임을 시작합니다');setTimeout(()=>window._confirmNew=0,2500)}};
- const me=S.players[0];const avg=Math.round(Object.values(S.mkt).reduce((a,b)=>a+b,0)/4);const pv=S.prev?Math.round(Object.values(S.prev).reduce((a,b)=>a+b,0)/4):avg;
+ const me=ME();const avg=Math.round(Object.values(S.mkt).reduce((a,b)=>a+b,0)/4);const pv=S.prev?Math.round(Object.values(S.prev).reduce((a,b)=>a+b,0)/4):avg;
  const tiles=`<div class="tiles">
   <div class="tile" id="t-cash"><small>💵 현금</small><b>${won(me.cash)}</b><i>${me.debt?'대출 '+won(me.debt):'대출 없음'}</i></div>
   <div class="tile" id="t-nw"><small>🏆 순자산</small><b>${won(netWorth(me))}</b><i>순위 ${rankOf(me)}/${alive().length}</i></div>
@@ -914,7 +918,7 @@ function logHTML(){if(!S.log.length)return`<div class="sub">아직 기록이 없
   const rkmini=rk?`<span class="jrkmini">${rk.map((x,k)=>`<i style="--pc:${x.c}" title="${k+1}위 ${esc(x.n)} ${x.bk?'파산':won(x.nw)}">${x.bk?'💀':x.e}</i>`).join('<em>›</em>')}</span>`:'';
   const rkfull=rk&&open?`<div class="jrank">${rk.map((x,k)=>`<span style="--pc:${x.c}"><b>${k+1}</b>${x.e} ${esc(x.n)}<i>${x.bk?'파산':won(x.nw)}</i></span>`).join('')}</div>`:'';
   return`<div class="jr${open?' open':''}"><button class="jrh" data-log="${r}"><span class="jrt">R${r}</span><span class="jrn">${items.length}건</span>${rkmini}<span class="jrc">${open?'▾':'▸'}</span></button>${rkfull}${open?`<ul class="jrl">${items.map(h=>`<li>${h}</li>`).join('')}</ul>`:''}</div>`}).join('')+`</div>`}
-function renderTab(){const el=$('#tabbody');const me=S.players[0];
+function renderTab(){const el=$('#tabbody');const me=ME();
  if(tab==='act'){el.innerHTML=(S.tut<=3&&S.round<=2?`<div class="hint"><b>튜토리얼</b> ${S.tut<=1?'주사위를 굴려 도착한 땅을 사세요. 땅은 통행료를, 기업은 라운드 이익을 줍니다.':S.tut===2?'같은 구역을 다 모으면 통행료 2배. 금리가 오르면 주거단지(D)는 내리고 금융가(G)는 오릅니다.':'원자재는 쌀 때 사 두면 건설비·기업 원가를 보며 팔 수 있습니다. 15라운드 뒤 순자산 1위가 승리!'}</div>`:'')+cellDetail()+`<h3>원인 → 결과 (지금 살아 있는 연결)</h3><div class="flow">${flows()}</div><h3>일지 <span style="font-size:11px;color:var(--muted);font-weight:400">라운드별</span></h3>${logHTML()}`}
  else if(tab==='co'){el.innerHTML=`<h2>🏢 ${esc(me.name)}의 회사<span>라운드마다 이익이 들어옵니다</span></h2><div class="scroll"><table class="tbl"><tr><th>업종</th><th>단계</th><th>매출</th><th>원가</th><th>이익/R</th></tr>${Object.keys(SECT).map(s=>{const r=compProfit(me,s);const st=!me.comp[s]?'':r.profit>0?'<span style="color:var(--ok)">흑자</span>':r.profit<0?`<span style="color:var(--danger)">적자${me.compLoss[s]?' '+me.compLoss[s]+'/3':''}</span>`:'균형';const ip=S.ipo[me.id+'_'+s]?' 📢상장':'';return`<tr id="co-${s}"><td>${SECT[s].e} ${SECT[s].n}${ip}</td><td>${COMPN[me.comp[s]]}<br><small style="color:var(--muted)">${st}</small></td><td class="n">${me.comp[s]?won(r.rev):'–'}</td><td class="n">${me.comp[s]?won(r.cost):'–'}</td><td class="n" style="color:${r.profit>0?'var(--ok)':r.profit<0?'var(--danger)':'inherit'}">${me.comp[s]?won(r.profit):'–'}</td></tr>`}).join('')}</table></div>
   <h3>📊 기업 성적 <span style="font-size:11px;color:var(--muted);font-weight:400">게임 내내 기록</span></h3>
@@ -941,7 +945,7 @@ function cellDetail(){if(selected==null)return'';const i=selected,c=CELLS[i],pr=
  return d+'</dl></div>'}
 function flows(){const f=[];f.push(`<div id="fl-rate"><span>금리 ${S.rate.toFixed(2)}%</span><em>→</em><span>이자 ${S.rate.toFixed(2)}%/R</span><em>·</em><span>주거단지(D) 시세 ${Math.round(clamp(1-(S.rate-4)*.05,.6,1.3)*roundMod('dMod')*100)}%</span><em>·</em><span>금융가(G) 통행료 +${Math.round(Math.max(0,S.rate-4)*5)}%</span></div>`);
  f.push(`<div id="fl-com"><span>원자재 ${Object.keys(COM).map(k=>COM[k].e+S.mkt[k]).join(' ')}</span><em>→</em><span>건설비 ×${(S.mkt.steel/100).toFixed(2)}</span><em>·</em><span>기업 원가</span><em>·</em><span>전통시장 ×${(S.mkt.food/100).toFixed(2)} · 테크밸리 ×${(S.mkt.chip/100).toFixed(2)}</span></div>`);
- const me=S.players[0];f.push(`<div id="fl-edu"><span>교육 ${EDUN[me.edu]}</span><em>→</em><span>생산성 +${me.edu*5}%</span><em>→</em><span>기업 이익 ${won(Object.keys(SECT).reduce((a,s)=>a+compProfit(me,s).profit,0))}/R</span><em>→</em><span>재투자</span><em>·</em><span>대학가(B) 통행료 +${me.edu*10}%</span></div>`);
+ const me=ME();f.push(`<div id="fl-edu"><span>교육 ${EDUN[me.edu]}</span><em>→</em><span>생산성 +${me.edu*5}%</span><em>→</em><span>기업 이익 ${won(Object.keys(SECT).reduce((a,s)=>a+compProfit(me,s).profit,0))}/R</span><em>→</em><span>재투자</span><em>·</em><span>대학가(B) 통행료 +${me.edu*10}%</span></div>`);
  f.push(`<div id="fl-boom"><span>${phaseN()}</span><em>→</em><span>스카이라인(H) 통행료 ×${S.boom>0?1.5:S.boom<0?.5:1}</span><em>·</em><span>항만(E) ×${boomF()}</span><em>·</em><span>기업 매출 ×${boomF()}</span></div>`);
  f.push(`<div id="fl-redev"><span>재개발 카드</span><em>→</em><span>재개발촌(A) 시세·통행료 ${S.redev?'×2 ('+S.redev+'R 남음)':'×1 (대기)'}</span></div>`);
  f.push(`<div id="fl-syn"><span>전력공사</span><em>→</em><span>석유 ${S.mkt.oil} 연동</span><em>·</em><span>기업 보유</span><em>→</em><span>같은 업종 구역 통행료 +10%</span></div>`);
@@ -977,13 +981,20 @@ function devCheck(){const w=innerWidth,h=innerHeight,sh=Math.min(w,h),lg=Math.ma
  return{w,h,kind,ori,lv,msg}}
 function specBox(){/* 최소사양 안내는 공용 device-spec.js가 그림(모든 레벨 동일) */return window.DeviceSpec?DeviceSpec.html():''}
 
+/* 사람 수(1~4) + AI 수 → 합계 2~4명으로 맞춤 */
+function syncSeats(){const q=s=>document.querySelector(s);const h=+((q('#setupForm input[name=hum]:checked')||{}).value||1);
+ [2,3,4].forEach(n=>{const el=q('#nm'+n);if(el)el.hidden=n>h});
+ let a=+((q('#setupForm input[name=nai]:checked')||{}).value||0);
+ document.querySelectorAll('#setupForm input[name=nai]').forEach(r=>{const v=+r.value;r.disabled=h+v>4||h+v<2;r.closest('label').classList.toggle('off',r.disabled)});
+ if(h+a>4||h+a<2){a=Math.max(2-h,Math.min(4-h,a));const r=q('#setupForm input[name=nai][value="'+a+'"]');if(r)r.checked=true}
+ const t=q('#seatTot');if(t)t.textContent=`· 총 ${h+a}명 (사람 ${h} · AI ${a})`}
 /* ═════════ 시작 화면 ═════════ */
 function renderSetup(){document.body.classList.remove('playing');const saved=load();$('#hdr').innerHTML='';$('#who').innerHTML='';
  $('#stage').innerHTML=`<div class="panel setup"><h2>🏙️ 네오 아틀라스 부자 경영<span style="display:block;margin:3px 0 0">Level 1 · 부자되기 (재무관리·기업가정신) · 40~50분</span></h2>
  ${saved?`<div class="hint"><b>이어하기</b> 저장된 판(R${saved.round}/${saved.maxRounds})이 있습니다. <button class="btn sec" id="btnResume" style="margin-left:6px">이어서 하기</button></div>`:''}
  ${specBox()}
- <form id="setupForm"><div class="field"><label for="nm">① 내 이름</label><input type="text" id="nm" name="nm" value="동진" maxlength="8"></div>
- <div class="field"><label>② AI 상대</label><div class="opts">${[1,2,3].map(n=>`<label><input type="radio" name="nai" value="${n}" ${n===2?'checked':''}><span>${n}명<small>${AINAME.slice(0,n).map(a=>a[2]+a[0]+'('+STRATN[a[3]]+')').join(' ')}</small></span></label>`).join('')}</div></div>
+ <form id="setupForm"><div class="field"><label>① 사람 <span class="sub">(한 기기를 돌려 가며 · 각자 폰으로 하려면 오른쪽 위 👥 함께 플레이)</span></label><div class="opts">${[1,2,3,4].map(n=>`<label><input type="radio" name="hum" value="${n}" ${n===1?'checked':''}><span>${n}명</span></label>`).join('')}</div><div class="hnames">${[1,2,3,4].map(n=>`<input type="text" id="nm${n>1?n:''}" name="nm${n>1?n:''}" value="${n===1?'동진':'플레이어'+n}" maxlength="8" aria-label="플레이어 ${n} 이름"${n>1?' hidden':''}>`).join('')}</div></div>
+ <div class="field"><label>② AI 상대 <span class="sub" id="seatTot"></span></label><div class="opts">${[0,1,2,3].map(n=>`<label><input type="radio" name="nai" value="${n}" ${n===2?'checked':''}><span>${n}명<small>${n?AINAME.slice(0,n).map(a=>a[2]+a[0]+'('+STRATN[a[3]]+')').join(' '):'사람끼리만'}</small></span></label>`).join('')}</div></div>
  <div class="field"><label>③ 난이도 <span class="sub">(규칙은 같고 뉴스 덱의 악재 비율만 다름)</span></label><div class="opts">${[['easy','쉬움','호재 6 : 악재 4'],['normal','보통','호재 5 : 악재 5'],['hard','어려움','호재 4 : 악재 6']].map(([v,l,s])=>`<label><input type="radio" name="diff" value="${v}" ${v==='normal'?'checked':''}><span>${l}<small>${s}</small></span></label>`).join('')}</div></div>
  <div class="field"><label>④ 라운드</label><div class="opts">${[[15,'15라운드','35분 · 짧게'],[20,'20라운드','45~50분 · 기본'],[30,'30라운드','70분 · 길게']].map(([v,l,s])=>`<label><input type="radio" name="len" value="${v}" ${v===20?'checked':''}><span>${l}<small>${s}</small></span></label>`).join('')}</div></div>
  <div class="field"><label>⑤ 속도 <span class="sub">(게임 중 상단의 속도 버튼 🐢🚶🐇⏯️으로 바꿀 수 있어요)</span></label><div class="opts">${SPEEDS.map(x=>[x[0],x[2],x[3]]).map(([v,l,s])=>`<label><input type="radio" name="speed" value="${v}" ${v==='normal'?'checked':''}><span>${l}<small>${s}</small></span></label>`).join('')}</div></div>
@@ -992,7 +1003,8 @@ function renderSetup(){document.body.classList.remove('playing');const saved=loa
  <button class="btn" type="submit" style="width:100%;font-size:15px;min-height:44px">🎲 게임 시작</button></form></div>`;
  if(saved)$('#btnResume').onclick=()=>{S=saved;S.ask=null;try{scrollTo(0,0)}catch(_){};gen++;render();gameLoop()};
  document.querySelectorAll('#setupForm input[name=frame]').forEach(r=>r.onchange=()=>applyFrame(r.value));
- $('#setupForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);applyFrame(f.get('frame'));S=newState(f.get('nm').trim()||'나',+f.get('nai'),f.get('diff'),+f.get('len'),f.get('speed'));S.v=4;try{scrollTo(0,0)}catch(_){};syncCycle();gen++;selected=S.players[0].pos;render();gameLoop()}}
+ document.querySelectorAll('#setupForm input[name=hum],#setupForm input[name=nai]').forEach(r=>r.addEventListener('change',syncSeats));syncSeats();
+ $('#setupForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);applyFrame(f.get('frame'));const hum=+(f.get('hum')||1),names=[1,2,3,4].slice(0,hum).map(n=>(f.get('nm'+(n>1?n:''))||'').trim()||(n===1?'나':'플레이어'+n));S=MP.onNewState(newState(names,+f.get('nai'),f.get('diff'),+f.get('len'),f.get('speed')));S.v=4;try{scrollTo(0,0)}catch(_){};syncCycle();gen++;selected=S.players[0].pos;render();gameLoop()}}
 (function(){const nj=$('#nojs');if(nj)nj.remove();applyOrient();applyFrame(getFrame());renderSetup()})();
 let _rzT;window.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{const sb=document.querySelector('.spec');if(sb&&!S)sb.outerHTML=specBox();applyOrient();if(getFrame()==='auto')applyFrame('auto');fitBoard()},150)});
 window.addEventListener('orientationchange',()=>setTimeout(()=>{applyOrient();if(getFrame()==='auto')applyFrame('auto');fitBoard()},250));
@@ -1291,4 +1303,18 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
 <script src="cell-fit.js?v=5"></script>
 <script src="choice-chain.js?v=4"></script><script src="result-dice.js?v=1"></script>
 <script src="./intro-skin.js?v=2"></script>
+<script>/* ── 다중 플레이 연결 (mp-core.js) ── */
+(function(){if(!window.MP)return;
+ const _ask=ask;ask=function(prompt,opts){const r=_ask(prompt,opts);r.then(MP.clearWho,MP.clearWho);MP.flush();return r};
+ MP.bind({level:'level1',
+  players:()=>S?S.players:[],turn:()=>S?S.turn:0,askOpen:()=>!!(S&&S.ask),
+  state:()=>S,setState:s=>{S=s},render:()=>render(),
+  setupVisible:()=>!S&&!!document.getElementById('setupForm'),
+  actionEl:t=>t.closest('[data-ask]'),
+  enterGame:()=>{try{scrollTo(0,0)}catch(e){}gen++;selected=S.players[0].pos},
+  clientMode:()=>{save=function(){};gameLoop=async function(){}},
+  prepareForm:(n,names)=>{const r=document.querySelector('#setupForm input[name=hum][value="'+n+'"]');if(r)r.checked=true;names.forEach((nm,k)=>{const el=document.getElementById('nm'+(k?k+1:''));if(el&&nm)el.value=nm});syncSeats()},
+  applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;if(!p.human){p.human=true;p.strat='human';p.color=HUMAN[m.seat][0];p.emoji=HUMAN[m.seat][1]}p.name=m.name})
+ })})();
+</script>
 </body></html>

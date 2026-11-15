@@ -1,0 +1,14 @@
+{
+  "name": "mable22-mp",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "relay": "node dev-relay.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "ws": "^8.23.0"
+  }
+}
