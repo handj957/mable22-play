@@ -1,7 +1,7 @@
 {
-  "name": "22세기 브르마블",
-  "short_name": "브르마블",
-  "description": "22세기 브르마블 Level 1~5",
+  "name": "mable22",
+  "short_name": "mable22",
+  "description": "mable22 — mable22beginning · mable22universe",
   "lang": "ko",
   "start_url": "./index.html?source=pwa",
   "scope": "./",

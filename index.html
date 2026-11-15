@@ -4,15 +4,15 @@
 <link rel="manifest" href="./manifest.webmanifest?v=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="브르마블">
+<meta name="apple-mobile-web-app-title" content="mable22">
 <meta name="theme-color" content="#6040bd">
 
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>mable22Universe · 레벨 선택</title>
-<meta name="description" content="22세기 브르마블 — Level 1~5 플레이">
+<title>mable22 · 시리즈 선택</title>
+<meta name="description" content="mable22 — mable22beginning · mable22universe">
 <style>
 :root{--bg:#f4f5f8;--card:#fff;--ink:#1b2340;--sub:#5b6480;--line:#e3e6ee;--pt:#4f5bd5;--sh:0 2px 10px rgba(27,35,64,.08)}
 *{box-sizing:border-box}
@@ -42,6 +42,13 @@ a.card .go{color:var(--go)}
 .go{margin-left:auto;color:var(--pt);font-weight:700;flex:none}
 .note{margin-top:22px;font-size:12.5px;color:var(--sub);border-top:1px solid var(--line);padding-top:14px}
 .note b{color:var(--ink)}
+.sec{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--sub);margin:18px 0 8px}
+.sb{--c1:#f7faff;--c2:#e2ebfd;--bd:#c7d5f5;--ac:#3b6cf6;--ink:#1d2433;--sub:#4f5d78;--go:#2f5be0}
+.su{--c1:#fcf9ff;--c2:#e9e0fb;--bd:#d3c4ef;--ac:linear-gradient(135deg,#5b34c8,#c8286f);--ink:#211838;--sub:#5a4f7c;--go:#5b34c8}
+.sb .no,.su .no{font-size:19px}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:800;background:#ffd84d;color:#3a2a00;white-space:nowrap}
+.wip{opacity:.86}
+
 @media (prefers-color-scheme:dark){:root{--bg:#141826;--card:#1d2235;--ink:#eef0f7;--sub:#9aa3bf;--line:#2b3149;--sh:none}}
 
 /* 태블릿·가로: 카드 2열로 한 화면에 */
@@ -50,12 +57,12 @@ a.card .go{color:var(--go)}
 @media (max-height:480px){.wrap{padding-top:12px;padding-bottom:16px}.eng{margin-bottom:10px}a.card{padding:9px 12px}.note{margin-top:12px;padding-top:8px}}
 @media (min-width:1000px){.wrap{max-width:1000px}h1{font-size:28px}.t{font-size:18px}.d{font-size:14px}}
 </style>
-<script src="./i18n.js?v=12" data-hub data-dict="./i18n/hub.en.js?v=1"></script>
+<script src="./i18n.js?v=12" data-hub data-dict="./i18n/hub.en.js?v=2"></script>
 </head>
 <body>
 <div class="wrap">
-  <h1>mable22Universe</h1>
-  <div class="eng">22세기 브르마블 · Blue Marble 2101 · Level 1 – 5</div>
+  <h1>mable22</h1>
+  <div class="eng">22세기 브르마블 · Blue Marble 2101</div>
 
   <section style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 16px;border:1px solid #b9c4d6;border-radius:14px;background:#fff;color:#1d2433" aria-label="소리 설정">
   <div><b>소리 설정</b><div style="font-size:12px;color:#5b6577">배경음악·효과음 · 모든 레벨에 적용</div></div>
@@ -66,14 +73,17 @@ a.card .go{color:var(--go)}
 function paint(){b.textContent=muted?'🔇 소리 OFF':'🔊 소리 ON';b.setAttribute('aria-pressed',String(!muted));b.setAttribute('aria-label',muted?'소리 켜기':'소리 끄기')}
 b.addEventListener('click',function(){muted=!muted;try{localStorage.setItem('m22_mute',muted?'1':'0')}catch(e){}paint()});paint()})();
 </script>
+<div class="sec">시리즈 선택</div>
 <div class="cards">
-<a class="card l1" href="level1.html"><div class="no">1</div><div><div class="t">네오 아틀라스 부자 경영</div><div class="d">부자되기 (재무관리·기업가정신) — 부동산·기업·원자재·교육</div></div><div class="go">플레이 ›</div></a>
-  <a class="card l2" href="level2.html"><div class="no">2</div><div><div class="t">네오 아틀라스 시티 건설</div><div class="d">도시정책 (도시경영·이해관계자 관리) — 사회·문화, 민심과 연쇄 효과</div></div><div class="go">플레이 ›</div></a>
-  <a class="card l3" href="level3.html"><div class="no">3</div><div><div class="t">네오 아틀라스 국가 정책</div><div class="d">국가경영·국제외교 — 정치·경제·군사·외교·자원·부동산 6대 분야</div></div><div class="go">플레이 ›</div></a>
-  <a class="card l4" href="level4.html"><div class="no">4</div><div><div class="t">네오 아틀라스 우주 패권</div><div class="d">글로벌 전략경영·경쟁우위 — 지도자 드래프트 · 다중 승리 4종</div></div><div class="go">플레이 ›</div></a>
-  <a class="card l5" href="level5.html"><div class="no">5</div><div><div class="t">블루마블 택틱스</div><div class="d">11×19 전장 · 주사위 사거리 전투 · 골드+AP 이중 재화 (전쟁편)</div></div><div class="go">플레이 ›</div></a>
-  <a class="card cw1" href="crazy-world1.html"><div class="no">CW1</div><div><div class="t">Crazy World 1 · 블루 하버</div><div class="d">현재 경제 × 항구 도시 × 태평양 · 11×11 · 1~4인</div></div><div class="go">플레이 ›</div></a>
-  <a class="card cw2" href="crazy-world2.html"><div class="no">CW2</div><div><div class="t">Crazy World 2 · 오비탈 프런티어</div><div class="d">궤도·달·화성 × 함대 × 위기 · 11×11 · 1~4인</div></div><div class="go">플레이 ›</div></a>
+  <a class="card sb" href="beginning.html"><div class="no">B</div><div><div class="t">mable22beginning</div><div class="d">Level 1~4 · 배우면서 즐기는 입문 시리즈 (보드 13×13)</div></div><div class="go">선택 ›</div></a>
+  <a class="card su" href="universe.html"><div class="no">U</div><div><div class="t">mable22universe</div><div class="d">Level 1~4 · 네오 아틀라스 본편 시리즈 — 부자 경영 · 시티 건설 · 국가 정책 · 우주 패권</div></div><div class="go">선택 ›</div></a>
+</div>
+
+<div class="sec">제작 중</div>
+<div class="cards">
+  <a class="card l5 wip" href="level5.html"><div class="no">5</div><div><div class="t">블루마블 택틱스</div><div class="d">11×19 전장 · 주사위 사거리 전투 · 골드+AP 이중 재화 (전쟁편)</div></div><div class="go"><span class="badge">제작 중</span></div></a>
+  <a class="card cw1 wip" href="crazy-world1.html"><div class="no">CW1</div><div><div class="t">Crazy World 1 · 블루 하버</div><div class="d">현재 경제 × 항구 도시 × 태평양 · 11×11 · 1~4인</div></div><div class="go"><span class="badge">제작 중</span></div></a>
+  <a class="card cw2 wip" href="crazy-world2.html"><div class="no">CW2</div><div><div class="t">Crazy World 2 · 오비탈 프런티어</div><div class="d">궤도·달·화성 × 함대 × 위기 · 11×11 · 1~4인</div></div><div class="go"><span class="badge">제작 중</span></div></a>
 </div>
 
   <div class="note">
