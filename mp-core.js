@@ -56,7 +56,9 @@
 
   /* ───────── 스타일 ───────── */
   var CSS = '' +
-    '.mp-ov{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:rgba(10,14,30,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:16px;font-family:inherit}' +
+    '.mp-ov{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:rgba(10,14,30,.82);padding:16px;font-family:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent;overscroll-behavior:contain}' +
+    '.mp-ov button,.mp-fab,.mp-pill{touch-action:manipulation;-webkit-user-select:none;user-select:none}' +
+    'body.mp-lock>:not(.mp-ov),body.mp-lock>:not(.mp-ov) *{animation-play-state:paused!important}' +
     '.mp-card{width:min(420px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;color:#1d2433;border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.35);padding:18px 18px 16px;font-size:14px;line-height:1.45}' +
     '.mp-card h3{margin:0 0 4px;font-size:18px}.mp-card .mp-sub{color:#667085;font-size:12.5px;margin:0 0 12px}' +
     '.mp-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:11px;padding:11px 14px;min-height:44px;font:inherit;font-weight:800;cursor:pointer;background:#6d5dfc;color:#fff}.mp-btn.sec{background:#eef0f5;color:#344054}.mp-btn.w{width:100%}.mp-btn:disabled{opacity:.45;cursor:not-allowed}' +
@@ -72,6 +74,27 @@
     '.mp-sent{outline:3px solid #12b76a!important;outline-offset:2px}' +
     '@media (prefers-reduced-motion:reduce){.mp-pill.mine{animation:none}}';
   function css() { if (document.getElementById('mp-css')) return; var s = el('style'); s.id = 'mp-css'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); }
+
+  /* 오버레이가 열려 있는 동안 뒤 화면 애니메이션을 멈춰 아이패드 사파리 부하를 줄임 */
+  function lockSync() { try { document.body.classList.toggle('mp-lock', !!document.querySelector('.mp-ov')); } catch (e) {} }
+  setInterval(lockSync, 400);
+
+  /* 아이패드·아이폰: 첫 터치에 전체화면 전환이 겹치면 click이 사라질 수 있음
+     → MP 버튼은 손가락을 뗄 때(pointerup) 바로 실행하고, 뒤따르는 진짜 click은 한 번 무시 */
+  var pd = null, synthT = 0;
+  document.addEventListener('pointerdown', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('.mp-ov button,.mp-fab,.mp-pill') : null;
+    pd = b ? { b: b, x: e.clientX, y: e.clientY } : null;
+  }, true);
+  document.addEventListener('pointerup', function (e) {
+    if (!pd) return; var b = pd.b, moved = Math.abs(e.clientX - pd.x) + Math.abs(e.clientY - pd.y) > 12; pd = null;
+    if (moved || b.disabled || !b.isConnected) return;
+    synthT = Date.now(); b.click(); lockSync();
+  }, true);
+  document.addEventListener('pointercancel', function () { pd = null; }, true);
+  document.addEventListener('click', function (e) {
+    if (synthT && e.isTrusted && Date.now() - synthT < 700) { synthT = 0; e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
 
   var toastT = null;
   MP.toast = function (msg, ms) {
@@ -224,7 +247,7 @@
   /* ───────── 로비(함께 플레이) ───────── */
   var lob = null;
   function openLobby() { css(); if (lob) return; lob = el('div', 'mp-ov'); lob.setAttribute('role', 'dialog'); lob.setAttribute('aria-modal', 'true'); lob.addEventListener('click', function (e) { if (e.target === lob && !(MP.mode === 'client' && !MP.started)) closeLobby(); }); document.body.appendChild(lob); lobbyRender(); }
-  function closeLobby() { if (lob) { lob.remove(); lob = null; } }
+  function closeLobby() { if (lob) { lob.remove(); lob = null; } lockSync(); }
   MP.openLobby = openLobby;
   function seatsHTML() {
     var h = '';
@@ -284,9 +307,10 @@
       '<button type="button" class="mp-mode" data-mp-solo><i>🎮</i><div><b>1인 플레이</b><span>나 + AI 상대 · 바로 시작</span></div></button>' +
       '<button type="button" class="mp-mode" data-mp-multi><i>👥</i><div><b>멀티플레이</b><span>온라인 방 · 최대 4명 · 각자 폰·패드로</span></div></button></div></div>';
     document.body.appendChild(ov);
-    var s = ov.querySelector('[data-mp-solo]'); try { s.focus(); } catch (e) {}
-    s.onclick = function () { ov.remove(); };
-    ov.querySelector('[data-mp-multi]').onclick = function () { ov.remove(); openLobby(); };
+    var s = ov.querySelector('[data-mp-solo]');
+    s.onclick = function () { ov.remove(); lockSync(); };
+    ov.querySelector('[data-mp-multi]').onclick = function () { ov.remove(); openLobby(); lockSync(); };
+    lockSync();
   }
 
   /* 설정 화면에서만 보이는 ‘온라인 방’ 버튼 */
