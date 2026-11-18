@@ -1,0 +1,99 @@
+# 멀티플레이 서버(Cloudflare Workers) 자동 배포
+# 준비(1회): 저장소 Settings → Secrets and variables → Actions 에
+#   CLOUDFLARE_API_TOKEN  (Cloudflare → My Profile → API Tokens → 'Edit Cloudflare Workers' 템플릿)
+#   CLOUDFLARE_ACCOUNT_ID (Cloudflare 대시보드 → Workers & Pages 오른쪽의 Account ID)
+# 실행: Actions → 'Deploy multiplayer server' → Run workflow  (server/ 를 고쳐 푸시해도 자동 실행)
+# 결과: 서버 배포 → mp-config.js 에 서버 주소 자동 기록 → GitHub Pages 다시 배포
+name: Deploy multiplayer server
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['server/**', '.github/workflows/deploy-mp.yml']
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: deploy-mp
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 키 확인
+        id: keys
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$T" ] || [ -z "$A" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID 비밀값이 없어 배포를 건너뜁니다. 저장소 Settings → Secrets and variables → Actions 에 넣은 뒤 다시 실행하세요."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.keys.outputs.ok == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.keys.outputs.ok == 'true'
+        with:
+          node-version: 20
+
+      - name: 서버 시험 (방·매칭 규칙)
+        if: steps.keys.outputs.ok == 'true'
+        run: node tests/mp-room.cjs
+
+      - name: Cloudflare에 배포
+        if: steps.keys.outputs.ok == 'true'
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: server
+          command: deploy
+
+      - name: 서버 주소 찾기·확인
+        if: steps.keys.outputs.ok == 'true'
+        id: url
+        env:
+          DURL: ${{ steps.deploy.outputs.deployment-url }}
+          OUT: ${{ steps.deploy.outputs.command-output }}
+        run: |
+          URL="$DURL"
+          if [ -z "$URL" ]; then URL=$(printf '%s' "$OUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' | head -1); fi
+          if [ -z "$URL" ]; then
+            echo "::error::배포 주소(workers.dev)를 찾지 못했습니다. Cloudflare 대시보드 → Workers & Pages 에서 workers.dev 하위 도메인을 먼저 만들어 주세요."
+            exit 1
+          fi
+          echo "배포 주소: $URL"
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS "$URL/health" | grep -q 'mable22-mp ok'; then echo "서버 응답 확인"; break; fi
+            sleep 5
+          done
+          curl -fsS "$URL/match?lv=deploy-check" -H "Origin: https://handj957.github.io" && echo
+          echo "wss=${URL/https:/wss:}" >> "$GITHUB_OUTPUT"
+
+      - name: mp-config.js 에 주소 기록
+        if: steps.keys.outputs.ok == 'true'
+        id: cfg
+        env:
+          WSS: ${{ steps.url.outputs.wss }}
+        run: |
+          sed -i "s#^window.MP_SERVER = .*#window.MP_SERVER = window.MP_SERVER || '${WSS}';#" mp-config.js
+          grep -n "MP_SERVER =" mp-config.js
+          if git diff --quiet mp-config.js; then echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mp-config.js
+          git commit -m "멀티플레이 서버 주소 반영: ${WSS}"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: GitHub Pages 다시 배포
+        if: steps.keys.outputs.ok == 'true' && steps.cfg.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
