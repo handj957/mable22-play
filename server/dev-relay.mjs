@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { ...cors, 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ code: queues.get(lv).ticket(url.searchParams.get('skip') || '') }));
   }
-  res.writeHead(url.pathname === '/health' ? 200 : 404, cors); res.end('mable22-mp dev');
+  res.writeHead(url.pathname === '/health' ? 200 : 404, cors); res.end('mable22-mp ok (dev)');
 });
 const wss = new WebSocketServer({ server, maxPayload: 2 * 1024 * 1024 });
 wss.on('connection', (ws, req) => {

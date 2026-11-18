@@ -141,18 +141,22 @@
 
 ## 7. Cloudflare 배포
 
-### 방법 A (권장) — GitHub Actions가 배포 (PC 설치 없음, 1회 준비 5분)
+### 방법 A (사용 중) — Cloudflare가 GitHub 저장소에서 직접 배포 (2026-11-18 배포 완료)
 
-1. Cloudflare 가입·로그인 → **Workers & Pages** 메뉴를 한 번 열어 workers.dev 하위 도메인을 만든다(처음 한 번).
-2. Cloudflare → 오른쪽 위 프로필 → **My Profile → API Tokens → Create Token → ‘Edit Cloudflare Workers’ 템플릿** → 토큰 복사.
-3. Cloudflare 대시보드 **Workers & Pages** 화면 오른쪽의 **Account ID** 복사.
-4. GitHub 저장소 `handj957/mable22-play` → **Settings → Secrets and variables → Actions → New repository secret** 으로 두 개 등록:
-   - `CLOUDFLARE_API_TOKEN` = 2번 토큰
-   - `CLOUDFLARE_ACCOUNT_ID` = 3번 ID
-5. 저장소 **Actions → Deploy multiplayer server → Run workflow**.
+- 서버 주소: **`https://mable22-mp.handj957.workers.dev`** (게임은 `wss://`로 접속, `mp-config.js`에 기록됨)
+- Cloudflare 대시보드 → Workers & Pages → Create application → Import a repository → `handj957/mable22-play`
+- 설정값
 
-워크플로(`.github/workflows/deploy-mp.yml`)가 하는 일: 방·매칭 시험 → Cloudflare 배포 → 서버 응답 확인 → `mp-config.js`에 `wss://…workers.dev` 주소 자동 기록·커밋 → GitHub Pages 다시 배포.
-이후 `server/`를 고쳐 푸시하면 자동으로 다시 배포된다. 비밀값이 없으면 경고만 남기고 건너뛴다.
+| 칸 | 값 |
+|---|---|
+| Project name | `mable22-mp` (`server/wrangler.toml`의 name과 같아야 함) |
+| Build command | (비움) |
+| Deploy command | `cd server && npx wrangler deploy` |
+| Enable Preview builds | 끔 |
+
+- 이후 `main`에 푸시하면 Cloudflare가 자동으로 다시 배포한다. 토큰·GitHub 비밀값은 필요 없다.
+- 실제 서버 점검: GitHub **Actions → Check multiplayer server** (`tests/mp-live.mjs`: 서버 응답 → 빠른 매칭 표 → 2명 접속·지금 시작·호스트 지정 → 상태 전달). `server/`·`mp-config.js`를 푸시하면 자동 실행.
+- 저장소 이름(`mable22-play`, 게임 파일 전체)과 서버 이름(`mable22-mp`, `server` 폴더만)은 다르다.
 
 ### 방법 B — 본인 PC에서 직접
 
@@ -165,7 +169,7 @@ npx wrangler login          # 브라우저로 Cloudflare 로그인
 npx wrangler deploy         # → https://mable22-mp.<계정>.workers.dev 주소가 나옴
 ```
 
-그다음 `mp-config.js` 한 줄을 고치고 푸시한다. (방법 A는 이 과정이 자동)
+그다음 `mp-config.js` 한 줄을 고치고 푸시한다.
 
 ```js
 window.MP_SERVER = 'wss://mable22-mp.<계정>.workers.dev';

@@ -1,0 +1,25 @@
+# 멀티플레이 서버 실제 점검 — Cloudflare가 저장소에서 직접 배포(Workers Builds)한 서버를 시험
+# 실행: Actions → 'Check multiplayer server' → Run workflow  (mp-config.js·server/ 를 고쳐 푸시해도 자동 실행)
+name: Check multiplayer server
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['server/**', 'mp-config.js', 'tests/mp-live.mjs', '.github/workflows/mp-check.yml']
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 방·매칭 규칙 시험
+        run: node tests/mp-room.cjs
+      - name: 실제 서버 점검
+        run: |
+          sleep 60   # 푸시 직후면 Cloudflare 재배포가 끝나길 기다림
+          npm i --no-save --no-audit --no-fund ws@8 >/dev/null
+          URL=$(grep -oE "wss://[a-zA-Z0-9.-]+" mp-config.js | head -1 | sed 's#^wss:#https:#')
+          echo "서버: $URL"
+          node tests/mp-live.mjs "$URL"
