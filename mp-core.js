@@ -1,6 +1,8 @@
 /* 22세기 브르마블 · 다중 플레이 공통 모듈 (mp-core.js) — Level 1~4 공용
  *
- * 사람 최대 4명이 각자 폰으로 함께 합니다 (온라인 방). 한 기기 돌려하기는 없습니다.
+ * 사람 최대 4명이 각자 폰으로 함께 합니다. 한 기기 돌려하기는 없습니다.
+ *  · ⚡ 빠른 매칭: 같은 게임에 접속한 모르는 사람끼리 자동으로 모여 바로 시작(4명이면 3초, 2~3명이면 15초 뒤, 빈 자리 AI)
+ *  · 👥 친구와 하기: 방을 만들어 코드/링크로 친구를 부르고 호스트가 시작
  *  호스트 기기가 게임을 실제로 돌리고(판정·주사위·AI 모두 호스트),
  *  참가자 기기는 게임 상태를 받아 같은 화면을 그리며, 자기 차례의 선택만 호스트로 보냅니다.
  *     서버는 Cloudflare Workers + Durable Object(방 1개 = 객체 1개) — server/ 폴더 참고.
@@ -27,7 +29,7 @@
   function pemo(p) { return (p && (p.emoji || p.sym)) || '🙂'; }
   function el(tag, cls, html) { var d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
-  MP.isOnline = function () { return MP.mode === 'host' || MP.mode === 'client'; };
+  MP.isOnline = function () { return MP.mode === 'host' || MP.mode === 'client' || MP.mode === 'queue'; };
 
   /* 지금 '결정해야 하는 사람' — 레벨이 MP.who(p)로 힌트를 주면 그 사람, 아니면 차례인 사람 */
   MP.turnPlayer = function () { if (MP.mode === 'client') return ps()[MP.remote.turn] || null; try { return ps()[A ? A.turn() : ((raw() || {}).turn || 0)] || null; } catch (e) { return null; } };
@@ -71,6 +73,8 @@
     '.mp-pill.mine{background:#12b76a;animation:mpPulse 1.2s ease-in-out infinite}@keyframes mpPulse{50%{transform:translateX(-50%) scale(1.06)}}' +
     '.mp-toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:2147483100;background:#1d2433;color:#fff;border-radius:12px;padding:9px 14px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:92vw;text-align:center;transition:opacity .3s}' +
     '.mp-modes{display:grid;gap:10px;margin:14px 0 4px}.mp-mode{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid #e4e7ec;background:#fff;border-radius:14px;padding:14px;min-height:72px;font:inherit;color:#1d2433;cursor:pointer}.mp-mode:hover,.mp-mode:focus-visible{border-color:#6d5dfc;background:#f6f4ff}.mp-mode i{font-style:normal;font-size:32px;flex:none}.mp-mode b{display:block;font-size:17px}.mp-mode span{display:block;color:#667085;font-size:12.5px;margin-top:2px}' +
+    '.mp-mode.hot{border-color:#f5b400;background:#fffbea}.mp-btn.big{flex-direction:column;gap:0;font-size:17px;min-height:58px}.mp-btn.big small{font-weight:600;font-size:12px;opacity:.85}.mp-or{text-align:center;color:#98a2b3;font-size:12px;margin:12px 0 2px}' +
+    '.mp-qhead{font-size:20px;font-weight:900;text-align:center;margin:10px 0 2px}.mp-qcount{text-align:center;color:#4b3fd1;font-weight:800;min-height:20px}' +
     '.mp-sent{outline:3px solid #12b76a!important;outline-offset:2px}' +
     '@media (prefers-reduced-motion:reduce){.mp-pill.mine{animation:none}}';
   function css() { if (document.getElementById('mp-css')) return; var s = el('style'); s.id = 'mp-css'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); }
@@ -118,11 +122,11 @@
   function isRemoteSeat(seat) { return MP.mode === 'host' && seat !== MP.seat && MP.memberOnline(seat); }
 
   var retry = 0, retryT = null;
-  function connect(role, code, name) {
+  function connect(role, code, name, pub) {
     var base = MP.server(); if (!base) { MP.toast('온라인 서버 주소가 아직 설정되지 않았습니다 (mp-config.js)'); return; }
-    MP.closing = false; MP.code = code; MP.role = role; MP.name = name;
+    MP.closing = false; MP.code = code; MP.role = role; MP.name = name; MP.pubJoin = !!pub;
     var url = base.replace(/^http/, 'ws') + '/room/' + encodeURIComponent(code) + '?role=' + role + '&name=' + encodeURIComponent(name) +
-      '&tok=' + encodeURIComponent(token(code)) + '&lv=' + encodeURIComponent((A && A.level) || '');
+      '&tok=' + encodeURIComponent(token(code)) + '&lv=' + encodeURIComponent((A && A.level) || '') + (pub ? '&pub=1' : '');
     var ws; try { ws = new WebSocket(url); } catch (e) { MP.toast('연결 실패: ' + esc(e.message)); return; }
     MP.ws = ws;
     ws.onopen = function () { retry = 0; };
@@ -131,26 +135,55 @@
       if (MP.ws !== ws) return; MP.ws = null; pill();
       if (MP.closing) return;
       if (ev && ev.code === 4000) return;               // 서버가 거절(방 없음·가득 참 등) — 메시지로 이미 안내
-      if (retry < 8) { retry++; clearTimeout(retryT); retryT = setTimeout(function () { connect(MP.role, MP.code, MP.name); }, Math.min(8000, 600 * retry)); MP.toast('연결이 끊겨 다시 잇는 중… (' + retry + ')'); }
+      if (retry < 8) { retry++; clearTimeout(retryT); retryT = setTimeout(function () { connect(MP.role, MP.code, MP.name, MP.pubJoin); }, Math.min(8000, 600 * retry)); MP.toast('연결이 끊겨 다시 잇는 중… (' + retry + ')'); }
     };
   }
   MP.leave = function () {
     if (!MP.started && MP.mode === 'host' && A && A.prepareForm) { try { A.prepareForm(1, []); } catch (e) {} }
     MP.closing = true; send({ t: 'bye' }); try { MP.ws && MP.ws.close(); } catch (e) {}
-    MP.ws = null; MP.mode = 'local'; MP.seat = null; MP.code = null; MP.roster = []; MP.started = false;
-    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    MP.ws = null; MP.mode = 'local'; MP.seat = null; MP.code = null; MP.roster = []; MP.started = false; MP.matching = false; MP.startAt = 0;
+    try { var mq = new URLSearchParams(location.search).get('mp'); history.replaceState(null, '', location.pathname + (mq ? '?mp=' + encodeURIComponent(mq) : '')); } catch (e) {}
     pill(); lobbyRender();
   };
+
+  /* ⚡ 빠른 매칭: 서버에서 '지금 사람을 모으는 방' 코드를 받아 들어감 */
+  function autoName() { var n = store('m22_mp_name'); if (!n) { n = '플레이어' + (1000 + Math.floor(Math.random() * 9000)); store('m22_mp_name', n); } return n; }
+  MP.quick = function (skip, tries) {
+    var base = MP.server();
+    if (!base) { openLobby(); MP.toast('온라인 서버가 아직 연결되지 않았습니다'); return; }
+    MP.matching = true; MP.qTries = tries || 0; MP.startAt = 0; openLobby(); lobbyRender();
+    var http = base.replace(/^ws/, 'http');
+    fetch(http + '/match?lv=' + encodeURIComponent((A && A.level) || '') + (skip ? '&skip=' + encodeURIComponent(skip) : ''), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (o) { if (MP.matching && o && o.code) connect('guest', o.code, autoName(), true); })
+      .catch(function () { MP.matching = false; MP.toast('매칭 서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요', 3000); lobbyRender(); });
+  };
+  /* 매칭 방이 시작되면 0번(호스트) 기기가 설정을 채우고 자동으로 게임 시작 */
+  function autoStartHost() {
+    var n = Math.max(1, MP.roster.length), names = [];
+    for (var s = 0; s < n; s++) { var m = null; MP.roster.forEach(function (r) { if (r.seat === s) m = r; }); names.push(m ? m.name : ''); }
+    try { A.prepareForm(n, names); } catch (e) { console.warn('[MP] prepare', e); }
+    setTimeout(function () { try { A.autoStart(); } catch (e) { console.warn('[MP] autostart', e); MP.toast('자동 시작에 실패했습니다. 게임 시작을 눌러 주세요'); } closeLobby(); }, 80);
+  }
 
   var lastMineAsk = false;
   function onMsg(m) {
     if (m.t === 'welcome') {
-      MP.seat = m.seat; MP.mode = m.host ? 'host' : 'client'; MP.code = m.code;
+      var wasQueue = MP.mode === 'queue';
+      MP.seat = m.seat; MP.code = m.code; MP.pub = !!m.pub;
+      MP.mode = (m.pub && !m.go) ? 'queue' : (m.host ? 'host' : 'client');
+      if (m.go && m.pub) { MP.matching = false; if (m.host && wasQueue) MP.autoGo = true; }
       try { history.replaceState(null, '', location.pathname + '?room=' + m.code + (new URLSearchParams(location.search).get('mp') ? '&mp=' + encodeURIComponent(MP.server()) : '')); } catch (e) {}
       if (MP.mode === 'client' && A && A.clientMode) { try { A.clientMode(); } catch (e) {} }
+      if (MP.mode === 'queue' && !lob) openLobby();
       lobbyRender(); pill();
     } else if (m.t === 'roster') {
-      MP.roster = m.members || []; if (m.started && MP.mode === 'host') MP.started = true;
+      var before = MP.roster.length;
+      MP.roster = m.members || [];
+      MP.startAt = m.startIn != null ? Date.now() + m.startIn : 0;
+      if (MP.autoGo && m.started) { MP.autoGo = false; autoStartHost(); }
+      else if (m.started && MP.mode === 'host' && !MP.pub) MP.started = true;
+      if (MP.mode === 'queue' && MP.roster.length > before && before > 0) { try { navigator.vibrate && navigator.vibrate(60); } catch (e) {} }
       lobbyRender(); pill();
     } else if (m.t === 'state') {
       if (MP.mode !== 'client') return; applyState(m.d);
@@ -159,8 +192,9 @@
     } else if (m.t === 'note') {
       MP.toast(esc(m.m));
     } else if (m.t === 'err') {
+      if (m.fatal && MP.matching && MP.qTries < 3) { var c = MP.code; MP.closing = true; MP.mode = 'local'; MP.seat = null; MP.quick(c, MP.qTries + 1); return; }   // 그새 시작·가득 → 다른 방
       MP.toast('⚠️ ' + esc(m.m), 3500);
-      if (m.fatal) { MP.closing = true; MP.mode = 'local'; MP.seat = null; lobbyRender(); pill(); }
+      if (m.fatal) { MP.closing = true; MP.mode = 'local'; MP.seat = null; MP.matching = false; lobbyRender(); pill(); }
     }
   }
 
@@ -238,7 +272,8 @@
     else if (a && MP.started) {
       txt += ' · ' + (mine ? '🔔 내 차례' : esc(a.name) + (a.human ? '님 차례' : ' (AI)'));
       if (MP.mode === 'host' && a.human && a.id !== MP.seat && !MP.memberOnline(a.id)) txt += ' · 연결 끊김 → 대신 선택 가능';
-    } else if (!MP.started) txt += MP.mode === 'host' ? ' · 설정 후 게임 시작' : ' · 호스트 시작 대기';
+    } else if (MP.mode === 'queue') { txt = '⚡ 매칭 중 · ' + MP.roster.length + '/4명' + (MP.startAt ? ' · ' + Math.max(0, Math.ceil((MP.startAt - Date.now()) / 1000)) + '초 뒤 시작' : ' · 상대 찾는 중'); }
+    else if (!MP.started) txt += MP.mode === 'host' ? ' · 설정 후 게임 시작' : (MP.pub ? ' · 게임 준비 중' : ' · 호스트 시작 대기');
     p.className = 'mp-pill' + (mine && (MP.mode === 'host' || MP.remote.open) ? ' mine' : '');
     p.innerHTML = txt;
   }
@@ -246,7 +281,7 @@
 
   /* ───────── 로비(함께 플레이) ───────── */
   var lob = null;
-  function openLobby() { css(); if (lob) return; lob = el('div', 'mp-ov'); lob.setAttribute('role', 'dialog'); lob.setAttribute('aria-modal', 'true'); lob.addEventListener('click', function (e) { if (e.target === lob && !(MP.mode === 'client' && !MP.started)) closeLobby(); }); document.body.appendChild(lob); lobbyRender(); }
+  function openLobby() { css(); if (lob) return; lob = el('div', 'mp-ov'); lob.setAttribute('role', 'dialog'); lob.setAttribute('aria-modal', 'true'); lob.addEventListener('click', function (e) { if (e.target === lob && !(MP.mode === 'client' && !MP.started) && MP.mode !== 'queue' && !MP.matching) closeLobby(); }); document.body.appendChild(lob); lobbyRender(); }
   function closeLobby() { if (lob) { lob.remove(); lob = null; } lockSync(); }
   MP.openLobby = openLobby;
   function seatsHTML() {
@@ -261,16 +296,28 @@
   function lobbyRender() {
     if (!lob) return;
     var nm = store('m22_mp_name') || '', srv = MP.server(), h = '';
-    h += '<h3>👥 온라인 방 <span style="font-size:12px;color:#98a2b3">최대 4명 · 각자 폰으로</span></h3>';
-    h += '<p class="mp-sub">친구들이 각자 폰·패드로 같은 판을 합니다. 빈 자리는 AI가 채웁니다.</p>';
-    if (!MP.isOnline()) {
+    if (MP.mode === 'queue' || (MP.matching && !MP.isOnline()) || (MP.pub && MP.mode === 'client' && !MP.started) || (MP.pub && MP.autoGo)) {
+      var n = MP.roster.length, sec = MP.startAt ? Math.max(0, Math.ceil((MP.startAt - Date.now()) / 1000)) : 0;
+      var head = MP.mode !== 'queue' ? (MP.pub ? '🎲 게임을 여는 중…' : '🔎 서버에 연결하는 중…') : (n < 2 ? '🔎 상대를 찾는 중…' : (n >= 4 ? '🎉 4명 모두 모였습니다!' : '👀 ' + n + '명 모였습니다'));
+      h += '<h3>⚡ 빠른 매칭 <span style="font-size:12px;color:#98a2b3">' + esc((document.title || '').split(/[·|]/)[0].trim()) + '</span></h3>';
+      h += '<div class="mp-qhead">' + head + '</div>';
+      h += '<div class="mp-qcount" data-mp-count>' + (MP.mode === 'queue' ? (sec ? sec + '초 뒤 시작' : '같은 게임에 들어온 사람을 기다리는 중') : '') + '</div>';
+      if (MP.mode === 'queue' || MP.pub) h += '<div class="mp-seats">' + seatsHTML() + '</div>';
+      h += '<div class="mp-note">4명이 모이면 바로, 2~3명이면 15초 뒤 시작합니다. 빈 자리는 AI가 채웁니다.</div>';
+      if (MP.mode === 'queue') h += '<button class="mp-btn w" type="button" data-mp-go ' + (n >= 2 ? '' : 'disabled') + '>▶ 지금 시작' + (n >= 2 ? ' (' + n + '명 + AI ' + (4 - n) + ')' : '') + '</button>';
+      h += '<div class="mp-row"><button class="mp-btn sec w" type="button" data-mp-solo2>🎮 AI와 혼자 하기</button><button class="mp-btn sec w" type="button" data-mp-leave>취소</button></div>';
+    } else if (!MP.isOnline()) {
+      h += '<h3>👥 멀티플레이 <span style="font-size:12px;color:#98a2b3">최대 4명 · 각자 폰으로</span></h3>';
       if (!srv) h += '<div class="mp-note warn">온라인 서버가 아직 연결되지 않았습니다. 관리자가 Cloudflare에 서버를 배포한 뒤 <b>mp-config.js</b>에 주소를 넣으면 열립니다.</div>';
+      h += '<button class="mp-btn w big" type="button" data-mp-quick ' + (srv ? '' : 'disabled') + '>⚡ 빠른 매칭 <small>랜덤 상대와 바로 시작</small></button>';
+      h += '<div class="mp-or">또는 친구와 함께</div>';
       h += '<div class="mp-row"><input data-mp-name maxlength="10" placeholder="내 이름" value="' + esc(nm) + '" aria-label="내 이름"></div>';
       h += '<button class="mp-btn w" type="button" data-mp-create ' + (srv ? '' : 'disabled') + '>🏠 방 만들기 (호스트)</button>';
       h += '<div class="mp-row" style="margin-top:12px"><input data-mp-code maxlength="4" placeholder="방 코드 4자리" style="text-transform:uppercase;letter-spacing:.2em" value="' + esc(MP.pendingCode || '') + '" aria-label="방 코드"><button class="mp-btn" type="button" data-mp-join ' + (srv ? '' : 'disabled') + '>🚪 참여</button></div>';
-      h += '<div class="mp-note">호스트 기기가 게임을 돌리고, 참가자는 각자 폰·패드에서 자기 차례에 선택합니다. 호스트 화면이 꺼지면 게임이 멈추니 호스트는 화면을 켜 두세요.</div>';
+      h += '<div class="mp-note">방을 만든 사람(호스트) 기기가 게임을 돌립니다. 호스트는 화면을 켜 두세요.</div>';
       h += '<button class="mp-btn sec w" type="button" data-mp-close>닫기</button>';
     } else {
+      h += '<h3>👥 친구와 하기</h3>';
       h += '<div style="text-align:center;color:#667085;font-size:12px">방 코드</div><div class="mp-code">' + esc(MP.code) + '</div>';
       h += '<div class="mp-row"><button class="mp-btn sec w" type="button" data-mp-copy>🔗 초대 링크 복사</button></div>';
       h += '<div class="mp-seats">' + seatsHTML() + '</div>';
@@ -286,10 +333,13 @@
     lob.innerHTML = '<div class="mp-card">' + h + '</div>';
     var q = function (s) { return lob.querySelector(s); };
     if (q('[data-mp-close]')) q('[data-mp-close]').onclick = closeLobby;
+    if (q('[data-mp-quick]')) q('[data-mp-quick]').onclick = function () { var v = ((q('[data-mp-name]') || {}).value || '').trim().slice(0, 10); if (v) store('m22_mp_name', v); MP.quick(); };
+    if (q('[data-mp-go]')) q('[data-mp-go]').onclick = function () { send({ t: 'go' }); };
+    if (q('[data-mp-solo2]')) q('[data-mp-solo2]').onclick = function () { MP.leave(); closeLobby(); };
     var getName = function () { var v = (q('[data-mp-name]') || {}).value; v = (v || '').trim().slice(0, 10); if (!v) { MP.toast('이름을 적어 주세요'); return null; } store('m22_mp_name', v); return v; };
     if (q('[data-mp-create]')) q('[data-mp-create]').onclick = function () { var n = getName(); if (n) connect('host', genCode(), n); };
     if (q('[data-mp-join]')) q('[data-mp-join]').onclick = function () { var n = getName(); if (!n) return; var c = ((q('[data-mp-code]') || {}).value || '').trim().toUpperCase(); if (!/^[A-Z0-9]{4}$/.test(c)) { MP.toast('방 코드 4자리를 확인해 주세요'); return; } connect('guest', c, n); };
-    if (q('[data-mp-leave]')) q('[data-mp-leave]').onclick = function () { if (MP.started && !confirm('방에서 나갈까요?')) return; MP.leave(); };
+    if (q('[data-mp-leave]')) q('[data-mp-leave]').onclick = function () { if (MP.started && !confirm('방에서 나갈까요?')) return; var wasQ = MP.mode === 'queue' || MP.matching; MP.leave(); if (wasQ) closeLobby(); };
     if (q('[data-mp-copy]')) q('[data-mp-copy]').onclick = function () { var u = location.origin + location.pathname + '?room=' + MP.code + (new URLSearchParams(location.search).get('mp') ? '&mp=' + encodeURIComponent(MP.server()) : ''); try { navigator.clipboard.writeText(u).then(function () { MP.toast('초대 링크를 복사했습니다'); }); } catch (e) { prompt('초대 링크', u); } };
     if (q('[data-mp-fill]')) q('[data-mp-fill]').onclick = function () {
       var n = Math.max(1, MP.roster.length), names = [];
@@ -298,26 +348,34 @@
     };
   }
 
-  /* 접속하면 먼저: 1인 플레이 / 멀티플레이 고르기 (페이지를 열 때 한 번) */
+  setInterval(function () {
+    if (!lob || MP.mode !== 'queue') return; var c = lob.querySelector('[data-mp-count]'); if (!c) return;
+    var sec = MP.startAt ? Math.max(0, Math.ceil((MP.startAt - Date.now()) / 1000)) : 0;
+    c.textContent = sec ? sec + '초 뒤 시작' : (MP.roster.length >= 2 ? '곧 시작합니다' : '같은 게임에 들어온 사람을 기다리는 중');
+  }, 250);
+
+  /* 접속하면 먼저: 1인 플레이 / 빠른 매칭 / 친구와 하기 (페이지를 열 때 한 번) */
   var asked = false;
   function chooseMode() {
     asked = true; css();
     var ov = el('div', 'mp-ov'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.id = 'mp-mode';
     ov.innerHTML = '<div class="mp-card"><h3>어떻게 플레이할까요?</h3><p class="mp-sub">언제든 설정 화면 오른쪽 위 👥 버튼으로 바꿀 수 있습니다.</p><div class="mp-modes">' +
       '<button type="button" class="mp-mode" data-mp-solo><i>🎮</i><div><b>1인 플레이</b><span>나 + AI 상대 · 바로 시작</span></div></button>' +
-      '<button type="button" class="mp-mode" data-mp-multi><i>👥</i><div><b>멀티플레이</b><span>온라인 방 · 최대 4명 · 각자 폰·패드로</span></div></button></div></div>';
+      '<button type="button" class="mp-mode hot" data-mp-quickgo><i>⚡</i><div><b>빠른 매칭</b><span>랜덤 상대와 자동 매칭 · 최대 4명</span></div></button>' +
+      '<button type="button" class="mp-mode" data-mp-multi><i>👥</i><div><b>친구와 하기</b><span>방 만들기 · 코드로 참여</span></div></button></div></div>';
     document.body.appendChild(ov);
     var s = ov.querySelector('[data-mp-solo]');
     s.onclick = function () { ov.remove(); lockSync(); };
     ov.querySelector('[data-mp-multi]').onclick = function () { ov.remove(); openLobby(); lockSync(); };
+    ov.querySelector('[data-mp-quickgo]').onclick = function () { ov.remove(); MP.quick(); lockSync(); };
     lockSync();
   }
 
-  /* 설정 화면에서만 보이는 ‘온라인 방’ 버튼 */
+  /* 설정 화면에서만 보이는 ‘멀티플레이’ 버튼 */
   function fab() {
     var f = document.getElementById('mp-fab'), show = false;
     try { show = !!A && !MP.started && A.setupVisible(); } catch (e) {}
-    if (show && !f) { css(); f = el('button', 'mp-fab', '👥 온라인 방'); f.id = 'mp-fab'; f.type = 'button'; f.onclick = openLobby; document.body.appendChild(f); }
+    if (show && !f) { css(); f = el('button', 'mp-fab', '👥 멀티플레이'); f.id = 'mp-fab'; f.type = 'button'; f.onclick = openLobby; document.body.appendChild(f); }
     if (f) f.hidden = !show;
     if (show && !asked && !MP.pendingCode && !MP.isOnline() && !lob && !document.querySelector('.mp-ov')) chooseMode();
   }
@@ -330,7 +388,7 @@
     var L = (A.playersOf ? A.playersOf(s) : s.players) || [];
     var miss = MP.roster.filter(function (r) { return !L[r.seat]; });
     if (miss.length) MP.toast('⚠️ 자리가 모자라 ' + miss.map(function (r) { return esc(r.name); }).join(', ') + '님이 빠졌습니다. 사람 수를 늘려 다시 시작하세요', 4500);
-    MP.started = true; lastSent = ''; send({ t: 'start' }); setTimeout(MP.flush, 50); setTimeout(pill, 60);
+    MP.started = true; lastSent = ''; if (!MP.pub) send({ t: 'start' }); setTimeout(MP.flush, 50); setTimeout(pill, 60);
     return s;
   };
 

@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=2"></script>
+<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=3"></script>
 <link rel="manifest" href="./manifest.webmanifest?v=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1776,6 +1776,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
   actionEl:t=>{const r=t.closest('#roll,#center .btns .btn[data-i]');if(r)return r;const c=t.closest('#board .cell');return c&&G&&G.phase==='hsr'?c:null},
   enterGame:()=>{const s=document.getElementById('setup');if(s)s.hidden=true;VIEW={tab:'act',info:null,badge:{}};try{clearPawns()}catch(e){}},
   clientMode:()=>{save=function(){};startTurn=async function(){}},
+  autoStart:()=>{const b=document.getElementById('start');if(!b)showSetup();document.getElementById('start').click()},
   prepareForm:(n,names)=>{SETUP.seats.forEach((s,k)=>{s.human=k<n;if(k<n&&names[k])s.name=names[k]});showSetup()},
   applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;p.human=true;p.strat='균형';p.name=m.name})
  })})();

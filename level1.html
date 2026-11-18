@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=2"></script>
+<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=3"></script>
 <link rel="manifest" href="./manifest.webmanifest?v=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1312,6 +1312,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
   actionEl:t=>t.closest('[data-ask]'),
   enterGame:()=>{try{scrollTo(0,0)}catch(e){}gen++;selected=S.players[0].pos},
   clientMode:()=>{save=function(){};gameLoop=async function(){}},
+  autoStart:()=>{const f=document.getElementById('setupForm');if(f)f.requestSubmit()},
   prepareForm:(n,names)=>{const r=document.querySelector('#setupForm input[name=hum][value="'+n+'"]');if(r)r.checked=true;names.forEach((nm,k)=>{const el=document.getElementById('nm'+(k?k+1:''));if(el&&nm)el.value=nm});syncSeats()},
   applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;if(!p.human){p.human=true;p.strat='human';p.color=HUMAN[m.seat][0];p.emoji=HUMAN[m.seat][1]}p.name=m.name})
  })})();

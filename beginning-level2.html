@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head>
-<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=2"></script>
+<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=3"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
 <script src="./i18n.js?v=12" data-dict="./i18n/level2.en.js?v=2,./i18n/beginning.en.js?v=1,./i18n/common.en.js?v=8"></script>
@@ -1852,6 +1852,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
   actionEl:t=>{const r=t.closest('#roll,#center .btns .btn[data-i]');if(r)return r;const c=t.closest('#board .cell');return c&&G&&G.phase==='hsr'?c:null},
   enterGame:()=>{const s=document.getElementById('setup');if(s)s.hidden=true;VIEW={tab:'act',info:null,badge:{}};try{clearPawns()}catch(e){}},
   clientMode:()=>{save=function(){};startTurn=async function(){}},
+  autoStart:()=>{const b=document.getElementById('start');if(!b)showSetup();document.getElementById('start').click()},
   prepareForm:(n,names)=>{SETUP.seats.forEach((s,k)=>{s.human=k<n;if(k<n&&names[k])s.name=names[k]});showSetup()},
   applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;p.human=true;p.strat='균형';p.name=m.name})
  })})();

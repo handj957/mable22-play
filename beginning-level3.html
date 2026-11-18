@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head>
-<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=2"></script>
+<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=3"></script>
 <script src="scroll-hint.js?v=1"></script>
 <link rel="stylesheet" href="dual-dice.css?v=6">
 <script src="dual-dice.js?v=1"></script>
@@ -6299,6 +6299,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
   canAct:(seat,d)=>{const p=S&&S.players[seat];if(!p||!p.human||p.bankrupt)return false;if(d.data&&d.data.bid!=null)return true;const a=MP.asker();return !!a&&a.id===seat},
   enterGame:()=>{gen++;selected=0;const s=document.getElementById('setup');if(s)s.hidden=true;const r=document.getElementById('result');if(r)r.hidden=true},
   clientMode:()=>{save=function(){};gameLoop=async function(){}},
+  autoStart:()=>{const s=document.getElementById('setup');if(s)s.hidden=false;document.getElementById('setupForm').requestSubmit()},
   prepareForm:(n,names)=>{const r=document.getElementById('hum'+n);if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))}names.forEach((nm,k)=>{const el=document.getElementById('pname'+(k?k+1:''));if(el&&nm)el.value=nm});if(typeof syncPlayers==='function')syncPlayers()},
   applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;if(!p.human){p.human=true;p.strategy='human';p.M=BLOCS[p.bloc].m}p.name=m.name})
  })})();

@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head>
-<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=2"></script>
+<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=1"></script><script src="mp-core.js?v=3"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
 <script src="./i18n.js?v=12" data-dict="./i18n/level1.en.js?v=4,./i18n/beginning.en.js?v=1,./i18n/common.en.js?v=8"></script>
@@ -1296,6 +1296,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
   enterGame:()=>{try{scrollTo(0,0)}catch(e){}gen++;selected=S.players[0].pos},
   clientMode:()=>{save=function(){};gameLoop=async function(){}},
   /* 방 인원 n명이 앉을 자리가 모자라지 않게 AI 수를 n-1 이상으로 */
+  autoStart:()=>{const f=document.getElementById('setupForm');if(f)f.requestSubmit()},
   prepareForm:(n,names)=>{const cur=+((document.querySelector('#setupForm input[name=nai]:checked')||{}).value||1),a=Math.min(3,Math.max(cur,n-1));const r=document.querySelector('#setupForm input[name=nai][value="'+a+'"]');if(r)r.checked=true;const nm=document.getElementById('nm');if(nm&&names[0])nm.value=names[0]},
   applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;if(!p.human){p.human=true;p.strat='human';p.color=HUMAN[m.seat][0];p.emoji=HUMAN[m.seat][1]}p.name=m.name})
  })})();
