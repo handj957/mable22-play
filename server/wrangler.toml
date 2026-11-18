@@ -21,4 +21,5 @@ new_sqlite_classes = ["Matchmaker"]
 
 [vars]
 # 접속을 허용할 게임 주소(쉼표로 구분). 비워 두면 어디서나 접속 가능.
-ALLOWED_ORIGINS = "https://handj957.github.io"
+# GitHub Pages + Cloudflare Pages(새 프로젝트 이름 mable22 또는 mable22-play)
+ALLOWED_ORIGINS = "https://handj957.github.io,https://mable22.pages.dev,https://mable22-play.pages.dev"

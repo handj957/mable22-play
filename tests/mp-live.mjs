@@ -4,7 +4,7 @@
  */
 import WebSocket from 'ws';
 const BASE = (process.argv[2] || '').replace(/\/+$/, '');
-const ORIGIN = 'https://handj957.github.io';
+const ORIGIN = process.argv[3] || 'https://handj957.github.io';
 const LV = 'live-check';
 const ok = (m) => console.log('✅ ' + m), fail = (m) => { console.log('❌ ' + m); process.exit(1); };
 const wait = (ms) => new Promise(r => setTimeout(r, ms));

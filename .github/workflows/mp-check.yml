@@ -22,4 +22,4 @@ jobs:
           npm i --no-save --no-audit --no-fund ws@8 >/dev/null
           URL=$(grep -oE "wss://[a-zA-Z0-9.-]+" mp-config.js | head -1 | sed 's#^wss:#https:#')
           echo "서버: $URL"
-          node tests/mp-live.mjs "$URL"
+          for O in https://handj957.github.io https://mable22.pages.dev https://mable22-play.pages.dev; do echo "== 게임 주소 $O"; node tests/mp-live.mjs "$URL" "$O"; done
