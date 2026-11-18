@@ -14,6 +14,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: 게임 주소 접속 확인
+        run: |
+          for U in https://handj957.github.io/mable22-play/ https://mable22-play.pages.dev/ https://mable22-play.pages.dev/level1.html https://mable22.pages.dev/ https://mable22-mp.handj957.workers.dev/health; do
+            R=$(curl -sS -o /tmp/b -w '%{http_code} %{redirect_url}' -m 20 "$U" 2>&1 || true)
+            echo "$U -> $R | $(head -c 80 /tmp/b 2>/dev/null | tr -d '\n')"
+          done
+          echo "DNS:"; getent hosts mable22-play.pages.dev || echo "mable22-play.pages.dev 주소 없음(DNS)"
       - name: 방·매칭 규칙 시험
         run: node tests/mp-room.cjs
       - name: 실제 서버 점검
