@@ -75,6 +75,7 @@
     '.mp-modes{display:grid;gap:10px;margin:14px 0 4px}.mp-mode{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid #e4e7ec;background:#fff;border-radius:14px;padding:14px;min-height:72px;font:inherit;color:#1d2433;cursor:pointer}.mp-mode:hover,.mp-mode:focus-visible{border-color:#6d5dfc;background:#f6f4ff}.mp-mode i{font-style:normal;font-size:32px;flex:none}.mp-mode b{display:block;font-size:17px}.mp-mode span{display:block;color:#667085;font-size:12.5px;margin-top:2px}' +
     '.mp-mode.hot{border-color:#f5b400;background:#fffbea}.mp-btn.big{flex-direction:column;gap:0;font-size:17px;min-height:58px}.mp-btn.big small{font-weight:600;font-size:12px;opacity:.85}.mp-or{text-align:center;color:#98a2b3;font-size:12px;margin:12px 0 2px}' +
     '.mp-qhead{font-size:20px;font-weight:900;text-align:center;margin:10px 0 2px}.mp-qcount{text-align:center;color:#4b3fd1;font-weight:800;min-height:20px}' +
+    '.mp-err{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:2147483200;background:#b42318;color:#fff;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.3)}.mp-err small{opacity:.8;font-weight:600}.mp-err button{float:right;border:0;border-radius:8px;background:#fff;color:#b42318;font:inherit;font-weight:800;padding:3px 9px;margin-left:8px}' +
     '.mp-sent{outline:3px solid #12b76a!important;outline-offset:2px}' +
     '@media (prefers-reduced-motion:reduce){.mp-pill.mine{animation:none}}';
   function css() { if (document.getElementById('mp-css')) return; var s = el('style'); s.id = 'mp-css'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); }
@@ -83,22 +84,24 @@
   function lockSync() { try { document.body.classList.toggle('mp-lock', !!document.querySelector('.mp-ov')); } catch (e) {} }
   setInterval(lockSync, 400);
 
-  /* 아이패드·아이폰: 첫 터치에 전체화면 전환이 겹치면 click이 사라질 수 있음
-     → MP 버튼은 손가락을 뗄 때(pointerup) 바로 실행하고, 뒤따르는 진짜 click은 한 번 무시 */
-  var pd = null, synthT = 0;
-  document.addEventListener('pointerdown', function (e) {
-    var b = e.target && e.target.closest ? e.target.closest('.mp-ov button,.mp-fab,.mp-pill') : null;
-    pd = b ? { b: b, x: e.clientX, y: e.clientY } : null;
-  }, true);
-  document.addEventListener('pointerup', function (e) {
-    if (!pd) return; var b = pd.b, moved = Math.abs(e.clientX - pd.x) + Math.abs(e.clientY - pd.y) > 12; pd = null;
-    if (moved || b.disabled || !b.isConnected) return;
-    synthT = Date.now(); b.click(); lockSync();
-  }, true);
-  document.addEventListener('pointercancel', function () { pd = null; }, true);
-  document.addEventListener('click', function (e) {
-    if (synthT && e.isTrusted && Date.now() - synthT < 700) { synthT = 0; e.preventDefault(); e.stopImmediatePropagation(); }
-  }, true);
+  /* 화면 오류 표시 — 실제 기기(아이패드 등)에서 무엇이 멈췄는지 바로 보이게: 화면 아래 빨간 줄 + 최근 5건 기록(localStorage m22_errlog) */
+  var errShown = 0;
+  function showErr(msg, src, line) {
+    try {
+      if (!msg || /^Script error\.?$/.test(msg) || /ResizeObserver loop/.test(msg)) return;
+      if (src && src.indexOf(location.origin) !== 0 && src.indexOf('http') === 0) return;   // 다른 사이트(확장 프로그램 등) 오류 제외
+      var file = (src || '').split('/').pop().split('?')[0], rec = { t: new Date().toISOString(), m: String(msg).slice(0, 200), f: file, l: line || 0, ua: navigator.userAgent.slice(0, 160), w: innerWidth + 'x' + innerHeight };
+      try { var L = JSON.parse(localStorage.getItem('m22_errlog') || '[]'); L.push(rec); localStorage.setItem('m22_errlog', JSON.stringify(L.slice(-5))); } catch (e) {}
+      if (errShown >= 3) return; errShown++; css();
+      var d = el('div', 'mp-err'); d.setAttribute('role', 'alert');
+      d.innerHTML = '⚠️ 오류: ' + esc(rec.m) + ' <small>(' + esc(file) + ':' + rec.l + ')</small> <button type="button">닫기</button>';
+      d.querySelector('button').onclick = function () { d.remove(); };
+      document.body.appendChild(d);
+    } catch (e) {}
+  }
+  window.addEventListener('error', function (e) { showErr(e.message, e.filename, e.lineno); });
+  window.addEventListener('unhandledrejection', function (e) { var r = e.reason; showErr(r && (r.message || String(r)), r && r.stack && (r.stack.match(/(https?:[^\s)]+?):(\d+):\d+/) || [])[1], 0); });
+  MP.errors = function () { try { return JSON.parse(localStorage.getItem('m22_errlog') || '[]'); } catch (e) { return []; } };
 
   var toastT = null;
   MP.toast = function (msg, ms) {

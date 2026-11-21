@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko" data-skin="pearl" data-light><head>
-<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=2"></script><script src="mp-core.js?v=3"></script>
+<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=2"></script><script src="mp-core.js?v=4"></script>
 <script src="scroll-hint.js?v=1"></script>
 <link rel="stylesheet" href="dual-dice.css?v=6">
 <script src="dual-dice.js?v=1"></script>
@@ -12,7 +12,7 @@ var de=document.documentElement,rq=de.requestFullscreen||de.webkitRequestFullscr
 var sa=(navigator.standalone===true)||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches);
 if(!rq||sa||!(navigator.maxTouchPoints>0))return;
 function go(){try{var fe=document.fullscreenElement||document.webkitFullscreenElement;if(fe)return;var p=rq.call(de,{navigationUI:'hide'});if(p&&p.catch)p.catch(function(){})}catch(e){}}
-function once(){document.removeEventListener('pointerup',once,true);document.removeEventListener('touchend',once,true);go()}
+function once(e){/* 멀티플레이 팝업(1인/빠른 매칭/친구) 터치는 건너뜀 — 팝업과 전체화면 전환이 한 터치에 겹치면 아이패드 Safari에서 터치가 꼬임. 전체화면은 다음 게임 화면 터치에서 */try{var t=e&&e.target;if(t&&t.closest&&t.closest('.mp-ov,.mp-fab,.mp-pill,.mp-toast,.mp-err'))return}catch(x){}document.removeEventListener('pointerup',once,true);document.removeEventListener('touchend',once,true);go()}
 document.addEventListener('pointerup',once,true);document.addEventListener('touchend',once,true);
 function fit(){try{dispatchEvent(new Event('resize'))}catch(e){}}
 document.addEventListener('fullscreenchange',function(){setTimeout(fit,150)});document.addEventListener('webkitfullscreenchange',function(){setTimeout(fit,150)});
