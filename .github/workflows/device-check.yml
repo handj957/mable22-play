@@ -1,0 +1,31 @@
+# 기종별 실제 브라우저 엔진 점검 — iPhone·iPad·Mac Safari(WebKit), Android·PC Chrome(Chromium), PC Firefox
+# 실행: Actions → 'Device check' → Run workflow (게임 html·공통 js를 고쳐 푸시해도 자동 실행)
+name: Device check
+on:
+  workflow_dispatch:
+    inputs:
+      games: { description: '점검할 게임(쉼표, 비우면 8개 전부)', required: false, default: '' }
+  push:
+    branches: [main]
+    paths: ['*.html', '*.js', 'tests/device-check.mjs', '.github/workflows/device-check.yml']
+jobs:
+  devices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: 도구 설치 (Playwright 브라우저 3종)
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1 ws@8 >/dev/null
+          npx playwright install --with-deps webkit chromium firefox >/dev/null
+      - name: 게임 서버·방 서버 실행
+        run: |
+          python3 -m http.server 8000 >/tmp/http.log 2>&1 &
+          (cd server && ln -s ../node_modules node_modules && PORT=8787 node dev-relay.mjs >/tmp/relay.log 2>&1 &)
+          sleep 2; curl -fsS http://localhost:8787/health
+      - name: 기종별 점검
+        env:
+          GAMES: ${{ github.event.inputs.games }}
+        run: node tests/device-check.mjs http://localhost:8000 ws://localhost:8787
