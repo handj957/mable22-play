@@ -25,7 +25,24 @@ const is2 = g => g.endsWith('2');
 const ST = g => is2(g) ? 'G' : 'S';
 const ACT = g => is2(g) ? '#roll,#center .btns .btn[data-i]' : '[data-ask]:not([disabled])';
 
-async function press(pg, el, touch) { if (touch) await el.tap({ timeout: 3000 }); else await el.click({ timeout: 3000 }); }
+/* 누르기: 먼저 정상 방식(도구가 '누를 수 있는 상태'인지 확인) → 실패하면 이유를 기록하고 손가락처럼 좌표로 누름 */
+let ISSUES = null;
+async function press(pg, el, touch, label) {
+  try { if (touch) await el.tap({ timeout: 3000 }); else await el.click({ timeout: 3000 }); return 'ok'; }
+  catch (e) {
+    const why = String(e.message).split('\n').filter(l => /waiting|element is|not |intercept|outside|stable|visible|enabled|retrying/.test(l)).slice(-2).join(' / ').slice(0, 220);
+    const info = await el.evaluate(n => { const r = n.getBoundingClientRect(); const x = r.left + r.width / 2, y = r.top + r.height / 2; const top = document.elementFromPoint(x, y);
+      const anim = []; for (let a = n; a; a = a.parentElement) { try { const L = a.getAnimations ? a.getAnimations() : []; if (L.length) anim.push(a.tagName + '.' + String(a.className).split(' ')[0] + ':' + L.length); } catch (x) {} }
+      return { box: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)], vw: innerWidth, vh: innerHeight, top: top ? top.tagName + '.' + String(top.className).split(' ')[0] + (top === n || n.contains(top) ? '(자기자신)' : '(가림)') : 'null', anim: anim.slice(0, 3), vis: getComputedStyle(n).visibility, op: getComputedStyle(n).opacity };
+    }).catch(() => ({}));
+    if (ISSUES) ISSUES.push({ step: label, why, ...info });
+    const b = await el.boundingBox().catch(() => null);
+    if (!b) throw e;
+    const x = b.x + b.width / 2, y = b.y + b.height / 2;
+    if (touch) await pg.touchscreen.tap(x, y); else await pg.mouse.click(x, y);
+    return 'coord';
+  }
+}
 
 async function firstScreen(pg, g) {
   /* Level 3·4는 인트로 뒤에 설정창 — 인트로의 시작/설정 버튼이 있으면 누르고, 없으면 설정창을 엶 */
@@ -44,7 +61,7 @@ async function one(browserType, name, dev, g, results) {
   const errs = [];
   pg.on('pageerror', e => errs.push(String(e.message || e).slice(0, 160)));
   pg.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::|ERR_/.test(m.text())) errs.push('console: ' + m.text().slice(0, 140)); });
-  const r = { kind: name, game: g };
+  const r = { kind: name, game: g, issues: [] }; ISSUES = r.issues;
   try {
     await pg.goto(`${BASE}/${g}.html?mp=${encodeURIComponent(MP)}`, { waitUntil: 'load' });
     await sleep(2000);
@@ -66,22 +83,22 @@ async function one(browserType, name, dev, g, results) {
     if (r.panel) {
       const q = await pg.$('[data-mp-panel] [data-mp-quick]');
       if (q) {
-        await q.scrollIntoViewIfNeeded(); await press(pg, q, touch); await sleep(1500);
+        await q.scrollIntoViewIfNeeded(); r.quickPress = await press(pg, q, touch, '빠른 매칭'); await sleep(1500);
         r.quickWaiting = await pg.evaluate(() => (window.MP && MP.mode) || '');
         const c = await pg.$('[data-mp-panel] [data-mp-leave]');
-        if (c) { await press(pg, c, touch); await sleep(600); }
+        if (c) { r.cancelPress = await press(pg, c, touch, '취소'); await sleep(600); }
         r.quickCanceled = await pg.evaluate(() => window.MP && MP.mode === 'local');
       }
     }
     const sel = /level1$|[34]$/.test(g) ? '#setupForm button[type=submit]' : '#start';
     const btn = await pg.$(sel);
     if (!btn) r.start = 'no start button';
-    else { await btn.scrollIntoViewIfNeeded(); try { await press(pg, btn, touch); r.start = 'ok'; } catch (e) { r.start = 'FAIL ' + String(e.message).split('\n')[0].slice(0, 120); } }
+    else { await btn.scrollIntoViewIfNeeded(); try { r.startPress = await press(pg, btn, touch, '게임 시작'); r.start = 'ok'; } catch (e) { r.start = 'FAIL ' + String(e.message).split('\n')[0].slice(0, 120); } }
     await sleep(1800);
     let taps = 0;
     for (let i = 0; i < 12; i++) {
       const els = await pg.$$(ACT(g));
-      for (const e of els) { if (await e.isVisible()) { try { await press(pg, e, touch); taps++; } catch (x) { } break; } }
+      for (const e of els) { if (await e.isVisible()) { try { await press(pg, e, touch, '게임 버튼'); taps++; } catch (x) { } break; } }
       await sleep(450);
     }
     r.running = await pg.evaluate(st => { const s = window[st] || eval(st); return !!(s && s.players && s.players.length); }, ST(g)).catch(() => false);
@@ -90,6 +107,7 @@ async function one(browserType, name, dev, g, results) {
   } catch (e) { r.fatal = String(e.message).split('\n')[0].slice(0, 160); }
   r.errors = errs.slice(0, 3);
   r.ok = !r.fatal && !r.popupAtEntry && r.start === 'ok' && r.running && r.taps > 0 && !errs.length && !(r.errBar || []).length && (!r.panel || (r.quickWaiting === 'queue' && r.quickCanceled));
+  if (!r.ok) { try { await pg.screenshot({ path: `shots/${name.replace(/\s+/g, '_')}-${g}.png` }); } catch (e) { } }
   results.push(r);
   console.log((r.ok ? 'OK   ' : 'FAIL ') + name.padEnd(18) + g.padEnd(18) + JSON.stringify(r));
   await b.close();
@@ -130,6 +148,7 @@ async function crossMatch(g) {
   return started && same && !errs.length;
 }
 
+import fs from 'node:fs'; try { fs.mkdirSync('shots', { recursive: true }); } catch (e) { }
 const results = [];
 for (const [name, bt, dev] of KINDS) for (const g of GAMES) await one(bt, name, dev, g, results);
 const ok = results.filter(r => r.ok).length;

@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
     inputs:
       games: { description: '점검할 게임(쉼표, 비우면 8개 전부)', required: false, default: '' }
+      kinds: { description: '점검할 기종 이름 일부(쉼표, 예: Safari)', required: false, default: '' }
+      cross: { description: '기종 간 빠른 매칭 시험 게임(쉼표)', required: false, default: '' }
   push:
     branches: [main]
     paths: ['*.html', '*.js', 'tests/device-check.mjs', '.github/workflows/device-check.yml']
@@ -28,4 +30,10 @@ jobs:
       - name: 기종별 점검
         env:
           GAMES: ${{ github.event.inputs.games }}
+          KINDS: ${{ github.event.inputs.kinds }}
+          CROSS: ${{ github.event.inputs.cross }}
         run: node tests/device-check.mjs http://localhost:8000 ws://localhost:8787
+      - name: 실패 화면 저장
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: device-shots, path: shots/, if-no-files-found: ignore }

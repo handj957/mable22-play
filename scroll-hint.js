@@ -29,6 +29,7 @@
   }
   function update() {
     raf = 0;
+    if (!document.body) return;          /* Firefox는 큰 페이지를 읽는 도중에도 화면 갱신을 실행 — body가 생기기 전이면 다음 차례에 */
     if (!chip) mk();
     var c = document.querySelector('#board .center'), show = false;
     if (c) {
