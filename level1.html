@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=2"></script><script src="mp-core.js?v=4"></script>
+<!doctype html><html lang="ko"><head><script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=2"></script><script src="mp-core.js?v=5"></script>
 <link rel="manifest" href="./manifest.webmanifest?v=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -992,7 +992,7 @@ function renderSetup(){document.body.classList.remove('playing');const saved=loa
  $('#stage').innerHTML=`<div class="panel setup"><h2>🏙️ 네오 아틀라스 부자 경영<span style="display:block;margin:3px 0 0">Level 1 · 부자되기 (재무관리·기업가정신) · 40~50분</span></h2>
  ${saved?`<div class="hint"><b>이어하기</b> 저장된 판(R${saved.round}/${saved.maxRounds})이 있습니다. <button class="btn sec" id="btnResume" style="margin-left:6px">이어서 하기</button></div>`:''}
  ${specBox()}
- <form id="setupForm"><div class="field"><label for="nm">① 내 이름 <span class="sub">(친구와 각자 폰으로 하려면 오른쪽 위 👥 온라인 방)</span></label><div class="opts" style="display:none">${[1,2,3,4].map(n=>`<label><input type="radio" name="hum" value="${n}" ${n===1?'checked':''}><span>${n}명</span></label>`).join('')}</div><div class="hnames">${[1,2,3,4].map(n=>`<input type="text" id="nm${n>1?n:''}" name="nm${n>1?n:''}" value="${n===1?'동진':'플레이어'+n}" maxlength="8" aria-label="플레이어 ${n} 이름"${n>1?' hidden':''}>`).join('')}</div></div>
+ <form id="setupForm"><div class="field"><label for="nm">① 내 이름 <span class="sub"></span></label><div class="opts" style="display:none">${[1,2,3,4].map(n=>`<label><input type="radio" name="hum" value="${n}" ${n===1?'checked':''}><span>${n}명</span></label>`).join('')}</div><div class="hnames">${[1,2,3,4].map(n=>`<input type="text" id="nm${n>1?n:''}" name="nm${n>1?n:''}" value="${n===1?'동진':'플레이어'+n}" maxlength="8" aria-label="플레이어 ${n} 이름"${n>1?' hidden':''}>`).join('')}</div></div>
  <div class="field"><label>② AI 상대 <span class="sub" id="seatTot"></span></label><div class="opts">${[0,1,2,3].map(n=>`<label><input type="radio" name="nai" value="${n}" ${n===2?'checked':''}><span>${n}명<small>${n?AINAME.slice(0,n).map(a=>a[2]+a[0]+'('+STRATN[a[3]]+')').join(' '):'사람끼리만'}</small></span></label>`).join('')}</div></div>
  <div class="field"><label>③ 난이도 <span class="sub">(규칙은 같고 뉴스 덱의 악재 비율만 다름)</span></label><div class="opts">${[['easy','쉬움','호재 6 : 악재 4'],['normal','보통','호재 5 : 악재 5'],['hard','어려움','호재 4 : 악재 6']].map(([v,l,s])=>`<label><input type="radio" name="diff" value="${v}" ${v==='normal'?'checked':''}><span>${l}<small>${s}</small></span></label>`).join('')}</div></div>
  <div class="field"><label>④ 라운드</label><div class="opts">${[[15,'15라운드','35분 · 짧게'],[20,'20라운드','45~50분 · 기본'],[30,'30라운드','70분 · 길게']].map(([v,l,s])=>`<label><input type="radio" name="len" value="${v}" ${v===20?'checked':''}><span>${l}<small>${s}</small></span></label>`).join('')}</div></div>
@@ -1312,6 +1312,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
   actionEl:t=>t.closest('[data-ask]'),
   enterGame:()=>{try{scrollTo(0,0)}catch(e){}gen++;selected=S.players[0].pos},
   clientMode:()=>{save=function(){};gameLoop=async function(){}},
+  panelAt:()=>document.querySelector('#setupForm button[type=submit]'),
   autoStart:()=>{const f=document.getElementById('setupForm');if(f)f.requestSubmit()},
   prepareForm:(n,names)=>{const r=document.querySelector('#setupForm input[name=hum][value="'+n+'"]');if(r)r.checked=true;names.forEach((nm,k)=>{const el=document.getElementById('nm'+(k?k+1:''));if(el&&nm)el.value=nm});syncSeats()},
   applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;if(!p.human){p.human=true;p.strat='human';p.color=HUMAN[m.seat][0];p.emoji=HUMAN[m.seat][1]}p.name=m.name})

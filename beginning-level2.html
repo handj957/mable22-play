@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head>
-<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=2"></script><script src="mp-core.js?v=4"></script>
+<script src="orient-guard.js?v=1"></script><script src="mp-config.js?v=2"></script><script src="mp-core.js?v=5"></script>
 <script id="roerr">window.addEventListener("error",function(e){if(/ResizeObserver loop/.test(e.message||"")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="22세기 브르마블"><meta name="theme-color" content="#1b2340">
 <script src="./i18n.js?v=12" data-dict="./i18n/level2.en.js?v=2,./i18n/beginning.en.js?v=1,./i18n/common.en.js?v=8"></script>
@@ -1487,7 +1487,7 @@ function showSetup(){
   <section class="hero">${miniBoard()}
     <div class="stats"><div><b>48</b><span>보드 칸</span></div><div><b>9</b><span>지표</span></div><div><b>3</b><span>주사위</span></div><div><b>48</b><span>사건 카드</span></div></div>
   </section>
-  <section><div class="sh"><h2>지도자</h2><span>${humans>1?`온라인 방 ${humans}명 · AI ${4-humans}`:'나 + AI 3 · 친구와 하려면 👥 온라인 방'}</span></div>
+  <section><div class="sh"><h2>지도자</h2><span>${humans>1?`온라인 방 ${humans}명 · AI ${4-humans}`:'나 + AI 3'}</span></div>
     <div class="seats">${SETUP.seats.map((s,i)=>`<div class="st ${s.human?'me':''}" style="--pc:${PCOL[i]}">
       <div class="top"><span class="av">${SYM[i]}</span><input id="nm${i}" value="${s.name}" maxlength="8" aria-label="지도자 ${i+1} 이름"></div>
       <div class="tg"><button class="on" disabled>${i===0?'나':s.human?'온라인':'AI'}</button></div>
@@ -1852,6 +1852,7 @@ window.M22={sfx:sfx,isPlaying:function(){return playing},isIntro:isIntro};
   actionEl:t=>{const r=t.closest('#roll,#center .btns .btn[data-i]');if(r)return r;const c=t.closest('#board .cell');return c&&G&&G.phase==='hsr'?c:null},
   enterGame:()=>{const s=document.getElementById('setup');if(s)s.hidden=true;VIEW={tab:'act',info:null,badge:{}};try{clearPawns()}catch(e){}},
   clientMode:()=>{save=function(){};startTurn=async function(){}},
+  panelAt:()=>document.getElementById('start'),
   autoStart:()=>{const b=document.getElementById('start');if(!b)showSetup();document.getElementById('start').click()},
   prepareForm:(n,names)=>{SETUP.seats.forEach((s,k)=>{s.human=k<n;if(k<n&&names[k])s.name=names[k]});showSetup()},
   applySeats:(s,roster)=>roster.forEach(m=>{const p=s.players[m.seat];if(!p)return;p.human=true;p.strat='균형';p.name=m.name})
