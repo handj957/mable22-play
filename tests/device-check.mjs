@@ -93,6 +93,7 @@ async function one(browserType, name, dev, g, results) {
       }
     }
     const sel = /level1$|[34]$/.test(g) ? '#setupForm button[type=submit]' : '#start';
+    r.beforeStart = await pg.evaluate(() => { const s = document.getElementById('setup'); let st = null; try { st = eval('typeof S!=="undefined"&&S?{round:S.round,turn:S.turn,human:S.players.filter(p=>p.human).length}:null'); } catch (e) { } return { setupHidden: s ? s.hidden : 'none', bodyPlaying: document.body.classList.contains('playing'), mp: window.MP ? MP.mode + (MP.started ? ':started' : '') : '', panel: !!document.querySelector('[data-mp-panel]'), S: st }; }).catch(e => String(e));
     const btn = pg.locator(sel).first();
     if (!(await btn.count())) r.start = 'no start button';
     else { await btn.scrollIntoViewIfNeeded().catch(() => { }); try { r.startPress = await press(pg, btn, touch, '게임 시작'); r.start = 'ok'; } catch (e) { r.start = 'FAIL ' + String(e.message).split('\n')[0].slice(0, 120); } }
@@ -146,8 +147,12 @@ async function crossMatch(g) {
     }
     await sleep(400);
   }
-  const states = await Promise.all(opened.map(o => o.pg.evaluate(st => { const s = eval(st); return JSON.stringify([s.round, s.turn, s.players.map(p => p.cash)]); }, ST(g)).catch(e => 'ERR')));
-  const same = new Set(states).size === 1 && states[0] !== 'ERR';
+  let states = [], same = false;
+  for (let k = 0; k < 6 && !same; k++) {      // 호스트가 0.3초마다 보내므로, 진행이 멈춘 순간에 몇 번 비교
+    await sleep(1200);
+    states = await Promise.all(opened.map(o => o.pg.evaluate(st => { const s = eval(st); return JSON.stringify([s.round, s.turn, s.players.map(p => p.cash)]); }, ST(g)).catch(e => 'ERR')));
+    same = new Set(states).size === 1 && states[0] !== 'ERR';
+  }
   const errs = opened.flatMap(o => o.errs);
   console.log(`${started && same && !errs.length ? 'OK  ' : 'FAIL'} 빠른 매칭(iPad Safari + Android Chrome + PC Firefox) ${g}: 시작=${started} 동기화=${same} ${states[0]} 오류=${JSON.stringify(errs.slice(0, 2))}`);
   for (const o of opened) await o.b.close();
@@ -156,7 +161,7 @@ async function crossMatch(g) {
 
 import fs from 'node:fs'; try { fs.mkdirSync('shots', { recursive: true }); } catch (e) { }
 const results = [];
-for (const [name, bt, dev] of KINDS) for (const g of GAMES) await one(bt, name, dev, g, results);
+for (let rp = 0; rp < (+process.env.REPEAT || 1); rp++) for (const [name, bt, dev] of KINDS) for (const g of GAMES) await one(bt, name, dev, g, results);
 const ok = results.filter(r => r.ok).length;
 console.log(`\n== 기종 점검 ${ok}/${results.length} 통과`);
 let cross = true;
