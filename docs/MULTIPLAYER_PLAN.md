@@ -190,6 +190,7 @@ window.MP_SERVER = 'wss://mable22-mp.<계정>.workers.dev';
 
 - **2026-11-24 기종별 실제 브라우저 엔진 점검 도입** (`tests/device-check.mjs`, GitHub Actions ‘Device check’): iPhone·iPad(세로·가로)·Mac Safari = WebKit, Android 폰·Galaxy Tab·PC Chrome = Chromium, PC Firefox × 8개 게임 + 기종 간 빠른 매칭(iPad Safari + Android Chrome + PC Firefox). 게임 html·공통 js를 푸시하면 자동 실행.
 - 2026-11-24 **입장 팝업에서 어떤 선택도 안 됨** — 원인: iPhone·iPad Safari(WebKit)에서 Level 3·4 계열 입장 팝업 버튼이 ‘보이지 않는 요소’로 처리돼 눌리지 않음(Chromium에서는 정상이라 이전 시험에서 못 잡음). 수정: 팝업·떠 있는 버튼을 모두 없애고 첫 화면 안 패널로 교체, 패널 버튼은 문서 한 곳에서 받아 게임이 화면을 다시 그려도 작동.
+- **2026-11-24 최종: 64/64 통과** (iPhone·iPad 세로·가로·Mac Safari, Android 폰·Galaxy Tab·PC Chrome, PC Firefox × 8개 게임: 첫 화면에 팝업 없음 → 패널 빠른 매칭·취소 → 취소 뒤 오작동 없음 → 게임 시작 → 차례 진행, 오류 0) + 기종 간 빠른 매칭(iPad Safari + Android Chrome + PC Firefox) Level 1·Beginning 3 시작·동기화 정상.
 - 2026-11-24 Firefox Level 3·4 `document.body is null` — 원인: `scroll-hint.js`가 큰 페이지를 읽는 도중(body 생성 전) 화면 갱신. 수정: body가 생긴 뒤에만 동작.
 
 - 온라인 4명(호스트+3): Level 1~4와 Beginning 1~4, 8개 게임 모두 한 라운드 이상 진행, 4개 기기의 라운드·차례·현금이 모두 일치, 오류 0.
