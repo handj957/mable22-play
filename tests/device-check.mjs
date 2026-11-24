@@ -132,7 +132,9 @@ async function crossMatch(g) {
   }
   await sleep(1500);
   const go = opened[0].pg.locator('[data-mp-panel] [data-mp-act=go]').first();
-  if (await go.count()) await press(opened[0].pg, go, opened[0].touch, '지금 시작');
+  const before = await Promise.all(opened.map(o => o.pg.evaluate(() => MP.mode + ':' + MP.roster.length).catch(() => '?')));
+  console.log('   매칭 대기:', JSON.stringify(before));
+  if (await go.count()) { try { await press(opened[0].pg, go, opened[0].touch, '지금 시작'); } catch (e) { console.log('   (지금 시작 버튼이 이미 사라짐 — 자동 시작 진행 중)'); } }
   let started = false;
   for (let i = 0; i < 40 && !started; i++) { await sleep(500); started = (await Promise.all(opened.map(o => o.pg.evaluate(st => !!(window.MP && MP.started && eval(st)), ST(g)).catch(() => false)))).every(Boolean); }
   for (let it = 0; it < 30; it++) {
