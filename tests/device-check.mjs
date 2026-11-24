@@ -44,6 +44,7 @@ async function press(pg, el, touch, label) {
   }
 }
 
+const setupShown = pg => pg.evaluate(() => { const p = document.querySelector('[data-mp-panel]'); if (!p) return false; const r = p.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(p).visibility !== 'hidden'; }).catch(() => false);
 async function firstScreen(pg, g) {
   /* Level 3·4는 인트로 뒤에 설정창 — 인트로의 시작/설정 버튼이 있으면 누르고, 없으면 설정창을 엶 */
   if (/[34]$/.test(g)) {
@@ -81,24 +82,26 @@ async function one(browserType, name, dev, g, results) {
     // 첫 화면 안 멀티플레이 패널
     r.panel = await pg.evaluate(() => !!document.querySelector('[data-mp-panel]'));
     if (r.panel) {
-      const q = await pg.$('[data-mp-panel] [data-mp-quick]');
-      if (q) {
+      const q = pg.locator('[data-mp-panel] [data-mp-quick]').first();
+      if (await q.count()) {
         await q.scrollIntoViewIfNeeded(); r.quickPress = await press(pg, q, touch, '빠른 매칭'); await sleep(1500);
         r.quickWaiting = await pg.evaluate(() => (window.MP && MP.mode) || '');
-        const c = await pg.$('[data-mp-panel] [data-mp-leave]');
-        if (c) { r.cancelPress = await press(pg, c, touch, '취소'); await sleep(600); }
+        const c = pg.locator('[data-mp-panel] [data-mp-leave]').first();
+        if (await c.count()) { await c.scrollIntoViewIfNeeded(); r.cancelPress = await press(pg, c, touch, '취소'); await sleep(900); }
         r.quickCanceled = await pg.evaluate(() => window.MP && MP.mode === 'local');
+        r.setupAfterCancel = await setupShown(pg);          // 취소했는데 게임이 저절로 시작되면 안 됨
       }
     }
     const sel = /level1$|[34]$/.test(g) ? '#setupForm button[type=submit]' : '#start';
-    const btn = await pg.$(sel);
-    if (!btn) r.start = 'no start button';
-    else { await btn.scrollIntoViewIfNeeded(); try { r.startPress = await press(pg, btn, touch, '게임 시작'); r.start = 'ok'; } catch (e) { r.start = 'FAIL ' + String(e.message).split('\n')[0].slice(0, 120); } }
+    const btn = pg.locator(sel).first();
+    if (!(await btn.count())) r.start = 'no start button';
+    else { await btn.scrollIntoViewIfNeeded().catch(() => { }); try { r.startPress = await press(pg, btn, touch, '게임 시작'); r.start = 'ok'; } catch (e) { r.start = 'FAIL ' + String(e.message).split('\n')[0].slice(0, 120); } }
     await sleep(1800);
+    r.firstScreenClosed = !(await setupShown(pg));          // 게임 시작 뒤 첫 화면이 실제로 닫혔는지
     let taps = 0;
     for (let i = 0; i < 12; i++) {
-      const els = await pg.$$(ACT(g));
-      for (const e of els) { if (await e.isVisible()) { try { await press(pg, e, touch, '게임 버튼'); taps++; } catch (x) { } break; } }
+      const loc = pg.locator(ACT(g)); const n = await loc.count();
+      for (let k = 0; k < n; k++) { const e = loc.nth(k); if (await e.isVisible().catch(() => false)) { try { await press(pg, e, touch, '게임 버튼'); taps++; } catch (x) { } break; } }
       await sleep(450);
     }
     r.running = await pg.evaluate(st => { const s = window[st] || eval(st); return !!(s && s.players && s.players.length); }, ST(g)).catch(() => false);
@@ -106,10 +109,11 @@ async function one(browserType, name, dev, g, results) {
     r.errBar = await pg.evaluate(() => [...document.querySelectorAll('.mp-err')].map(x => x.textContent.slice(0, 120)));
   } catch (e) { r.fatal = String(e.message).split('\n')[0].slice(0, 160); }
   r.errors = errs.slice(0, 3);
-  r.ok = !r.fatal && !r.popupAtEntry && r.start === 'ok' && r.running && r.taps > 0 && !errs.length && !(r.errBar || []).length && (!r.panel || (r.quickWaiting === 'queue' && r.quickCanceled));
+  r.ok = !r.fatal && !r.popupAtEntry && r.start === 'ok' && r.firstScreenClosed && r.running && r.taps > 0 && r.setupAfterCancel !== false && !errs.length && !(r.errBar || []).length && (!r.panel || (r.quickWaiting === 'queue' && r.quickCanceled));
   if (!r.ok) { try { await pg.screenshot({ path: `shots/${name.replace(/\s+/g, '_')}-${g}.png` }); } catch (e) { } }
   results.push(r);
-  console.log((r.ok ? 'OK   ' : 'FAIL ') + name.padEnd(18) + g.padEnd(18) + JSON.stringify(r));
+  const brief = { ...r, issues: r.issues.map(i => i.step + (i.top && /가림/.test(i.top) ? '·가림:' + i.top : '') + (i.box && i.box[2] === 0 ? '·크기0' : '')) };
+  console.log((r.ok ? 'OK   ' : 'FAIL ') + name.padEnd(18) + g.padEnd(18) + JSON.stringify(brief));
   await b.close();
 }
 
@@ -121,22 +125,22 @@ async function crossMatch(g) {
     const b = await bt.launch(); const ctx = await b.newContext({ ...dev }); const pg = await ctx.newPage(); const errs = [];
     pg.on('pageerror', e => errs.push(String(e.message).slice(0, 120)));
     await pg.goto(`${BASE}/${g}.html?mp=${encodeURIComponent(MP)}`); await sleep(2000); await firstScreen(pg, g);
-    const q = await pg.$('[data-mp-panel] [data-mp-quick]');
-    if (!q) { console.log('FAIL 빠른 매칭 버튼 없음', n); await b.close(); return false; }
+    const q = pg.locator('[data-mp-panel] [data-mp-quick]').first();
+    if (!(await q.count())) { console.log('FAIL 빠른 매칭 버튼 없음', n); await b.close(); return false; }
     await q.scrollIntoViewIfNeeded(); await press(pg, q, !!dev.hasTouch);
     opened.push({ n, b, pg, errs, touch: !!dev.hasTouch }); await sleep(800);
   }
   await sleep(1500);
-  const go = await opened[0].pg.$('[data-mp-panel] [data-mp-go]');
-  if (go) await press(opened[0].pg, go, opened[0].touch);
+  const go = opened[0].pg.locator('[data-mp-panel] [data-mp-act=go]').first();
+  if (await go.count()) await press(opened[0].pg, go, opened[0].touch, '지금 시작');
   let started = false;
   for (let i = 0; i < 40 && !started; i++) { await sleep(500); started = (await Promise.all(opened.map(o => o.pg.evaluate(st => !!(window.MP && MP.started && eval(st)), ST(g)).catch(() => false)))).every(Boolean); }
   for (let it = 0; it < 30; it++) {
     for (const o of opened) {
       const mine = await o.pg.evaluate(() => { const a = MP.asker(); return !!a && a.id === MP.seat; }).catch(() => false);
       if (!mine) continue;
-      const els = await o.pg.$$(ACT(g));
-      for (const e of els) { if (await e.isVisible()) { try { await press(o.pg, e, o.touch); } catch (x) { } break; } }
+      const loc = o.pg.locator(ACT(g)); const n = await loc.count();
+      for (let k = 0; k < n; k++) { const e = loc.nth(k); if (await e.isVisible().catch(() => false)) { try { await press(o.pg, e, o.touch, '게임 버튼'); } catch (x) { } break; } }
     }
     await sleep(400);
   }
