@@ -99,6 +99,8 @@ async function one(browserType, name, dev, g, results) {
     else { await btn.scrollIntoViewIfNeeded().catch(() => { }); try { r.startPress = await press(pg, btn, touch, '게임 시작'); r.start = 'ok'; } catch (e) { r.start = 'FAIL ' + String(e.message).split('\n')[0].slice(0, 120); } }
     await sleep(1800);
     r.firstScreenClosed = !(await setupShown(pg));          // 게임 시작 뒤 첫 화면이 실제로 닫혔는지
+    /* Safari 엔진 도구는 누른 버튼이 바로 사라지면(=게임이 시작되면) '시간 초과'로 기록함 → 누르기 전 첫 화면이 열려 있었고 누른 뒤 닫혔으면 성공 */
+    if (r.start !== 'ok' && r.firstScreenClosed && r.beforeStart && r.beforeStart.setupHidden === false && r.beforeStart.mp === 'local') { r.start = 'ok'; r.startNote = '눌림(버튼 사라짐)'; }
     let taps = 0;
     for (let i = 0; i < 12; i++) {
       const loc = pg.locator(ACT(g)); const n = await loc.count();
