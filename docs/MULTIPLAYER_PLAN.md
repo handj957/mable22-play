@@ -161,6 +161,22 @@
 - 실제 서버 점검: GitHub **Actions → Check multiplayer server** (`tests/mp-live.mjs`: 서버 응답 → 빠른 매칭 표 → 2명 접속·지금 시작·호스트 지정 → 상태 전달). `server/`·`mp-config.js`를 푸시하면 자동 실행.
 - 저장소 이름(`mable22-play`, 게임 파일 전체)과 서버 이름(`mable22-mp`, `server` 폴더만)은 다르다.
 
+### 게임 화면도 Cloudflare로 (2026-11-26 준비 완료, 대시보드 등록 남음)
+
+- 주소: **`https://mable22-play.handj957.workers.dev/`** (예: `/level1`, `/beginning`) — `.html` 주소로 들어오면 확장자 없는 주소로 자동 이동, `?room=` 초대 코드는 그대로 유지
+- 설정 파일: `site/wrangler.toml`(맨 위가 아니라 `site/`에 둠 — 맨 위면 mable22-mp 자동 배포가 자기 설정으로 오인), 올리지 않을 파일은 `.assetsignore`(server·tests·docs·md)
+- Cloudflare 대시보드 → Create application → Import a repository → `mable22-play`
+
+| 칸 | 값 |
+|---|---|
+| Project name | `mable22-play` |
+| Build command | (비움) |
+| Deploy command | `cd site && npx wrangler deploy` |
+| Enable Preview builds | 끔 |
+
+- 기존 Pages `mable22`(mable22.pages.dev, 직접 올린 방식)는 GitHub 연결이 불가능해 쓰지 않음. GitHub Pages 주소도 계속 열림.
+- 멀티플레이 서버는 이 주소에서 오는 접속을 이미 허용(점검 통과).
+
 ### 방법 B — 본인 PC에서 직접
 
 
