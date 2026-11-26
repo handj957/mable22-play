@@ -1,0 +1,12 @@
+# 게임 화면(정적 파일)을 Cloudflare에 올리는 설정 — 이름 mable22-play → https://mable22-play.handj957.workers.dev
+# Cloudflare 대시보드: Create application → Import a repository → mable22-play
+#   Project name: mable22-play / Build command: (비움) / Deploy command: cd site && npx wrangler deploy / Preview builds: 끔
+# 설정을 저장소 맨 위가 아니라 site/ 에 두는 이유: 맨 위에 두면 mable22-mp 서버 자동 배포가 이 파일을 자기 설정으로 읽음
+# (멀티플레이 서버는 server/wrangler.toml 의 mable22-mp 로 따로 배포됨)
+name = "mable22-play"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = ".."                  # 저장소 전체(아래 .assetsignore 에 적힌 것은 제외)
+html_handling = "auto-trailing-slash"   # 첫 주소(/)에서 index.html 열기
+not_found_handling = "none"

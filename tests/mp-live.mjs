@@ -12,13 +12,14 @@ const wait = (ms) => new Promise(r => setTimeout(r, ms));
 const h = await fetch(BASE + '/health').then(r => r.text()).catch(e => 'ERR ' + e.message);
 h.includes('mable22-mp ok') ? ok('서버 응답: ' + h.trim()) : fail('서버 응답 이상: ' + h);
 
-const t1 = await (await fetch(`${BASE}/match?lv=${LV}`, { headers: { Origin: ORIGIN } })).json();
-const t2 = await (await fetch(`${BASE}/match?lv=${LV}`, { headers: { Origin: ORIGIN } })).json();
+const LVX = LV + '-' + Math.random().toString(36).slice(2, 6);   // 점검마다 새 대기열(방금 시작한 방 코드를 다시 받지 않게)
+const t1 = await (await fetch(`${BASE}/match?lv=${LVX}`, { headers: { Origin: ORIGIN } })).json();
+const t2 = await (await fetch(`${BASE}/match?lv=${LVX}`, { headers: { Origin: ORIGIN } })).json();
 t1.code && t1.code === t2.code ? ok('빠른 매칭: 같은 방 코드 ' + t1.code) : fail('매칭 표 이상 ' + JSON.stringify([t1, t2]));
 
 function join(name) {
   const tok = name + Date.now() + Math.random().toString(36).slice(2);
-  const url = `${BASE.replace(/^http/, 'ws')}/room/${t1.code}?role=guest&pub=1&lv=${LV}&name=${encodeURIComponent(name)}&tok=${tok}`;
+  const url = `${BASE.replace(/^http/, 'ws')}/room/${t1.code}?role=guest&pub=1&lv=${LVX}&name=${encodeURIComponent(name)}&tok=${tok}`;
   const ws = new WebSocket(url, { headers: { Origin: ORIGIN } });
   const c = { ws, msgs: [], last: t => [...c.msgs].reverse().find(m => m.t === t) };
   ws.on('message', d => c.msgs.push(JSON.parse(d.toString())));

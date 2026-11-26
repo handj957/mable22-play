@@ -16,11 +16,11 @@ jobs:
           node-version: 20
       - name: 게임 주소 접속 확인
         run: |
-          for U in https://handj957.github.io/mable22-play/ https://mable22-play.pages.dev/ https://mable22-play.pages.dev/level1.html https://mable22.pages.dev/ https://mable22-mp.handj957.workers.dev/health; do
+          for U in https://handj957.github.io/mable22-play/ https://mable22-play.handj957.workers.dev/ https://mable22-play.handj957.workers.dev/level1.html https://mable22-play.handj957.workers.dev/mp-core.js https://mable22-mp.handj957.workers.dev/health; do
             R=$(curl -sS -o /tmp/b -w '%{http_code} %{redirect_url}' -m 20 "$U" 2>&1 || true)
             echo "$U -> $R | $(head -c 80 /tmp/b 2>/dev/null | tr -d '\n')"
           done
-          echo "DNS:"; getent hosts mable22-play.pages.dev || echo "mable22-play.pages.dev 주소 없음(DNS)"
+          curl -s -o /dev/null -w "server 폴더 공개 여부(404여야 정상): %{http_code}\n" https://mable22-play.handj957.workers.dev/server/src/worker.js || true
       - name: 방·매칭 규칙 시험
         run: node tests/mp-room.cjs
       - name: 실제 서버 점검
@@ -29,4 +29,4 @@ jobs:
           npm i --no-save --no-audit --no-fund ws@8 >/dev/null
           URL=$(grep -oE "wss://[a-zA-Z0-9.-]+" mp-config.js | head -1 | sed 's#^wss:#https:#')
           echo "서버: $URL"
-          for O in https://handj957.github.io https://mable22.pages.dev https://mable22-play.pages.dev; do echo "== 게임 주소 $O"; node tests/mp-live.mjs "$URL" "$O"; done
+          for O in https://handj957.github.io https://mable22-play.handj957.workers.dev; do echo "== 게임 주소 $O"; node tests/mp-live.mjs "$URL" "$O"; done
